@@ -8,8 +8,7 @@ class Welcome():
     def __init__(self, bot):
         self.bot = bot
 
-    @bot.event
-    async def on_member_join(member):
+    async def member_join(self, member):
         guild = member.guild
         connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
         cursor = conn.cursor()
@@ -23,5 +22,7 @@ class Welcome():
             pass
 
 def setup(bot):
-    bot.add_cog(Welcome(bot))
+    cog = Welcome(bot)
+    bot.add_listener(cog.member_join, "on_member_join")
+    bot.add_cog(cog)
 
