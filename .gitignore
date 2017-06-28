@@ -1,2 +1,4 @@
 *.ini
 lib/
+*.conf
+__pycache__/
