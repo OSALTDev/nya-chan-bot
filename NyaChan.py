@@ -1,16 +1,14 @@
 #!/usr/bin/python3
 import sys
-from pprint import pprint
 import discord
 from discord.ext import commands
-import asyncio
 import role_ids
 import configparser
 
 config = configparser.ConfigParser()
 config.read_file(open('settings.ini'))
 
-startup_cogs = ['cog_rpg', 'cog_music', 'cog_misc']
+#startup_cogs = ['cog_rpg', 'cog_music', 'cog_misc']
 
 bot = commands.Bot(command_prefix=config['Bot']['prefix'], description=config['Bot']['description'])
 
@@ -27,13 +25,10 @@ async def on_ready():
     print('Discord.py version : ' + discord.__version__)
     print('Bot User : ' + str(bot.user))
     app_infos = await bot.application_info()
-    print('Bot Owner : ' + str(app_infos.owner))
-    url = await get_oauth_url()
+    bot.owner_id = app_infos.owner.id
+    print('Bot Owner : ' + str(bot.owner_id))
+    url = discord.utils.oauth_url(app_infos.id)
     print('Oauth URL : ' + str(url))
-
-async def get_oauth_url():
-    data = await bot.application_info()
-    return discord.utils.oauth_url(data.id)
 
 @bot.event
 async def on_message(message):
@@ -46,7 +41,7 @@ async def on_message(message):
 
 @bot.command()
 async def load(cog_name : str):
-    """Loads an cog."""
+    """Loads a cog."""
     try:
         bot.load_extension(cog_name)
     except (AttributeError, ImportError) as e:
@@ -54,9 +49,9 @@ async def load(cog_name : str):
         return
     await bot.say("{} loaded.".format(cog_name))
 
-#if __name__ == "__main__":
-#    for cog in startup_cogs:
-#        bot.load_extension(cog)
+if __name__ == "__main__":
+    for cog in startup_cogs:
+        bot.load_extension(cog)
 
 bot.run(token)
 
