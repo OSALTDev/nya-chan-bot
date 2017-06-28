@@ -23,5 +23,5 @@ class Welcome():
             pass
 
 def setup(bot):
-    bot.add_cog(Misc(bot))
+    bot.add_cog(Welcome(bot))
 
