@@ -2,13 +2,12 @@
 import sys
 import discord
 from discord.ext import commands
-import role_ids
 import configparser
 
 config = configparser.ConfigParser()
 config.read_file(open('settings.ini'))
 
-startup_cogs = []
+startup_cogs = ['cog_welcome']
 
 bot = commands.Bot(command_prefix=config['Bot']['prefix'], description=config['Bot']['description'])
 
@@ -36,29 +35,27 @@ async def on_message(message):
         return False
     await bot.process_commands(message)
 
-@commands.is_owner()
 @bot.command()
+@commands.is_owner()
 async def load(cog_name : str):
     """Loads a cog."""
     try:
-        bot.load_extension(cog_name)
+        bot.load_extension('Cogs.' + cog_name)
     except (AttributeError, ImportError) as e:
         await bot.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
         return
     await bot.say("{} loaded.".format(cog_name))
 
-@commands.is_owner()
 @bot.command()
+@commands.is_owner()
 async def unload(cog_name : str):
     """Unloads n cog."""
-    bot.unload_extension(cog_name)
+    bot.unload_extension('Cogs.' + cog_name)
     await bot.say("{} unloaded.".format(cog_name))
-
-
 
 if __name__ == "__main__":
     for cog in startup_cogs:
-        bot.load_extension(cog)
+        bot.load_extension('Cogs.' + cog)
 
 bot.run(token)
 
