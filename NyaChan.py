@@ -1,5 +1,6 @@
 import sys
 sys.path.insert(0, "lib")
+from pprint import pprint
 import discord
 from discord.ext import commands
 import asyncio
@@ -8,7 +9,7 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read_file(open('settings.ini'))
-print(config)
+pprint(config)
 sys.exit(0)
 startup_cogs = ['cog_rpg', 'cog_music', 'cog_misc']
 
