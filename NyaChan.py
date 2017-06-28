@@ -44,7 +44,16 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-
+@bot.command()
+@commands.is_owner()
+async def load(cog_name : str):
+    """Loads an cog."""
+    try:
+        bot.load_extension(cog_name)
+    except (AttributeError, ImportError) as e:
+        await bot.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        return
+    await bot.say("{} loaded.".format(cog_name))
 
 #if __name__ == "__main__":
 #    for cog in startup_cogs:
