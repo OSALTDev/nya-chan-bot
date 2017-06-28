@@ -9,7 +9,7 @@ class Welcome():
     def __init__(self, bot):
         self.bot = bot
 
-    def get_message(member):
+    def get_message(self, member):
         guild = member.guild
         connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
         cursor = connection.cursor()
