@@ -46,7 +46,6 @@ async def on_message(message):
 
 
 @bot.command()
-@commands.is_owner()
 async def load(cog_name : str):
     """Loads an cog."""
     try:
