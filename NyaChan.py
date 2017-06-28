@@ -35,7 +35,7 @@ async def on_message(message):
         return False
     await bot.process_commands(message)
 
-@bot.command(hidden=True)
+@bot.command()
 @commands.is_owner()
 async def load(ctx, cog_name : str):
     """Loads a cog."""
@@ -46,7 +46,7 @@ async def load(ctx, cog_name : str):
         return
     await ctx.send("{} loaded.".format(cog_name))
 
-@bot.command(hidden=True)
+@bot.command()
 @commands.is_owner()
 async def unload(ctx, cog_name : str):
     """Unloads a cog."""
