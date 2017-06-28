@@ -26,12 +26,24 @@ async def on_ready():
     print('#                      Nya Chan                      #')
     print('######################################################')
     print('Bot User : ' + str(bot.user))
+    print('Bot Owner : ' + str(bot.owner_id))
     url = await get_oauth_url()
     print('Oauth URL : ' + str(url))
 
 async def get_oauth_url():
     data = await bot.application_info()
     return discord.utils.oauth_url(data.id)
+
+@bot.event
+async def on_message(message):
+    if not message.content.startswith(config['Bot']['prefix']):
+        return False
+    if message.author.bot:
+        return False
+    await bot.process_commands(message)
+
+
+
 
 #if __name__ == "__main__":
 #    for cog in startup_cogs:
