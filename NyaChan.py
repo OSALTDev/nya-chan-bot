@@ -7,7 +7,7 @@ import configparser
 config = configparser.ConfigParser()
 config.read_file(open('settings.ini'))
 
-startup_cogs = ['cog_welcome']
+startup_cogs = ['welcome']
 
 bot = commands.Bot(command_prefix=config['Bot']['prefix'], description=config['Bot']['description'])
 
@@ -35,6 +35,10 @@ async def on_message(message):
         return False
     await bot.process_commands(message)
 
+@bot.event
+async def on_command_completion(ctx):
+    await ctx.message.delete()
+
 @bot.command()
 @commands.is_owner()
 async def load(ctx, cog_name : str):
@@ -55,7 +59,7 @@ async def unload(ctx, cog_name : str):
 
 if __name__ == "__main__":
     for cog in startup_cogs:
-        bot.load_extension('Cogs.' + cog)
+        bot.load_extension('Cogs.cog_' + cog)
 
 bot.run(token)
 
