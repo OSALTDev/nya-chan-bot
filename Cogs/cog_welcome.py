@@ -26,7 +26,8 @@ class Welcome():
         except:
             pass
 
-    @commands.command(description='Send the welcome message via private message again.', no_pm=True)
+    @commands.command(description='Send the welcome message via private message again.')
+    @commands.guild_only()
     async def welcome(self, ctx):
         """Resend welcome message"""
         member = ctx.message.author
