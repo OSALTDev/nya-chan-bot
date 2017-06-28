@@ -36,6 +36,11 @@ async def on_message(message):
     await bot.process_commands(message)
 
 @bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        ctx.send(ctx.message.author.mention + ', this command does not exist!')
+
+@bot.event
 async def on_command_completion(ctx):
     await ctx.message.delete()
 
@@ -46,7 +51,7 @@ async def load(ctx, cog_name : str):
     try:
         bot.load_extension('Cogs.' + cog_name)
     except (AttributeError, ImportError) as e:
-        await ctx.send.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
         return
     await ctx.send("{} loaded.".format(cog_name))
 
