@@ -1,4 +1,5 @@
 import sys
+sys.path.insert(0, "lib")
 import discord
 from discord.ext import commands
 import asyncio
