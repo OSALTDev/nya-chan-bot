@@ -26,8 +26,10 @@ class Welcome():
         except:
             pass
 
-    @commands.command(description='Send the welcome message via private message again.')
+    @commands.command(description='Send the welcome message via private message again.', no_pm=True)
     async def welcome(self, ctx):
+        """Resend welcome message"""
+        member = ctx.message.author
         text = self.get_message(member)
         try:
             await member.send(text)
