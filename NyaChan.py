@@ -25,6 +25,7 @@ async def on_ready():
     print('######################################################')
     print('#                      Nya Chan                      #')
     print('######################################################')
+    print('Discord.py version : ' + discord.__version__)
     print('Bot User : ' + str(bot.user))
     app_infos = await bot.application_info()
     print('Bot Owner : ' + str(app_infos.owner))
