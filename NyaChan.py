@@ -42,16 +42,16 @@ async def load(ctx, cog_name : str):
     try:
         bot.load_extension('Cogs.' + cog_name)
     except (AttributeError, ImportError) as e:
-        await bot.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        await ctx.send.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
         return
-    await bot.say("{} loaded.".format(cog_name))
+    await ctx.send("{} loaded.".format(cog_name))
 
 @bot.command()
 @commands.is_owner()
 async def unload(ctx, cog_name : str):
     """Unloads n cog."""
     bot.unload_extension('Cogs.' + cog_name)
-    await bot.say("{} unloaded.".format(cog_name))
+    await ctx.send("{} unloaded.".format(cog_name))
 
 if __name__ == "__main__":
     for cog in startup_cogs:
