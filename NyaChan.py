@@ -32,13 +32,11 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if not message.content.startswith(config['Bot']['prefix']):
-        return False
     if message.author.bot:
         return False
     await bot.process_commands(message)
 
-
+@commands.is_owner()
 @bot.command()
 async def load(cog_name : str):
     """Loads a cog."""
@@ -48,6 +46,15 @@ async def load(cog_name : str):
         await bot.say("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
         return
     await bot.say("{} loaded.".format(cog_name))
+
+@commands.is_owner()
+@bot.command()
+async def unload(cog_name : str):
+    """Unloads n cog."""
+    bot.unload_extension(cog_name)
+    await bot.say("{} unloaded.".format(cog_name))
+
+
 
 if __name__ == "__main__":
     for cog in startup_cogs:
