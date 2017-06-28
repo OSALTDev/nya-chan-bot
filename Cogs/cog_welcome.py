@@ -20,7 +20,7 @@ class Welcome():
         return text.format(member, guild)
 
     async def member_join(self, member):
-        text = get_message(member)
+        text = self.get_message(member)
         try:
             await member.send(text)
         except:
@@ -28,7 +28,7 @@ class Welcome():
 
     @commands.command(description='Send the welcome message via private message again.')
     async def welcome(self, ctx):
-        text = get_message(member)
+        text = self.get_message(member)
         try:
             await member.send(text)
         except:
