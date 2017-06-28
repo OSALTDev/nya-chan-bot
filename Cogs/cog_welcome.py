@@ -11,11 +11,11 @@ class Welcome():
     async def member_join(self, member):
         guild = member.guild
         connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
-        cursor = conn.cursor()
+        cursor = connection.cursor()
         cursor.execute("""INSERT INTO welcomes (id_server, message) VALUES(%s, %s)""", (guild.id, 'coucou'))
         #cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", (member.guild.id))
         #rows = cursor.fetchall()
-        conn.close()
+        connection.close()
         #text = rows[0][0]
         #try:
             #await member.send(text.format(member, guild))
