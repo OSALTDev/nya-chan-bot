@@ -9,7 +9,7 @@ import configparser
 config = configparser.ConfigParser()
 config.read_file(open('settings.ini'))
 print(config)
-exit 0
+sys.exit(0)
 startup_cogs = ['cog_rpg', 'cog_music', 'cog_misc']
 
 bot = commands.Bot(command_prefix=config['Bot']['prefix'], description=config['Bot']['description'])
