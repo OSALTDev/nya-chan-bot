@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 import sys
-sys.path.insert(0, "lib")
 from pprint import pprint
 import discord
 from discord.ext import commands
