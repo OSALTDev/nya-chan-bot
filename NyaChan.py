@@ -35,10 +35,11 @@ async def on_message(message):
         return False
     await bot.process_commands(message)
 
-#@bot.event
-#async def on_command_error(ctx, error):
-#    if isinstance(error, commands.CommandNotFound):
-#        ctx.send(ctx.message.author.mention + ', this command does not exist!')
+@bot.event
+async def on_command_error(ctx, error):
+    print(type(error))
+    if isinstance(error, commands.CommandNotFound):
+        ctx.send(ctx.message.author.mention + ', this command does not exist!')
 
 @bot.event
 async def on_command_completion(ctx):
