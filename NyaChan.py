@@ -37,7 +37,7 @@ async def on_message(message):
 
 @bot.command()
 @commands.is_owner()
-async def load(cog_name : str):
+async def load(ctx, cog_name : str):
     """Loads a cog."""
     try:
         bot.load_extension('Cogs.' + cog_name)
@@ -48,7 +48,7 @@ async def load(cog_name : str):
 
 @bot.command()
 @commands.is_owner()
-async def unload(cog_name : str):
+async def unload(ctx, cog_name : str):
     """Unloads n cog."""
     bot.unload_extension('Cogs.' + cog_name)
     await bot.say("{} unloaded.".format(cog_name))
