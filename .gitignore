@@ -1,1 +1,12 @@
 *.ini
+*.yaml
+lib/
+*.conf
+__pycache__/
+.project
+.pydevproject
+.settings/
+docker_environment
+.idea
+venv
+data/

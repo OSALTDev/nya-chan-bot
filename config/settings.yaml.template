@@ -1,0 +1,19 @@
+bot:
+    name: bot_name
+    description: bot_description
+    prefix: command_prefix
+    startup_cogs:
+        - cog1
+        - cog2
+        - cog...
+        - cogN
+    token: Discord_token
+
+database:
+    host: host
+    user: user
+    password: password
+    database: database_name
+
+git:
+    branch: branch_to_pull_from_for_updates
