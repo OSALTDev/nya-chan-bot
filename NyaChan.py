@@ -26,7 +26,8 @@ async def on_ready():
     print('#                      Nya Chan                      #')
     print('######################################################')
     print('Bot User : ' + str(bot.user))
-    print('Bot Owner : ' + str(bot.owner_id))
+    app_infos = await bot.application_info()
+    print('Bot Owner : ' + str(app_infos.owner))
     url = await get_oauth_url()
     print('Oauth URL : ' + str(url))
 
