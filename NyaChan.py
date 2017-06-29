@@ -121,7 +121,7 @@ async def shutdown(ctx):
 @bot.command()
 @commands.is_owner()
 async def update(ctx):
-    """Update bot."""
+    """Updates bot."""
     try:
         process = subprocess.check_output("git pull origin master", stderr=subprocess.STDOUT, shell=True)
         await ctx.send("```Git pull success```")
@@ -132,7 +132,7 @@ async def update(ctx):
 @bot.command()
 @commands.is_owner()
 async def restart(ctx):
-    """Restart bot."""
+    """Restarts bot."""
     try:
         p = psutil.Process(os.getpid())
         for handler in p.get_open_files() + p.connections():
