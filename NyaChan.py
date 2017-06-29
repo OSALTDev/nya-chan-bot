@@ -16,6 +16,8 @@ if len(sys.argv) == 2 and sys.argv[1] == 'dev':
 else:
     token = config['Bot']['token_prod']
 
+loaded_cogs = []
+
 @bot.event
 async def on_ready():
     print('######################################################')
@@ -54,6 +56,7 @@ async def load(ctx, cog_name : str):
     """Loads a cog."""
     try:
         bot.load_extension('Cogs.cog_' + cog_name)
+        loaded_cogs.push(cog_name)
         await ctx.send("{} loaded.".format(cog_name))
     except (AttributeError, ImportError) as e:
         await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
@@ -63,16 +66,21 @@ async def load(ctx, cog_name : str):
 @commands.is_owner()
 async def unload(ctx, cog_name : str):
     """Unloads a cog."""
-    try:
+    if cog_name in loaded_cogs:
         bot.unload_extension('Cogs.cog_' + cog_name)
         await ctx.send("{} unloaded.".format(cog_name))
-    except (Exception) as e:
-        await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        loaded_cogs.remove(cog_name)
+    else:
+        await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name)
         raise commands.UserInputError(ctx)
 
 if __name__ == "__main__":
     for cog in startup_cogs:
-        bot.load_extension('Cogs.cog_' + cog)
+        try:
+            bot.load_extension('Cogs.cog_' + cog)
+            loaded_cogs.push(cog_name)
+        except (AttributeError, ImportError) as e:
+            pass
 
 bot.run(token)
 
