@@ -1,7 +1,5 @@
 import discord
 from discord.ext import commands
-from utils.dataIO import fileIO
-from utils import checks
 from urllib import parse
 import os
 import aiohttp
@@ -16,11 +14,21 @@ class Nsfw():
     @commands.guild_only()
     async def kona(self, ctx, *tags):
         """Grabs the last picture from Konachan that matches your keywords."""
-        member = ctx.message.author
-        try:
-            await member.send('test')
-        except:
-            pass
+        await fetch_image(self, ctx, randomize=False, tags=tags)
+
+    async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
+        guild = ctx.message.guild
+        search = "https://konachan.com/post.json?limit=1&tags="
+        tag_search = "{} ".format(" ".join(tags))
+        if randomize:
+            tag_search += " order:random"
+        search += parse.quote_plus(tagSearch)
+        message = await ctx.send("Fetching kona image...")
+
+
+
+
+
 
 def setup(bot):
     cog = Nsfw(bot)
