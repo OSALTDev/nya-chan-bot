@@ -7,7 +7,7 @@ import configparser
 config = configparser.ConfigParser()
 config.read_file(open('settings.ini'))
 
-startup_cogs = []
+startup_cogs = ['welcome']
 
 bot = commands.Bot(command_prefix=config['Bot']['prefix'], description=config['Bot']['description'])
 
@@ -59,8 +59,7 @@ async def load(ctx, cog_name : str):
         loaded_cogs.push(cog_name)
         await ctx.send("{} loaded.".format(cog_name))
     except (AttributeError, ImportError) as e:
-        print('Cogs.cog_' + cog_name)
-        await ctx.send("```py\n'{}' module does not exist\n```".format(cog_name))
+        await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
         raise commands.UserInputError(ctx)
 
 @bot.command()
@@ -72,7 +71,7 @@ async def unload(ctx, cog_name : str):
         await ctx.send("{} unloaded.".format(cog_name))
         loaded_cogs.remove(cog_name)
     else:
-        await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name))
+        await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name)
         raise commands.UserInputError(ctx)
 
 if __name__ == "__main__":
