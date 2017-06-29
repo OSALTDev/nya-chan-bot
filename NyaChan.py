@@ -66,7 +66,7 @@ async def unload(ctx, cog_name : str):
     try:
         bot.unload_extension('Cogs.cog_' + cog_name)
         await ctx.send("{} unloaded.".format(cog_name))
-    except (AttributeError, ImportError) as e:
+    except (Exception) as e:
         await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
         raise commands.UserInputError(ctx)
 
