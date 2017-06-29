@@ -71,7 +71,7 @@ async def unload(ctx, cog_name : str):
         await ctx.send("{} unloaded.".format(cog_name))
         loaded_cogs.remove(cog_name)
     else:
-        await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name)
+        await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name))
         raise commands.UserInputError(ctx)
 
 if __name__ == "__main__":
