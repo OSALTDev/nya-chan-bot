@@ -29,7 +29,7 @@ class Nsfw():
     @commands.guild_only()
     async def kona(self, ctx, *tags):
         """Grabs the last picture from Konachan that matches your keywords."""
-        await self.fetch_image(self, False, tags)
+        await self.fetch_image(ctx, False, tags)
 
     
 
