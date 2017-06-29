@@ -41,6 +41,7 @@ async def on_message(message):
 
 @bot.event
 async def on_command_error(ctx, error):
+    print(type(error))
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await ctx.send("{}, this command does not exist!```{}```".format(ctx.message.author.mention, ctx.message.content))
     elif isinstance(error, discord.ext.commands.errors.NotOwner):
