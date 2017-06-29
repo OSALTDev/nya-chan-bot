@@ -1,5 +1,7 @@
 #!/usr/bin/python3
+import os
 import sys
+import psutil
 import discord
 from discord.ext import commands
 import configparser
@@ -87,6 +89,23 @@ async def list_cogs(ctx):
         await ctx.send("```Loaded modules : {}```".format(" ".join(str(x) for x in loaded_cogs)))
     else:
         await ctx.send("```No module loaded```")
+
+@bot.command()
+@commands.is_owner()
+async def shutdown(ctx):
+    """Shutdown bot"""
+    await bot.logout()
+
+def restart(ctx):
+    """Restart bot"""
+    try:
+        p = psutil.Process(os.getpid())
+        for handler in p.get_open_files() + p.connections():
+            os.close(handler.fd)
+    except Exception, e:
+        pass
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
 
 if __name__ == "__main__":
     for cog in startup_cogs:
