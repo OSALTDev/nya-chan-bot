@@ -51,7 +51,7 @@ async def on_command_completion(ctx):
 async def load(ctx, cog_name : str):
     """Loads a cog."""
     #try:
-        bot.load_extension('Cogs.' + cog_name)
+    bot.load_extension('Cogs.' + cog_name)
     #except (AttributeError, ImportError) as e:
     #    print(type(e).__name__)
     #    print(str(e))
