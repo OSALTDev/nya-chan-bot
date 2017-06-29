@@ -102,7 +102,7 @@ def restart(ctx):
         p = psutil.Process(os.getpid())
         for handler in p.get_open_files() + p.connections():
             os.close(handler.fd)
-    except Exception, e:
+    except Exception as e:
         pass
     python = sys.executable
     os.execl(python, python, *sys.argv)
