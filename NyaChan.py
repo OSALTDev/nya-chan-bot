@@ -105,7 +105,7 @@ async def unload(ctx, cog_name : str):
 @bot.command()
 @commands.is_owner()
 async def list_cogs(ctx):
-    """List loaded cogs."""
+    """Lists loaded cogs."""
     if len(loaded_cogs) > 0:
         await ctx.send("```Loaded modules : {}```".format(" ".join(str(x) for x in loaded_cogs)))
     else:
