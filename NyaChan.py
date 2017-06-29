@@ -124,7 +124,8 @@ async def update(ctx):
     """Update bot."""
     try:
         process = subprocess.check_output("git pull origin master", stderr=subprocess.STDOUT, shell=True)
-        await ctx.send("```{}```".format(process))
+        print(process)
+        await ctx.send("```{" + process + "}```")
     except Exception as e:
         raise commands.UserInputError(ctx) 
 
