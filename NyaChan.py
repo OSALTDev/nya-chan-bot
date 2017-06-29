@@ -81,7 +81,7 @@ async def say(ctx, channel_name : str, message : str):
     if not channel is None:
         await channel.send(message)
     else:
-        raise commands.UserInputError(ctx)
+        raise commands.UserInputError(ctx, 'Channel not found')
     
 @bot.command()
 @commands.is_owner()
