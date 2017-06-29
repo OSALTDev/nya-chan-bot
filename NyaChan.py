@@ -55,9 +55,13 @@ async def on_command_completion(ctx):
 async def load(ctx, cog_name : str):
     """Loads a cog."""
     try:
-        bot.load_extension('Cogs.cog_' + cog_name)
-        loaded_cogs.append(cog_name)
-        await ctx.send("{} loaded.".format(cog_name))
+        if not cog_name in loaded_cogs:        
+            bot.load_extension('Cogs.cog_' + cog_name)
+            loaded_cogs.append(cog_name)
+            await ctx.send("{} loaded.".format(cog_name))
+        else:
+            await ctx.send("```py\n'{}' module is already loaded\n```".format(cog_name))
+            raise commands.UserInputError(ctx)
     except (AttributeError, ImportError) as e:
         await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
         raise commands.UserInputError(ctx)
