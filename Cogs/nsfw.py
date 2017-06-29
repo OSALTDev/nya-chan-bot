@@ -23,6 +23,7 @@ class Nsfw():
         if randomize:
             tag_search += " order:random"
         search += parse.quote_plus(tagSearch)
+        print(search)
         message = await ctx.send("Fetching kona image...")
 
 
