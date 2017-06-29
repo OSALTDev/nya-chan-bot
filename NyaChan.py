@@ -47,6 +47,8 @@ async def on_command_error(ctx, error):
         await ctx.send("{}, only my Master can ask me to do that, nya!```{}```".format(ctx.message.author.mention, ctx.message.content))
     elif isinstance(error, discord.ext.commands.errors.UserInputError):
         await ctx.send("{}, Input error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
+    else:
+        await ctx.send("{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
 
 @bot.event
 async def on_command_completion(ctx):
