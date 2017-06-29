@@ -71,17 +71,17 @@ async def load(ctx, cog_name : str):
 
 @bot.command()
 @commands.is_owner()
-async def say(ctx, channel_name : str, **message):
+async def say(ctx, channel_name : str, **msg):
     """Says something as Nya."""
     channel = None
     print(channel_name)
-    print(" ".join(str(x) for x in message))
+    print(msg)
     for chan in ctx.guild.channels:
         if chan.name == channel_name:
             channel = chan
 
     if not channel is None:
-        await channel.send(" ".join(str(x) for x in message))
+        await channel.send(" ".join(str(x) for x in msg))
     else:
         await ctx.send("```py\n'{}' channel has not been found\n```".format(channel_name))
         raise commands.UserInputError(ctx, 'Channel not found')
