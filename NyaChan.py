@@ -71,11 +71,10 @@ async def load(ctx, cog_name : str):
 
 @bot.command()
 @commands.is_owner()
+@commands.guild_only()
 async def say(ctx, channel_name : str, *msg):
     """Says something as Nya."""
     channel = None
-    print(channel_name)
-    print(msg)
     for chan in ctx.guild.channels:
         if chan.name == channel_name:
             channel = chan
