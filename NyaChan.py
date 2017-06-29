@@ -78,7 +78,7 @@ if __name__ == "__main__":
     for cog in startup_cogs:
         try:
             bot.load_extension('Cogs.cog_' + cog)
-            loaded_cogs.insert(cog_name)
+            loaded_cogs.insert(cog)
         except (AttributeError, ImportError) as e:
             pass
 
