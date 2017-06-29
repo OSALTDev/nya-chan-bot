@@ -79,6 +79,15 @@ async def unload(ctx, cog_name : str):
         await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name))
         raise commands.UserInputError(ctx)
 
+@bot.command()
+@commands.is_owner()
+async def list_cogs(ctx, cog_name : str):
+    """List loaded cogs."""
+    if len(loaded_cogs) > 0:
+        await ctx.send("Loaded modules : {}".format(" ".join(str(x) for x in loaded_cogs)))
+    else:
+        await ctx.send("No module loaded.")
+
 if __name__ == "__main__":
     for cog in startup_cogs:
         try:
