@@ -14,10 +14,6 @@ class Nsfw():
     @commands.guild_only()
     async def kona(self, ctx, *tags):
         """Grabs the last picture from Konachan that matches your keywords."""
-        await fetch_image(self, ctx, randomize=False, tags=tags)
-        print('test')
-
-    async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
         guild = ctx.message.guild
         search = "https://konachan.com/post.json?limit=1&tags="
         tag_search = "{} ".format(" ".join(tags))
@@ -25,12 +21,6 @@ class Nsfw():
             tag_search += " order:random"
         search += parse.quote_plus(tagSearch)
         print(search)
-        #message = await ctx.send("Fetching kona image...")
-
-
-
-
-
 
 def setup(bot):
     cog = Nsfw(bot)
