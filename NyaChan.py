@@ -80,7 +80,8 @@ async def say(ctx, channel_name : str, message : str):
 
     if not channel is None:
         await channel.send(message)
-    raise commands.UserInputError(ctx)
+    else:
+        raise commands.UserInputError(ctx)
     
 @bot.command()
 @commands.is_owner()
