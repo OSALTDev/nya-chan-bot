@@ -2,6 +2,7 @@
 import os
 import sys
 import psutil
+import subprocess
 import discord
 from discord.ext import commands
 import configparser
@@ -115,6 +116,29 @@ async def list_cogs(ctx):
 async def shutdown(ctx):
     """Shutdown bot."""
     await bot.logout()
+
+
+@bot.command()
+@commands.is_owner()
+async def update(ctx):
+    """Update bot."""
+    process = subprocess.Popen(["git", "pull", "origin", "master"], stdout=subprocess.PIPE)
+    output = process.communicate()[0]
+    #try:
+        
+    #except Exception as e:
+    #    pass
+    #python = sys.executable
+    #os.execl(python, python, *sys.argv)
+
+
+
+
+
+
+
+
+
 
 @bot.command()
 @commands.is_owner()
