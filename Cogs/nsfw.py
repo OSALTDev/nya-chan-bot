@@ -21,7 +21,7 @@ class Nsfw():
         tag_search = "{} ".format(" ".join(tags))
         if randomize:
             tag_search += " order:random"
-        #search += parse.quote_plus(tagSearch)
+        search += parse.quote_plus(tagSearch)
         print(search)
 
 def setup(bot):
