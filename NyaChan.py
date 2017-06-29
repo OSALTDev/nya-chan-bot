@@ -124,7 +124,7 @@ async def update(ctx):
     """Update bot."""
     try:
         process = subprocess.check_output("git pull origin master", stderr=subprocess.STDOUT, shell=True)
-        print(str(process))
+        print(process.split('\n'))
         print("Coucou\nHey")
         print('Coucou2\nHey2')
         await ctx.send("```{}```".format(process))
