@@ -79,7 +79,7 @@ async def say(ctx, channel_name : str, **message):
             channel = chan
 
     if not channel is None:
-        await channel.send(" ".join(str(x) for x in message)))
+        await channel.send(" ".join(str(x) for x in message))
     else:
         await ctx.send("```py\n'{}' channel has not been found\n```".format(channel_name))
         raise commands.UserInputError(ctx, 'Channel not found')
