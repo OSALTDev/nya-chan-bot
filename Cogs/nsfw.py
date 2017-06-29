@@ -1,10 +1,7 @@
 import discord
 from discord.ext import commands
-from .utils.dataIO import fileIO
-from .utils import checks
-from urllib import parse
-import os
-import aiohttp
+import pymysql
+import role_ids
 from __main__ import config
 
 class Nsfw():
