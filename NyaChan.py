@@ -96,6 +96,8 @@ async def shutdown(ctx):
     """Shutdown bot"""
     await bot.logout()
 
+@bot.command()
+@commands.is_owner()
 def restart(ctx):
     """Restart bot"""
     try:
