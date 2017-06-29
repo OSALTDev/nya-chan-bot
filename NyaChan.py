@@ -41,14 +41,13 @@ async def on_message(message):
 
 @bot.event
 async def on_command_error(ctx, error):
-    print(type(error))
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await ctx.send("{}, this command does not exist!```{}```".format(ctx.message.author.mention, ctx.message.content))
     elif isinstance(error, discord.ext.commands.errors.NotOwner):
         await ctx.send("{}, only my Master can ask me to do that, nya!```{}```".format(ctx.message.author.mention, ctx.message.content))
     elif isinstance(error, discord.ext.commands.errors.UserInputError):
         await ctx.send("{}, Input error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
-    elif isinstance(error, NoPrivateMessage):
+    elif isinstance(error, discord.ext.commands.errors.NoPrivateMessage):
         await ctx.send("{}, this command cannot be send in a PM!```{}```".format(ctx.message.author.mention, ctx.message.content))
     else:
         await ctx.send("{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
