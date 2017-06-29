@@ -11,8 +11,6 @@ class Nsfw():
         self.bot = bot
 
     async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
-        for x in args:
-            print("Var : {}".format(x))
         guild = ctx.message.guild
         search = "https://konachan.com/post.json?limit=1&tags="
         tag_search = "{} ".format(" ".join(tags))
