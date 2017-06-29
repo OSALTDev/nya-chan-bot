@@ -122,23 +122,11 @@ async def shutdown(ctx):
 @commands.is_owner()
 async def update(ctx):
     """Update bot."""
-    process = subprocess.check_output("git pull origin master", stderr=subprocess.STDOUT, shell=True)
-    print(process)
-    #try:
-        
-    #except Exception as e:
-    #    pass
-    #python = sys.executable
-    #os.execl(python, python, *sys.argv)
-
-
-
-
-
-
-
-
-
+    try:
+        process = subprocess.check_output("git pull origin master", stderr=subprocess.STDOUT, shell=True)
+        await ctx.send("```{}```".format(process)
+    except Exception as e:
+        raise commands.UserInputError(ctx) 
 
 @bot.command()
 @commands.is_owner()
