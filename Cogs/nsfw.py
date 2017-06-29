@@ -16,7 +16,7 @@ class Nsfw():
         tag_search = "{} ".format(" ".join(tags))
         if randomize:
             tag_search += " order:random"
-        search += parse.quote_plus(tagSearch)
+        search += parse.quote_plus(tag_search)
         print(search)
         message = await ctx.send("Fetching kona image...")
 
@@ -24,7 +24,7 @@ class Nsfw():
     @commands.guild_only()
     async def kona(self, ctx, *tags):
         """Grabs the last picture from Konachan that matches your keywords."""
-        await self.fetch_image(self, ctx, randomize=False, tags=tags)
+        await self.fetch_image(self, ctx, False, tags)
 
     
 
