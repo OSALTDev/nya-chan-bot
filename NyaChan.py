@@ -50,8 +50,8 @@ async def on_command_error(ctx, error):
         await ctx.send("{}, Input error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
     elif isinstance(error, discord.ext.commands.errors.NoPrivateMessage):
         await ctx.send("{}, this command cannot be send in a PM!```{}```".format(ctx.message.author.mention, ctx.message.content))
-    #else:
-    #    await ctx.send("{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
+    else:
+        await ctx.send("{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
 
 @bot.event
 async def on_command_completion(ctx):
