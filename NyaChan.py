@@ -59,7 +59,7 @@ async def load(ctx, cog_name : str):
         try:  
             bot.load_extension('Cogs.cog_' + cog_name)
             loaded_cogs.append(cog_name)
-            await ctx.send("{} loaded.".format(cog_name))
+            await ctx.send("```{} loaded.```".format(cog_name))
         except (AttributeError, ImportError) as e:
             await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
             raise commands.UserInputError(ctx)
@@ -73,7 +73,7 @@ async def unload(ctx, cog_name : str):
     """Unloads a cog."""
     if cog_name in loaded_cogs:
         bot.unload_extension('Cogs.cog_' + cog_name)
-        await ctx.send("{} unloaded.".format(cog_name))
+        await ctx.send("```{} unloaded.```".format(cog_name))
         loaded_cogs.remove(cog_name)
     else:
         await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name))
@@ -84,9 +84,9 @@ async def unload(ctx, cog_name : str):
 async def list_cogs(ctx):
     """List loaded cogs."""
     if len(loaded_cogs) > 0:
-        await ctx.send("Loaded modules : {}".format(" ".join(str(x) for x in loaded_cogs)))
+        await ctx.send("```Loaded modules : {}```".format(" ".join(str(x) for x in loaded_cogs)))
     else:
-        await ctx.send("No module loaded.")
+        await ctx.send("```No module loaded```")
 
 if __name__ == "__main__":
     for cog in startup_cogs:
