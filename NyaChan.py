@@ -40,7 +40,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         print(ctx.message.author.mention)
         print(type(ctx))
-        ctx.send(ctx.message.author.mention + ', this command does not exist!')
+        await ctx.send("{}, this command does not exist!".format(ctx.message.author.mention))
 
 @bot.event
 async def on_command_completion(ctx):
