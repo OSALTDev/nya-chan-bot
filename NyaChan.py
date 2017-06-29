@@ -122,8 +122,8 @@ async def shutdown(ctx):
 @commands.is_owner()
 async def update(ctx):
     """Update bot."""
-    process = subprocess.Popen(["git", "pull", "origin", "master"], stdout=subprocess.PIPE)
-    output = process.communicate()[0]
+    process = subprocess.check_output("git pull origin master", stderr=subprocess.STDOUT, shell=True)
+    print(process)
     #try:
         
     #except Exception as e:
