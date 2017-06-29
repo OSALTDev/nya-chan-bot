@@ -71,7 +71,7 @@ async def load(ctx, cog_name : str):
 
 @bot.command()
 @commands.is_owner()
-async def say(ctx, channel_name : str, **msg):
+async def say(ctx, channel_name : str, *msg):
     """Says something as Nya."""
     channel = None
     print(channel_name)
