@@ -98,7 +98,7 @@ async def shutdown(ctx):
 
 @bot.command()
 @commands.is_owner()
-def restart(ctx):
+async def restart(ctx):
     """Restart bot"""
     try:
         p = psutil.Process(os.getpid())
