@@ -74,6 +74,8 @@ async def load(ctx, cog_name : str):
 async def say(ctx, channel_name : str, **message):
     """Says something as Nya."""
     channel = None
+    print(channel_name)
+    print(" ".join(str(x) for x in message))
     for chan in ctx.guild.channels:
         if chan.name == channel_name:
             channel = chan
