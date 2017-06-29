@@ -56,7 +56,7 @@ async def load(ctx, cog_name : str):
     """Loads a cog."""
     try:
         bot.load_extension('Cogs.cog_' + cog_name)
-        loaded_cogs.push(cog_name)
+        loaded_cogs.insert(cog_name)
         await ctx.send("{} loaded.".format(cog_name))
     except (AttributeError, ImportError) as e:
         await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
@@ -78,7 +78,7 @@ if __name__ == "__main__":
     for cog in startup_cogs:
         try:
             bot.load_extension('Cogs.cog_' + cog)
-            loaded_cogs.push(cog_name)
+            loaded_cogs.insert(cog_name)
         except (AttributeError, ImportError) as e:
             pass
 
