@@ -54,13 +54,14 @@ async def load(ctx, cog_name : str):
     """Loads a cog."""
     try:
         bot.load_extension('Cogs.cog_' + cog_name)
+        await ctx.send("{} loaded.".format(cog_name))
     except (AttributeError, ImportError) as e:
         raise commands.UserInputError(ctx)
     #    print(type(e).__name__)
     #    print(str(e))
     #    await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
     #    return
-    #await ctx.send("{} loaded.".format(cog_name))
+    
 
 @bot.command()
 @commands.is_owner()
