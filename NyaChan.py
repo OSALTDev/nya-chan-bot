@@ -63,8 +63,12 @@ async def load(ctx, cog_name : str):
 @commands.is_owner()
 async def unload(ctx, cog_name : str):
     """Unloads a cog."""
-    bot.unload_extension('Cogs.cog_' + cog_name)
-    await ctx.send("{} unloaded.".format(cog_name))
+    try:
+        bot.unload_extension('Cogs.cog_' + cog_name)
+        await ctx.send("{} unloaded.".format(cog_name))
+    except (AttributeError, ImportError) as e:
+        await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        raise commands.UserInputError(ctx)
 
 if __name__ == "__main__":
     for cog in startup_cogs:
