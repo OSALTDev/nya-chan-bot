@@ -1,7 +1,10 @@
 import discord
 from discord.ext import commands
-import pymysql
-import role_ids
+from utils.dataIO import fileIO
+from utils import checks
+from urllib import parse
+import os
+import aiohttp
 from __main__ import config
 
 class Nsfw():
