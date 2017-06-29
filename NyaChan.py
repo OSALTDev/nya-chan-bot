@@ -50,14 +50,14 @@ async def on_command_completion(ctx):
 @commands.is_owner()
 async def load(ctx, cog_name : str):
     """Loads a cog."""
-    try:
+    #try:
         bot.load_extension('Cogs.' + cog_name)
-    except (AttributeError, ImportError) as e:
-        print(type(e).__name__)
-        print(str(e))
-        await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-        return
-    await ctx.send("{} loaded.".format(cog_name))
+    #except (AttributeError, ImportError) as e:
+    #    print(type(e).__name__)
+    #    print(str(e))
+    #    await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+    #    return
+    #await ctx.send("{} loaded.".format(cog_name))
 
 @bot.command()
 @commands.is_owner()
