@@ -64,7 +64,7 @@ async def load(ctx, cog_name : str):
     #try:
     if not cog_name in loaded_cogs:      
         try:  
-            bot.load_extension('Cogs.cog_' + cog_name)
+            bot.load_extension('Cogs.' + cog_name)
             loaded_cogs.append(cog_name)
             await ctx.send("```{} loaded.```".format(cog_name))
         except (AttributeError, ImportError) as e:
@@ -95,7 +95,7 @@ async def say(ctx, channel_name : str, *msg):
 async def unload(ctx, cog_name : str):
     """Unloads a cog."""
     if cog_name in loaded_cogs:
-        bot.unload_extension('Cogs.cog_' + cog_name)
+        bot.unload_extension('Cogs.' + cog_name)
         await ctx.send("```{} unloaded.```".format(cog_name))
         loaded_cogs.remove(cog_name)
     else:
@@ -145,7 +145,7 @@ async def restart(ctx):
 if __name__ == "__main__":
     for cog in startup_cogs:
         try:
-            bot.load_extension('Cogs.cog_' + cog)
+            bot.load_extension('Cogs.' + cog)
             loaded_cogs.append(cog)
         except (AttributeError, ImportError) as e:
             pass
