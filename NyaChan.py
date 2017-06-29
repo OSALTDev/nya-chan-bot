@@ -71,6 +71,19 @@ async def load(ctx, cog_name : str):
 
 @bot.command()
 @commands.is_owner()
+async def say(ctx, channel_name : str, message : str):
+    """Says something as Nya."""
+    channel = None
+    for chan in ctx.guild.channels:
+        if chan.name == channel_name:
+            channel = chan
+
+    if not channel is None:
+        await channel.send(message)
+    raise commands.UserInputError(ctx)
+    
+@bot.command()
+@commands.is_owner()
 async def unload(ctx, cog_name : str):
     """Unloads a cog."""
     if cog_name in loaded_cogs:
