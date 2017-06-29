@@ -41,6 +41,8 @@ async def on_command_error(ctx, error):
         await ctx.send("{}, this command does not exist!```{}```".format(ctx.message.author.mention, ctx.message.content))
     elif isinstance(error, discord.ext.commands.errors.NotOwner):
         await ctx.send("{}, only my Master can ask me to do that, nya!```{}```".format(ctx.message.author.mention, ctx.message.content))
+    elif isinstance(error, discord.ext.commands.errors.UserInputError):
+        await ctx.send("{}, Input error```{}```".format(ctx.message.author.mention, ctx.message.content))
 
 @bot.event
 async def on_command_completion(ctx):
@@ -50,9 +52,10 @@ async def on_command_completion(ctx):
 @commands.is_owner()
 async def load(ctx, cog_name : str):
     """Loads a cog."""
-    #try:
-    bot.load_extension('Cogs.' + cog_name)
-    #except (AttributeError, ImportError) as e:
+    try:
+        bot.load_extension('Cogs.cog_' + cog_name)
+    except (AttributeError, ImportError) as e:
+        raise commands.UserInputError(ctx)
     #    print(type(e).__name__)
     #    print(str(e))
     #    await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
@@ -63,7 +66,7 @@ async def load(ctx, cog_name : str):
 @commands.is_owner()
 async def unload(ctx, cog_name : str):
     """Unloads a cog."""
-    bot.unload_extension('Cogs.' + cog_name)
+    bot.unload_extension('Cogs.cog_' + cog_name)
     await ctx.send("{} unloaded.".format(cog_name))
 
 if __name__ == "__main__":
