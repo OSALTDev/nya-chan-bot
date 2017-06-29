@@ -59,7 +59,7 @@ async def load(ctx, cog_name : str):
         loaded_cogs.push(cog_name)
         await ctx.send("{} loaded.".format(cog_name))
     except (AttributeError, ImportError) as e:
-        await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+        await ctx.send("```py\n'{}' module does not exist\n```".format(cog_name))
         raise commands.UserInputError(ctx)
 
 @bot.command()
