@@ -93,13 +93,13 @@ async def list_cogs(ctx):
 @bot.command()
 @commands.is_owner()
 async def shutdown(ctx):
-    """Shutdown bot"""
+    """Shutdown bot."""
     await bot.logout()
 
 @bot.command()
 @commands.is_owner()
 async def restart(ctx):
-    """Restart bot"""
+    """Restart bot."""
     try:
         p = psutil.Process(os.getpid())
         for handler in p.get_open_files() + p.connections():
