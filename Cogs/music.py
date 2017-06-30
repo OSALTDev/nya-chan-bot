@@ -15,10 +15,10 @@ class Music():
     async def play(self, ctx):
         """Play a youtube video"""
         voice_channel = None
-        if ctx.author.voice is None:
-            print('not in voice')
-        else:
-            print('in voice channel : {}'.format(ctx.author.voice.channel.name))
+        if not ctx.author.voice is None:
+            voice_channel = ctx.author.voice.channel
+        if not voice_channel is None:
+            vc = await voice_channel.connect()
             
 
 
