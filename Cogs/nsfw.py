@@ -23,6 +23,7 @@ class Nsfw():
             async with session.get(search) as r:
                 website = await r.json()
         if website != []:
+            imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
             imageId = website[0].get('id')
             embedTitle = "Konachan Image #{}".format(imageId)
             embedLink = "https://konachan.com/post/show/{}".format(imageId)
