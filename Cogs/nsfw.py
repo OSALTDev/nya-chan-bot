@@ -24,9 +24,9 @@ class Nsfw():
                 website = await r.json()
         if website != []:
             imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
-            await message.edit('Ok')
+            await message.edit(content='Ok')
         else:
-            await message.edit('Not')
+            await message.edit(content='Not')
         #except:
         #    await message.delete()
         #    pass
