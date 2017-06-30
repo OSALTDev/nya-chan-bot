@@ -19,7 +19,7 @@ class Music():
             voice_channel = ctx.author.voice.channel
         if not voice_channel is None:
             vc = await voice_channel.connect()
-            
+            vc.play(discord.FFmpegPCMAudio('data/music/tmp/CSvFpBOe8eY.m4a'))
 
 
 
