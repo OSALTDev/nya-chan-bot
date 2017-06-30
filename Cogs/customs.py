@@ -16,8 +16,6 @@ class Customs():
         guild = ctx.guild
         member = ctx.author
         channel = ctx.channel
-        print(channel)
-        print(ctx.message.channel)
         connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
         cursor = connection.cursor()
         cursor.execute("""SELECT `message` FROM `custom_commands` WHERE `id_server` = %s AND `command` = %s""", (guild.id, command_name))
@@ -25,8 +23,7 @@ class Customs():
         connection.close()
         if len(rows) > 0:
             text = rows[0][0]
-            print(text)
-            ctx.channel.send(text)
+            await ctx.channel.send(text)
 
 def setup(bot):
     cog = Customs(bot)
