@@ -53,10 +53,6 @@ async def on_command_error(ctx, error):
     else:
         await ctx.send("{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
 
-@bot.event
-async def on_command_completion(ctx):
-    await ctx.message.delete()
-
 @bot.command()
 @commands.is_owner()
 async def load(ctx, cog_name : str):

@@ -10,10 +10,13 @@ class Misc():
     @commands.command(description='Pat Nya Chan.')
     @commands.guild_only()
     async def pat(self, ctx, location : str = 'head'):
-        if location in ['head']:
-            msg = 'Nyaaaaaah, Thank you {} =^.^='.format(ctx.message.author.display_name)
-        else:
+        """Pat Nya Chan"""
+        if location in ['head', 'back', 'belly', 'tummy']:
+            msg = 'Nyaaaaaah, Thank you {} =^.^='.format(ctx.message.author.mention)
+        elif location in ['boobs', 'ass', 'butt']:
             msg = 'Eeeeeeeeeeek !!'
+        else:
+            return
         await ctx.channel.send(msg)
 
     @commands.command(pass_context=True, description='Get the number of minutes to wait until Nixie\'s next steam.')
