@@ -17,9 +17,8 @@ class RPG():
             await ctx.channel.send('```{}, format has to be NdN !```'.format(ctx.author.mention))
             return False
         result = [random.randint(1, limit) for r in range(rolls)]
-        print(result)
-        result = "```Results for {} : {}```".format(dice, ', '.join(str(random.randint(1, limit)) for r in range(rolls)))
-        await ctx.channel.send(result)
+        msg = "```Results for {} : {} (Total : {})```".format(dice, ', '.join(result), sum(result))
+        await ctx.channel.send(msg)
 
 def setup(bot):
     cog = RPG(bot)
