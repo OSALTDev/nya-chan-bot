@@ -28,11 +28,11 @@ class Misc():
         delta = launch - now
         minutes = round(delta.days * 24 * 60 + delta.seconds / 60 + delta.microseconds / 60000000)
         if minutes > 0:
-            await self.channel.send("{} minutes until Nixie's next stream, YAY !".format(minutes))
+            await ctx.channel.send("{} minutes until Nixie's next stream, YAY !".format(minutes))
         elif minutes > -60:
-            await self.channel.send("Stream in progress ... hopefully, have fun !")
+            await ctx.channel.send("Stream in progress ... hopefully, have fun !")
         else:
-            await self.channel.send("Stay tuned, next stream date will be announced soon !")
+            await ctx.channel.send("Stay tuned, next stream date will be announced soon !")
 
 def setup(bot):
     cog = Misc(bot)
