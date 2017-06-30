@@ -18,13 +18,14 @@ class Nsfw():
             tag_search += " order:random"
         search += parse.quote_plus(tag_search)
         message = await ctx.send("Fetching kona image...")
-        print(message)
         #try:
-        #    async with aiohttp.get(search) as r:
-        #        website = await r.json()
-        #    if website != []:
-        #        imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
-        #        return await message.edit(imageURL)
+        async with aiohttp.get(search) as r:
+            website = await r.json()
+        if website != []:
+            imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
+            return await message.edit('Ok')
+        else:
+            return await message.edit('Not Ok')
         #except:
         #    await message.delete()
         #    pass
