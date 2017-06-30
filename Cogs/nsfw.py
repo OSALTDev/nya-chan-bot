@@ -18,23 +18,25 @@ class Nsfw():
             tag_search += " order:random"
         search += parse.quote_plus(tag_search)
         message = await ctx.send("Fetching kona image...")
-        try:
-            async with aiohttp.get(search) as r:
-                website = await r.json()
-            if website != []:
-                imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
-                return await message.edit(imageURL)
-        except:
-            await message.delete()
-            pass
+        print(message)
+        #try:
+        #    async with aiohttp.get(search) as r:
+        #        website = await r.json()
+        #    if website != []:
+        #        imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
+        #        return await message.edit(imageURL)
+        #except:
+        #    await message.delete()
+        #    pass
 
     @commands.command(description='Grabs the last picture from Konachan that matches your keywords.')
     @commands.guild_only()
     async def kona(self, ctx, *tags):
         """Grabs the last picture from Konachan that matches your keywords."""
-        await self.fetch_image(ctx, False, tags)
-
-    
+        try:
+            await self.fetch_image(ctx, True, tags)
+        except Exception as e:
+            await ctx.send("{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(e).__name__, str(e)))
 
 
 
