@@ -15,8 +15,13 @@ class Welcome():
         cursor = connection.cursor()
         cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", (guild.id))
         rows = cursor.fetchall()
+        if len(rows) == 0;
+            cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""", (guild.id))
+            cursor.commit()
+            text = ""
+        else:
+            text = rows[0][0]
         connection.close()
-        text = rows[0][0]
         return text.format(member, guild)
 
     async def member_join(self, member):
