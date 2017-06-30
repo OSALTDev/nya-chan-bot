@@ -19,8 +19,9 @@ class Nsfw():
         search += parse.quote_plus(tag_search)
         message = await ctx.send("Fetching kona image...")
         #try:
-        async with aiohttp.get(search) as r:
-            website = await r.json()
+        async with aiohttp.ClientSession() as session:
+            async with session.get(search) as r:
+                website = await r.json()
         if website != []:
             imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
             return await message.edit('Ok')
