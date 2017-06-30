@@ -19,33 +19,20 @@ class Misc():
             return
         await ctx.channel.send(msg)
 
-    @commands.command(pass_context=True, description='Get the number of minutes to wait until Nixie\'s next steam.')
-    @asyncio.coroutine
-    def stream(self, ctx):
-        if not in_list(ctx.message.author.roles, lambda x: x.name in ['@everyone']):
-            yield from bot.send_message(ctx.message.channel, 'You do not have the permission to do that !')
-            return False
+    @commands.command(description='Get the number of minutes to wait until Nixie\'s next steam.')
+    @commands.guild_only()
+    async def stream(self, ctx):
+        """Get the number of minutes to wait until Nixie\'s next steam"""
         now = datetime.datetime.now()
         launch = datetime.datetime(2017, 6, 27, 22, 0, 0, 0)
         delta = launch - now
         minutes = round(delta.days * 24 * 60 + delta.seconds / 60 + delta.microseconds / 60000000)
-        yield from self.bot.say("{} minutes until Nixie's next stream, YAY !".format(minutes))
-
-    @commands.command(pass_context=True, description='Explain how to get into the Patreons group.')
-    @asyncio.coroutine
-    def patreon(self, ctx):
-        if not in_list(ctx.message.author.roles, lambda x: x.name in ['@everyone']):
-            yield from bot.send_message(ctx.message.channel, 'You do not have the permission to do that !')
-            return False
-        msg = '''```To all the lovely people here supporting Nixie on patreon who are not in the Patreons group here on discord, please follow these steps.
-- Log in to your patreon.
-- Head to your account settings.
-- Make sure you have linked your discord account to patreon.
-- Head to "your pledges"
-- Edit your Nixie's pledge, and click update (you don't have to change it)
-- You should end up on the thank you page where a button to join the discord server is located.
-- Click on it ! ```'''
-        yield from self.bot.say(msg)
+        if minutes > 0:
+            await self.channel.send("{} minutes until Nixie's next stream, YAY !".format(minutes))
+        elif minutes > -60:
+            await self.channel.send("Stream in progress ... hopefully, have fun !")
+        else:
+            await self.channel.send("Stay tuned, next stream date will be announced soon !")
 
 def setup(bot):
     cog = Misc(bot)
