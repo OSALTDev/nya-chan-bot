@@ -15,7 +15,7 @@ class Welcome():
         cursor = connection.cursor()
         cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", (guild.id))
         rows = cursor.fetchall()
-        if len(rows) == 0;
+        if len(rows) == 0:
             cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""", (guild.id))
             cursor.commit()
             text = ""
