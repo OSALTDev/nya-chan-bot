@@ -23,8 +23,28 @@ class Nsfw():
             async with session.get(search) as r:
                 website = await r.json()
         if website != []:
-            imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
-            await message.edit(content="Requested by {}\n{}".format(ctx.message.author.mention, imageURL))
+            imageId = website[0].get('id')
+            embedTitle = "Konachan Image #{}".format(imageId)
+            embedLink = "https://konachan.com/post/show/{}".format(imageId)
+            rating = website[0].get('rating')
+            if rating == "s":
+                ratingColor = "00FF00"
+                ratingWord = "safe"
+            elif rating == "q":
+                ratingColor = "FF9900"
+                ratingWord = "questionable"
+            elif rating == "e":
+                ratingColor = "FF0000"
+                ratingWord = "explicit"
+            tagList = website[0].get('tags').replace(' ', ', ').replace('_', '\_')
+            output = discord.Embed(title=embedTitle, url=embedLink, colour=discord.Colour(value=int(ratingColor, 16)))
+            output.add_field(name="Rating", value=ratingWord)
+            output.add_field(name="Tags", value=tagList, inline=False)
+            output.set_thumbnail(url=imageURL)
+            await message.edit(content="Requested by {}".format(ctx.message.author.mention), embed=output)
+
+            #imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
+            #await message.edit(content="Requested by {}\n{}".format(ctx.message.author.mention, imageURL))
         else:
             await message.delete()
 
