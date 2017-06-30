@@ -24,7 +24,7 @@ class Nsfw():
                 website = await r.json()
         if website != []:
             imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
-            await message.edit(content=imageURL)
+            await message.edit(content="Requested by {}\n{}".format(ctx.message.author.mention, imageURL))
         else:
             await message.delete()
 
