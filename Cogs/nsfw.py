@@ -24,12 +24,9 @@ class Nsfw():
                 website = await r.json()
         if website != []:
             imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
-            await message.edit(content='Ok')
+            await message.edit(content=imageURL)
         else:
-            await message.edit(content='Not')
-        #except:
-        #    await message.delete()
-        #    pass
+            await message.delete()
 
     @commands.command(description='Grabs the last picture from Konachan that matches your keywords.')
     @commands.guild_only()
