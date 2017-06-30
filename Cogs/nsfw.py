@@ -11,15 +11,22 @@ class Nsfw():
         self.bot = bot
 
     async def fetch_image(self, ctx, randomize : bool=False, tags : list=[]):
-        message = ""
         guild = ctx.message.guild
         search = "https://konachan.com/post.json?limit=1&tags="
         tag_search = "{} ".format(" ".join(tags))
         if randomize:
             tag_search += " order:random"
         search += parse.quote_plus(tag_search)
-        print(search)
         message = await ctx.send("Fetching kona image...")
+        try:
+            async with aiohttp.get(search) as r:
+                website = await r.json()
+            if website != []:
+                imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
+                return message.edit(message)
+        except:
+            message.delete()
+            pass
 
     @commands.command(description='Grabs the last picture from Konachan that matches your keywords.')
     @commands.guild_only()
