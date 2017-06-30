@@ -3,27 +3,18 @@ import asyncio
 import datetime
 import role_ids
 
-def in_list(list, filter):
-    for x in list:
-        if filter(x):
-            return True
-    return False
-
 class Misc():
     def __init__(self, bot):
         self.bot = bot
 
-    @commands.command(pass_context=True, description='Reward Nya with a gentle pat.')
-    @asyncio.coroutine
-    def pat(self, ctx, location : str = 'head'):
-        if not in_list(ctx.message.author.roles, lambda x: x.name in ['@everyone']):
-            yield from bot.send_message(ctx.message.channel, 'You do not have the permission to do that !')
-            return False
+    @commands.command(description='Pat Nya Chan.')
+    @commands.guild_only()
+    async def pat(self, ctx, location : str = 'head'):
         if location in ['head']:
             msg = 'Nyaaaaaah, Thank you {} =^.^='.format(ctx.message.author.display_name)
         else:
             msg = 'Eeeeeeeeeeek !!'
-        yield from self.bot.say(msg)
+        await ctx.channel.send(msg)
 
     @commands.command(pass_context=True, description='Get the number of minutes to wait until Nixie\'s next steam.')
     @asyncio.coroutine
