@@ -10,7 +10,7 @@ import configparser
 config = configparser.ConfigParser()
 config.read_file(open('settings.ini'))
 
-startup_cogs = ['welcome', 'nsfw']
+startup_cogs = ['welcome', 'nsfw', 'customs']
 
 bot = commands.Bot(command_prefix=config['Bot']['prefix'], description=config['Bot']['description'])
 
