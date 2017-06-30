@@ -23,6 +23,7 @@ class Nsfw():
                 website = await r.json()
             if website != []:
                 imageURL = "https:{}".format(website[0].get("file_url")).replace(' ', '+')
+                print(imageURL)
                 return message.edit(imageURL)
         except:
             message.delete()
