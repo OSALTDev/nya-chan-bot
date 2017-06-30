@@ -22,7 +22,7 @@ class Customs():
         connection.close()
         if len(rows) > 0:
             text = rows[0][0]
-            member.channel.send(text)
+            ctx.channel.send(text)
 
 def setup(bot):
     cog = Customs(bot)
