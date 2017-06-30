@@ -21,7 +21,7 @@ class Customs():
         connection.close()
         if len(rows) > 0:
             text = rows[0][0]
-            return text.format(member, guild)
+            return text.format(guild)
 
 def setup(bot):
     cog = Customs(bot)
