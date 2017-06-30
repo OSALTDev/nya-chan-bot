@@ -45,5 +45,5 @@ class Misc():
         yield from self.bot.say(msg)
 
 def setup(bot):
-    bot.add_cog(Misc(bot))
-
+    cog = Misc(bot)
+    bot.add_cog(cog)
