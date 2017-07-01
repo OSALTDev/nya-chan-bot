@@ -12,11 +12,11 @@ class Games():
     async def lfg(self, ctx):
         """Toggle your LFG status"""
         roles = ctx.author.roles
-        hasRole = False
+        has_role = False
         for role in roles:
             if role.name == 'LFG':
-                hasRole = True
-        if hasRole:
+                has_role = True
+        if has_role == False:
             ctx.author.add_roles(['LFG'])
             await ctx.channel.send('You are now tagged as looking for a game, {}'.format(ctx.author.mention))
         else:
