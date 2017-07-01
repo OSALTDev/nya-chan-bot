@@ -11,6 +11,13 @@ class Games():
     @commands.guild_only()
     async def lfg(self, ctx):
         """Toggle your LFG status"""
+        lfg_role = None
+        for x in ctx.guild.roles:
+            if x.name == 'LFG':
+                lfg_role = x
+        if lfg_role == None:
+            await ctx.channel.send('There is no LFG role on this server.')
+            return false
         roles = ctx.author.roles
         has_role = False
         for role in roles:
