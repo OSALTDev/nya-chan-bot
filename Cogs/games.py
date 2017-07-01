@@ -17,10 +17,10 @@ class Games():
             if role.name == 'LFG':
                 hasRole = True
         if hasRole:
-            ctx.author.add_roles(['LFG'])
+            await ctx.author.add_roles(['LFG'])
             await ctx.channel.send('You are now tagged as looking for a game, {}'.format(ctx.author.mention))
         else:
-            ctx.author.remove_roles(['LFG'])
+            await ctx.author.remove_roles(['LFG'])
             await ctx.channel.send('You are not tagged as looking for a game anymore, {}'.format(ctx.author.mention))
 
 def setup(bot):
