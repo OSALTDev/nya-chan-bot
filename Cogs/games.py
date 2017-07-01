@@ -17,7 +17,7 @@ class Games():
                 lfg_role = x
         if lfg_role == None:
             await ctx.channel.send('There is no LFG role on this server.')
-            return false
+            return False
         roles = ctx.author.roles
         has_role = False
         for role in roles:
