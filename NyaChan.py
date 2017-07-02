@@ -109,8 +109,8 @@ async def list_cogs(ctx):
 
 @bot.command()
 @commands.is_owner()
-async def nowplaying(ctx, game_name : str):
-    await bot.change_presence(game=discord.Game(name=game_name))
+async def nowplaying(ctx, *game_name):
+    await bot.change_presence(game=discord.Game(name=" ".join(str(x) for x in game_name)))
 
 @bot.command()
 @commands.is_owner()
