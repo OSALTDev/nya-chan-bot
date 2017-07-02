@@ -85,7 +85,7 @@ async def say(ctx, channel_name : str, *msg):
     else:
         await ctx.send("```py\n'{}' channel has not been found\n```".format(channel_name))
         raise commands.UserInputError(ctx, 'Channel not found')
-    
+
 @bot.command()
 @commands.is_owner()
 async def unload(ctx, cog_name : str):
@@ -109,10 +109,14 @@ async def list_cogs(ctx):
 
 @bot.command()
 @commands.is_owner()
+async def nowplaying(ctx, game_name : str):
+    await bot.change_presence(game=discord.Game(name=game_name))
+
+@bot.command()
+@commands.is_owner()
 async def shutdown(ctx):
     """Shutdown bot."""
     await bot.logout()
-
 
 @bot.command()
 @commands.is_owner()
