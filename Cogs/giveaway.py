@@ -47,7 +47,7 @@ class Giveaway():
 
     @commands.command(description='List giveaways.')
     @commands.guild_only()
-    async def listgiveaway (self, ctx:
+    async def listgiveaway (self, ctx)
         """List giveaways"""
         ga_roles = []        
         for x in ctx.guild.roles:
