@@ -61,7 +61,7 @@ class Ama():
         connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
         cursor = connection.cursor()
         #Get the last stream ID
-        cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""", (guild.id))
+        cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""", (ctx.guild.id))
         rows = cursor.fetchall()
         if len(rows) == 0:
             await ctx.channel.send('No streams have been found !')
