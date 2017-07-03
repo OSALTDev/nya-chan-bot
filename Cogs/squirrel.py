@@ -21,7 +21,12 @@ class Squirrel():
             await ctx.channel.send('There is no Squirrel Army role on this server.')
             return False
         print('ok')
-        #future_squirrel = await commands.MemberConverter(ctx, username)
+        try:
+            future_squirrel = await commands.MemberConverter(ctx, username)
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)        
         #if future_squirrel is None:
         #    await ctx.channel.send('The user {} cannot be found'.format(username))
         #    return False;
