@@ -48,6 +48,7 @@ class Giveaway():
     @commands.command(description='Enter/Leave a giveaway.')
     @commands.guild_only()
     async def giveaway (self, ctx, giveaway_name: str):
+        """Enter/Leave a giveaway"""
         ga_role = None        
         for x in ctx.guild.roles:
             if x.name == 'giveaway_{}'.format(giveaway_name):
