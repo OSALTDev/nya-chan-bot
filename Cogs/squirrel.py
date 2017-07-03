@@ -15,7 +15,7 @@ class Squirrel():
         """Add a user to the Squirrel Army"""
         squirrel_role = None
         for x in ctx.guild.roles:
-            if x.id == 331563592560410634:  #329409494478094336
+            if x.id == 329409494478094336:
                 squirrel_role = x
         if squirrel_role == None:
             await ctx.channel.send('There is no Squirrel Army role on this server.')
@@ -29,11 +29,11 @@ class Squirrel():
             await ctx.channel.send('The user {} is already a Squirrel'.format(username))
             return False
         await future_squirrel.add_roles(squirrel_role)
-        squirrel_channel = self.bot.get_channel(325420488107098112)
+        squirrel_channel = self.bot.get_channel(329379656576794625)
         if squirrel_channel is None:
             await ctx.channel.send('The Squirrel Army channel cannot be found')
             return False;
-        await squirrel_channel.send('Welcome in the Squirrel Army {}, happy squirreling =^.^='.format(future_squirrel.mention))
+        await squirrel_channel.send('Welcome to the Squirrel Army {}, happy squirreling =^.^='.format(future_squirrel.mention))
 
 def setup(bot):
     cog = Squirrel(bot)
