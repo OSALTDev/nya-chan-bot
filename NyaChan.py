@@ -88,6 +88,25 @@ async def say(ctx, channel_name : str, *msg):
 
 @bot.command()
 @commands.is_owner()
+@commands.guild_only()
+def role_ids(ctx):
+    role_list = []
+    for role in ctx.guild.roles:
+        role_list.append('{} - {}'.format(role.name, role.id))
+    ctx.author.send('{}'.format("\n".join(str(x) for x in role_list)))
+
+
+@bot.command()
+@commands.is_owner()
+@commands.guild_only()
+def chan_ids(ctx):
+    chan_list = []
+    for chan in ctx.guild.channels:
+        chan_list.append('{} - {}'.format(chan.name, chan.id))
+    ctx.author.send('{}'.format("\n".join(str(x) for x in chan_list)))
+
+@bot.command()
+@commands.is_owner()
 async def unload(ctx, cog_name : str):
     """Unloads a cog."""
     if cog_name in loaded_cogs:
@@ -110,6 +129,7 @@ async def list_cogs(ctx):
 @bot.command()
 @commands.is_owner()
 async def nowplaying(ctx, *game_name):
+    """Sets the now playing message."""
     await bot.change_presence(game=discord.Game(name=" ".join(str(x) for x in game_name)))
 
 @bot.command()
