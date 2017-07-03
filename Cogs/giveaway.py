@@ -57,7 +57,7 @@ class Giveaway():
         if len(ga_roles) == 0:
             await ctx.channel.send('There is no active giveaways, {}.'.format(giveaway_name, ctx.author.mention))
             return False
-        await ctx.channel.send('Here is the list of the active giveaways :\n{}'.format("\n".join(str(x.name.replace('giveaway_', '')) for x in ga_roles)))
+        await ctx.channel.send('Here is the list of the active giveaways :\n```{}```'.format("\n".join(str(x.name.replace('giveaway_', '')) for x in ga_roles)))
         
     @commands.command(description='Enter/Leave a giveaway.')
     @commands.guild_only()
