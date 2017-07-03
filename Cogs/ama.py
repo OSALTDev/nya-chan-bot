@@ -84,9 +84,11 @@ class Ama():
             if to_save:
                 question_details = msg.content.split('\n--------------------------\n')
                 if len(question_details) != 2:
+                    await ctx.channel.send('question_details fail.')
                     continue
                 question_infos = question_details[0].split(' | ')
                 if len(question_infos) != 3:
+                    await ctx.channel.send('question_infos fail.')
                     continue
                 nb_saved += 1
                 q_content = question_details[1]
