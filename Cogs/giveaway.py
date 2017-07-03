@@ -84,15 +84,16 @@ class Giveaway():
         if len(participants) == 0:
             await ctx.channel.send('Nobody entered the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
             return False
+        updated_participants = []
         for participant in participants:
-            if participant.id in self.giveaways[giveaway_name]:
-                participants.remove(participant)
-        if len(participants) == 0:
+            if not participant.id in self.giveaways[giveaway_name]:
+                updated_participants.append(participant)
+        if len(updated_participants) == 0:
             await ctx.channel.send('Every participants already won the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
             return False
-        winner = random.choice(participants)
+        winner = random.choice(updated_participants)
         self.giveaways[giveaway_name].append(winner.id)
-        await ctx.channel.send('Participants : {}\n**Congratulation, {}, you just won in the giveaway "{}".'.format(", ".join(str(x) for x in participants), winner.mention, giveaway_name))
+        await ctx.channel.send('Participants : {}\n**Congratulation, {}, you just won in the giveaway "{}".'.format(", ".join(str(x) for x in updated_participants), winner.mention, giveaway_name))
 
     @commands.command(description='List winners ID')
     @commands.guild_only()
