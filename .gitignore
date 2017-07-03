@@ -2,3 +2,5 @@
 lib/
 *.conf
 __pycache__/
+.project
+.pydevproject
