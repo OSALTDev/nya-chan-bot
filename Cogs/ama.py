@@ -93,12 +93,12 @@ class Ama():
                 nb_saved += 1
                 q_content = question_details[1]
                 q_author = question_infos[0].replace('From ', '')
-                q_date = question_infos[1].replace(' UTC', '')       
+                q_date = datetime.strptime(question_infos[1].replace(' UTC', ''), '%c')
                 if timestamp is None:
                     q_timestamp = ''
                 else:
                     q_timestamp = timestamp
-                cursor.execute("""INSERT INTO questions (id, id_server, id_stream, author, datetime, question, timestamp) VALUES (null, %s, %s, %s, %s, %s, %s)""", (ctx.guild.id, stream_id, q_author, q_date, q_content, q_timestamp))
+                cursor.execute("""INSERT INTO questions (id, id_server, id_stream, author, datetime, question, timestamp) VALUES (null, %s, %s, %s, %s, %s, %s)""", (ctx.guild.id, stream_id, q_author, q_date.strftime('%Y-%m-%d %H:%M:%S'), q_content, q_timestamp))
                 connection.commit()
                 #await destination.send('From {} - {} UTC (Processed by {})\n--------------------------\n{}'.format(msg.author.mention, msg.created_at.strftime('%c'), ctx.author.mention, msg.content))
                 #await msg.delete()
