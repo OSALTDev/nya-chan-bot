@@ -19,7 +19,7 @@ class Squirrel():
         if squirrel_role == None:
             await ctx.channel.send('There is no Squirrel Army role on this server.')
             return False
-        future_squirrel = commands.MemberConverter(ctx, username)
+        future_squirrel = await commands.MemberConverter(ctx, username)
         if future_squirrel is None:
             await ctx.channel.send('The user {} cannot be found'.format(username))
             return False;
