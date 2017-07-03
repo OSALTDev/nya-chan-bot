@@ -19,7 +19,8 @@ class Ama():
     @commands.guild_only()
     async def cleanq(self, ctx):
         """Delete every message with your :downvote: reaction"""
-        async for msg in self.bot.logs_from(ctx.channel, limit=200):
+        msgs = await self.bot.logs_from(ctx.channel, limit=200)
+        for msg in msgs:
             to_delete = False
             for reaction in msg.reactions:
                 if reaction.emoji == ':downvote:' and reaction.me:
