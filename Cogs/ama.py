@@ -82,7 +82,7 @@ class Ama():
                 if reaction.emoji.name == 'upvote' and from_me is True:
                     to_save = True
             if to_save:
-                question_details = msg.content.split('\n--------------------------\n')
+                question_details = msg.content.split('\n-----------------------\n')
                 if len(question_details) != 2:
                     await ctx.channel.send('question_details fail.')
                     continue
