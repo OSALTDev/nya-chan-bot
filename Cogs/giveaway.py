@@ -127,6 +127,7 @@ class Giveaway():
                 winners.append(winner.mention)
         if len(winners) == 0:
             await ctx.channel.send('There is no winners for the giveaway "{}" yet, {}.'.format(giveaway_name, ctx.author.mention))
+            return False
         await ctx.channel.send('List of winner :\n{}'.format("\n".join(str(x) for x in winners)))
 
 def setup(bot):
