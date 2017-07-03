@@ -82,13 +82,13 @@ class Ama():
                 if reaction.emoji.name == 'upvote' and from_me is True:
                     to_save = True
             if to_save:
-                nb_saved += 1
                 question_details = msg.content.split('\n--------------------------\n')
                 if len(question_details) != 2:
                     continue
                 question_infos = question_details[0].split(' | ')
                 if len(question_infos) != 3:
                     continue
+                nb_saved += 1
                 q_content = question_details[1]
                 q_author = question_infos[0].replace('From ', '')
                 q_date = question_infos[1].replace(' UTC', '')       
