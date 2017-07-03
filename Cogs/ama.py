@@ -27,7 +27,7 @@ class Ama():
                     to_copy = True
             if to_copy:
                 nb_copied += 1
-                await destination.send('From {} - {} (Processed by {}) UTC\n{}'.format(msg.author.mention, msg.created_at, ctx.author.mention, msg.content))
+                await destination.send('From {} - {} UTC (Processed by {})\n-----------------------\n{}'.format(msg.author.mention, msg.created_at.strftime('%c'), ctx.author.mention, msg.content))
                 await msg.delete()
         await ctx.channel.send('{} message(s) transferred to {}.'.format(nb_copied, destination.name))
                     
