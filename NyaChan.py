@@ -89,21 +89,21 @@ async def say(ctx, channel_name : str, *msg):
 @bot.command()
 @commands.is_owner()
 @commands.guild_only()
-def role_ids(ctx):
+async def role_ids(ctx):
     role_list = []
     for role in ctx.guild.roles:
         role_list.append('{} - {}'.format(role.name, role.id))
-    ctx.author.send('{}'.format("\n".join(str(x) for x in role_list)))
+    await ctx.author.send('{}'.format("\n".join(str(x) for x in role_list)))
 
 
 @bot.command()
 @commands.is_owner()
 @commands.guild_only()
-def chan_ids(ctx):
+async def chan_ids(ctx):
     chan_list = []
     for chan in ctx.guild.channels:
         chan_list.append('{} - {}'.format(chan.name, chan.id))
-    ctx.author.send('{}'.format("\n".join(str(x) for x in chan_list)))
+    await ctx.author.send('{}'.format("\n".join(str(x) for x in chan_list)))
 
 @bot.command()
 @commands.is_owner()
