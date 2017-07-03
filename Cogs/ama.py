@@ -12,11 +12,20 @@ class Ama():
     async def copyq(self, ctx):
         """Copy every question with your :upvote: reaction on it to the Question- channel"""
         
+                    
+                      
         
     @commands.command(description='')
     @commands.guild_only()
     async def cleanq(self, ctx):
         """Delete every message with your :downvote: reaction"""
+        async for msg in await bot.logs_from(ctx.channel, limit=200):
+            to_delete = False
+            for reaction in msg.reactions:
+                if reaction.emoji == ':downvote:' and reaction.me:
+                    to_delete = True
+            if to_delete:
+                await msg.delete()
 
     @commands.command(description='')
     @commands.guild_only()
