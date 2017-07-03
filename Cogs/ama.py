@@ -25,9 +25,9 @@ class Ama():
             nb_message += 1
             to_delete = False
             for reaction in msg.reactions:
-                print(reaction.emoji)
+                print(reaction.emoji.name)
                 print(reaction.me)
-                if reaction.emoji == 'downvote' and reaction.me:
+                if reaction.emoji.name == 'downvote' and reaction.me:
                     to_delete = True
             if to_delete:
                 nb_deleted += 1
