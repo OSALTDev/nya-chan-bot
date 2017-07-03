@@ -94,6 +94,20 @@ class Giveaway():
         self.giveaways[giveaway_name].append(winner.id)
         await ctx.channel.send('**Congratulation, {}, you just won in the giveaway "{}".'.format(winner.mention, giveaway_name))
 
+    @commands.command(description='List winners ID')
+    @commands.guild_only()
+    @commands.has_any_role('Nixie', 'Mods')
+    async def listwinners(self, ctx, giveaway_name : str):
+        """List winners ID"""
+        ga_role = None
+        for x in ctx.guild.roles:
+            if x.name == 'giveaway_{}'.format(giveaway_name):
+                ga_role = x
+        if ga_role == None:
+            await ctx.channel.send('The giveaway "{}" doesn\'t exist, {}.'.format(giveaway_name, ctx.author.mention))
+            return False
+        await ctx.channel.send('List of winner ids :\n{}'.format(" ".join(str(x) for x in self.giveaways[giveaway_name])))
+
 def setup(bot):
     cog = Giveaway(bot)
     bot.add_cog(cog)
