@@ -44,6 +44,20 @@ class Giveaway():
         del self.giveaways[giveaway_name]
         await ga_role.delete()
         await ctx.channel.send('**The giveaway "{}" has now ended, thank you all for your participation !**'.format(giveaway_name))
+
+    @commands.command(description='List giveaways.')
+    @commands.guild_only()
+    async def listgiveaway (self, ctx:
+        """List giveaways"""
+        ga_roles = []        
+        for x in ctx.guild.roles:
+            if x.name.startwith('giveaway_'):
+                ga_roles.append(x)
+        
+        if len(ga_roles) == 0:
+            await ctx.channel.send('There is no active giveaways, {}.'.format(giveaway_name, ctx.author.mention))
+            return False
+        await ctx.channel.send('Here is the list of the active giveaways :\n{}'.format("\n".join(str(x) for x in ga_roles))))
         
     @commands.command(description='Enter/Leave a giveaway.')
     @commands.guild_only()
