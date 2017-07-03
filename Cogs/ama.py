@@ -25,9 +25,11 @@ class Ama():
             nb_message += 1
             to_delete = False
             for reaction in msg.reactions:
-                print(reaction.emoji.name)
-                print(reaction.me)
-                if reaction.emoji.name == 'downvote' and reaction.me:
+                from_me = False
+                async for usr in reaction.users():
+                    if usr.id == ctx.author.id:
+                        from_me = True
+                if reaction.emoji.name == 'downvote' and from_me is True:
                     to_delete = True
             if to_delete:
                 nb_deleted += 1
