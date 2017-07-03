@@ -88,7 +88,7 @@ class Giveaway():
             if participant.id in self.giveaways[giveaway_name]:
                 participants.remove(participant)
         if len(participants) == 0:
-            await ctx.channel.send('Every participants already won"{}", {}.'.format(giveaway_name, ctx.author.mention))
+            await ctx.channel.send('Every participants already won the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
             return False
         winner = random.choice(participants)
         self.giveaways[giveaway_name].append(winner.id)
