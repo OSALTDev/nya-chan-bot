@@ -92,7 +92,7 @@ class Giveaway():
             return False
         winner = random.choice(participants)
         self.giveaways[giveaway_name].append(winner.id)
-        await ctx.channel.send('**Congratulation, {}, you just won in the giveaway "{}".'.format(ctx.author.mention, giveaway_name))
+        await ctx.channel.send('**Congratulation, {}, you just won in the giveaway "{}".'.format(winner.mention, giveaway_name))
 
 def setup(bot):
     cog = Giveaway(bot)
