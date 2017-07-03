@@ -85,7 +85,7 @@ class Giveaway():
             return False
         for participant in participants:
             if participant.id in self.giveaways[giveaway_name]:
-            participants.remove(participant)
+                participants.remove(participant)
         if len(participants) == 0:
             await ctx.channel.send('Every participants already won"{}", {}.'.format(giveaway_name, ctx.author.mention))
             return False
