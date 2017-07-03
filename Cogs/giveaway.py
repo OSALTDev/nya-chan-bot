@@ -1,29 +1,59 @@
 from discord.ext import commands
 import asyncio
 import datetime
+import random
 import role_ids
 
 class Giveaway():
     def __init__(self, bot):
         self.bot = bot
+        self.giveaways = {}
 
     @commands.command(description='Start a giveaway.')
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Mods')
-    async def startgiveaway (self, ctx, ga_name: str):
+    async def startgiveaway (self, ctx, giveaway_name: str):
         """Start a giveaway"""
-        ga_role = await ctx.guild.create_role(name="giveaway_{}".format(ga_name), mentionable=True, reason="Give away started by {}".format(ctx.author.name))
-        await ctx.channel.send('**A new giveaway has started !**\nPlease use the following command to enter / leave this giveaway\n```!n.giveaway {}```'.format(ga_name))
+        ga_role = None        
+        for x in ctx.guild.roles:
+            if x.name == 'giveaway_{}'.format(giveaway_name):
+                ga_role = x
+        if not ga_role == None:
+            await ctx.channel.send('The giveaway "{}" already exists, {}.'.format(giveaway_name, ctx.author.mention))
+            return False
+        self.giveaways[giveaway_name] = []
+        ga_role = await ctx.guild.create_role(name="giveaway_{}".format(giveaway_name), mentionable=True, reason="Give away started by {}".format(ctx.author.name))
+        await ctx.channel.send('**A new giveaway has started !**\nPlease use the following command to enter / leave this giveaway\n```!n.giveaway {}```'.format(giveaway_name))
+
+    @commands.command(description='Stop a giveaway.')
+    @commands.guild_only()
+    @commands.has_any_role('Nixie', 'Mods')
+    async def stopgiveaway (self, ctx, giveaway_name: str):
+        """Stop a giveaway"""
+        ga_role = None        
+        for x in ctx.guild.roles:
+            if x.name == 'giveaway_{}'.format(giveaway_name):
+                ga_role = x
+        if ga_role == None:
+            await ctx.channel.send('The giveaway "{}" doesn\'t exist, {}.'.format(giveaway_name, ctx.author.mention))
+            return False
+        #Remove the fole from people
+        for participant in ga_role.members:
+            await participant.remove_roles(ga_role, reason="Give away stoped by {}".format(ctx.author.name))
+        #Remove the role from server
+        del self.giveaways[giveaway_name]
+        await ga_role.delete()
+        await ctx.channel.send('**The giveaway "{}" has now ended, thank you all for your participation !**'.format(giveaway_name))
         
     @commands.command(description='Enter/Leave a giveaway.')
     @commands.guild_only()
-    async def giveaway (self, ctx, ga_name: str):
+    async def giveaway (self, ctx, giveaway_name: str):
         ga_role = None        
         for x in ctx.guild.roles:
-            if x.name == 'giveaway_{}'.format(ga_name):
+            if x.name == 'giveaway_{}'.format(giveaway_name):
                 ga_role = x
         if ga_role == None:
-            await ctx.channel.send('The giveaway "{}" doesn\'t exist, {}.'.format(ga_name, ctx.author.mention))
+            await ctx.channel.send('The giveaway "{}" doesn\'t exist, {}.'.format(giveaway_name, ctx.author.mention))
             return False
         roles = ctx.author.roles
         has_role = False
@@ -32,10 +62,36 @@ class Giveaway():
                 has_role = True
         if has_role == False:
             await ctx.author.add_roles(ga_role)
-            await ctx.channel.send('You just entered the giveaway "{}", {}'.format(ga_name, ctx.author.mention))
+            await ctx.channel.send('You just entered the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
         else:
             await ctx.author.remove_roles(ga_role)
-            await ctx.channel.send('You just left the giveaway "{}", {}'.format(ga_name, ctx.author.mention))
+            await ctx.channel.send('You just left the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
+
+    @commands.command(description='Pick a winner from the people who entered the giveaway')
+    @commands.guild_only()
+    @commands.has_any_role('Nixie', 'Mods')
+    async def pickwinner(self, ctx, giveaway_name : str):
+        """Pick a winner"""
+        ga_role = None
+        for x in ctx.guild.roles:
+            if x.name == 'giveaway_{}'.format(giveaway_name):
+                ga_role = x
+        if ga_role == None:
+            await ctx.channel.send('The giveaway "{}" doesn\'t exist, {}.'.format(giveaway_name, ctx.author.mention))
+            return False
+        participants = ga_role.members
+        if len(participants) == 0:
+            await ctx.channel.send('Nobody entered the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
+            return False
+        for participant in participants:
+            if participant.id in self.giveaways[giveaway_name]:
+            participants.remove(participant)
+        if len(participants) == 0:
+            await ctx.channel.send('Every participants already won"{}", {}.'.format(giveaway_name, ctx.author.mention))
+            return False
+        winner = random.choice(participants)
+        self.giveaways[giveaway_name].append(winner.id)
+        await ctx.channel.send('**Congratulation, {}, you just won in the giveaway "{}".'.format(ctx.author.mention, giveaway_name))
 
 def setup(bot):
     cog = Giveaway(bot)
