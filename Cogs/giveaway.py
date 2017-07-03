@@ -12,7 +12,7 @@ class Giveaway():
     @commands.has_any_role('Nixie', 'Mods')
     async def startgiveaway (self, ctx, ga_name: str):
         """Start a giveaway"""
-        ga_role = await self.bot.create_role(name="giveaway_{}".format(ga_name), mentionable=True, reason="Give away started by {}".format(ctx.author.name))
+        ga_role = await ctx.guild.create_role(name="giveaway_{}".format(ga_name), mentionable=True, reason="Give away started by {}".format(ctx.author.name))
         await ctx.channel.send('**A new giveaway has started !**\nPlease use the following command to enter / leave this giveaway\n```!n.giveaway {}```'.format(ga_name))
         
     @commands.command(description='Enter/Leave a giveaway.')
