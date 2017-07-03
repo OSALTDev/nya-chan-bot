@@ -52,7 +52,7 @@ class Giveaway():
         ga_roles = []        
         for x in ctx.guild.roles:
             if x.name.startswith('giveaway_'):
-                ga_roles.append(x.name.replace('giveaway_', '')
+                ga_roles.append(x.name.replace('giveaway_', ''))
         
         if len(ga_roles) == 0:
             await ctx.channel.send('There is no active giveaways, {}.'.format(giveaway_name, ctx.author.mention))
