@@ -51,7 +51,7 @@ class Giveaway():
         """List giveaways"""
         ga_roles = []        
         for x in ctx.guild.roles:
-            if x.name.startwith('giveaway_'):
+            if x.name.startswith('giveaway_'):
                 ga_roles.append(x)
         
         if len(ga_roles) == 0:
