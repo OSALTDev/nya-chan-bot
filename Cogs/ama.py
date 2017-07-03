@@ -1,6 +1,6 @@
 from discord.ext import commands
 import asyncio
-import datetime
+from datetime import datetime
 import pymysql
 import role_ids
 from __main__ import config
@@ -93,7 +93,7 @@ class Ama():
                 nb_saved += 1
                 q_content = question_details[1]
                 q_author = question_infos[0].replace('From ', '')
-                q_date = datetime.strptime(question_infos[1].replace(' UTC', ''), '%c')
+                q_date = datetime.strptime(question_infos[1].replace(' UTC', ''), '%c') 
                 if timestamp is None:
                     q_timestamp = ''
                 else:
