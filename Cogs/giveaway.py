@@ -92,7 +92,7 @@ class Giveaway():
             return False
         winner = random.choice(participants)
         self.giveaways[giveaway_name].append(winner.id)
-        await ctx.channel.send('**Congratulation, {}, you just won in the giveaway "{}".'.format(winner.mention, giveaway_name))
+        await ctx.channel.send('Participants : {}\n**Congratulation, {}, you just won in the giveaway "{}".'.format(", ".join(str(x) for x in participants), winner.mention, giveaway_name))
 
     @commands.command(description='List winners ID')
     @commands.guild_only()
@@ -106,7 +106,7 @@ class Giveaway():
         if ga_role == None:
             await ctx.channel.send('The giveaway "{}" doesn\'t exist, {}.'.format(giveaway_name, ctx.author.mention))
             return False
-        await ctx.channel.send('List of winner ids :\n{}'.format(" ".join(str(x) for x in self.giveaways[giveaway_name])))
+        await ctx.channel.send('List of winner ids :\n{}'.format(", ".join(str(x) for x in self.giveaways[giveaway_name])))
 
 def setup(bot):
     cog = Giveaway(bot)
