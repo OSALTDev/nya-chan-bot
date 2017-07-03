@@ -109,7 +109,7 @@ class Giveaway():
             return False
         winners = []
         for winner_id in self.giveaways[giveaway_name]:
-            winner = await self.bot.get_user(winner_id)
+            winner = self.bot.get_user(winner_id)
             if not winner is None:
                 winners.append(winner.mention)
         await ctx.channel.send('List of winner :\n{}'.format("\n".join(str(x) for x in winners)))
