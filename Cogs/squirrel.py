@@ -25,7 +25,10 @@ class Squirrel():
         if future_squirrel is None:
             await ctx.channel.send('The user {} cannot be found'.format(username))
             return False;
-        future_squirrel.add_roles(squirrel_role)
+        if squirrel_role in future_squirrel.roles:
+            await ctx.channel.send('The user {} is already a Squirrel'.format(username))
+            return False
+        await future_squirrel.add_roles(squirrel_role)
         squirrel_channel = self.bot.get_channel(325420488107098112)
         if squirrel_channel is None:
             await ctx.channel.send('The Squirrel Army channel cannot be found')
