@@ -1,7 +1,9 @@
 from discord.ext import commands
 import asyncio
 import datetime
+import pymysql
 import role_ids
+from __main__ import config
 
 class Ama():
     def __init__(self, bot):
@@ -55,9 +57,28 @@ class Ama():
     @commands.command(description='')
     @commands.guild_only()
     async def processq(self, ctx):
-        """"""
-
-
+        """Process every question with your :upvote: reaction on it, save it to the database and remove it"""
+        connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
+        cursor = connection.cursor()
+        nb_saved = 0
+        destination = self.bot.get_channel(331363194780254210)
+        if destination is None:
+            await ctx.channel.send('There is no destination channel.')
+            return False
+        async for msg in ctx.channel.history(limit=200):
+            to_copy = False
+            for reaction in msg.reactions:
+                from_me = False
+                async for usr in reaction.users():
+                    if usr.id == ctx.author.id:
+                        from_me = True
+                if reaction.emoji.name == 'upvote' and from_me is True:
+                    to_copy = True
+            if to_copy:
+                nb_saved += 1
+                await destination.send('From {} - {} UTC (Processed by {})\n-----------------------\n{}'.format(msg.author.mention, msg.created_at.strftime('%c'), ctx.author.mention, msg.content))
+                await msg.delete()
+        await ctx.channel.send('{} message(s) transferred to {}.'.format(nb_saved, destination.name))
 
 def setup(bot):
     cog = Ama(bot)
