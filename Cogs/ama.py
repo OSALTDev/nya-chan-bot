@@ -66,7 +66,7 @@ class Ama():
         if len(rows) == 0:
             await ctx.channel.send('No streams have been found !')
             return False
-        stream_id = row[0][0]
+        stream_id = rows[0][0]
         nb_saved = 0
         destination = self.bot.get_channel(331363194780254210)
         if destination is None:
