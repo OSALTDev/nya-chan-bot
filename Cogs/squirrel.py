@@ -20,9 +20,9 @@ class Squirrel():
         if squirrel_role == None:
             await ctx.channel.send('There is no Squirrel Army role on this server.')
             return False
-        print('ok')
         try:
             converter = commands.converter.MemberConverter()
+            future_squirrel = converter.convert(ctx, username)
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
