@@ -58,7 +58,7 @@ class Ama():
     @commands.guild_only()
     async def processq(self, ctx, timestamp : str = None):
         """Process every question with your :upvote: reaction on it, save it to the database and remove it"""
-        connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
+        connection = pymysql.connect(host=config['database']['host'], user=config['database']['user'], password=config['database']['password'], db=config['database']['database'], charset='utf8')
         cursor = connection.cursor()
         #Get the last stream ID
         cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""", (ctx.guild.id))

@@ -11,7 +11,7 @@ class Welcome():
 
     def get_message(self, member):
         guild = member.guild
-        connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
+        connection = pymysql.connect(host=config['database']['host'], user=config['database']['user'], password=config['database']['password'], db=config['database']['database'], charset='utf8')
         cursor = connection.cursor()
         cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", (guild.id))
         rows = cursor.fetchall()

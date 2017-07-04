@@ -15,7 +15,7 @@ class Stats():
             author = message.author
             channel = message.channel
             if not channel is None:
-                connection = pymysql.connect(host=config['Database']['host'], user=config['Database']['user'], password=config['Database']['password'], db=config['Database']['database'], charset='utf8')
+                connection = pymysql.connect(host=config['database']['host'], user=config['database']['user'], password=config['database']['password'], db=config['database']['database'], charset='utf8')
                 cursor = connection.cursor()
                 cursor.execute("""SELECT id FROM statistics_global WHERE id_server = %s AND id_user = %s AND id_channel = %s""", (guild.id, author.id, channel.id))
                 rows = cursor.fetchall()

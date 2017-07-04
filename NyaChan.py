@@ -8,17 +8,12 @@ from discord.ext import commands
 import configparser
 import yaml
 
-config = configparser.ConfigParser()
-config.read_file(open('config/settings.ini'))
+config_stream = open('config/settings.yaml', 'r')
+config = yaml.load(config_stream)
+config_stream.close()
 
-startup_cogs = ['welcome', 'giveaway', 'customs', 'misc', 'rpg', 'games', 'squirrel', 'stats']
-
-bot = commands.Bot(command_prefix=config['Bot']['prefix'], description=config['Bot']['description'])
-
-if len(sys.argv) == 2 and sys.argv[1] == 'dev':
-    token = config['Bot']['token_dev']
-else:
-    token = config['Bot']['token_prod']
+bot = commands.Bot(command_prefix=config['bot']['prefix'], description=config['bot']['description'])
+token = config['bot']['token']
 
 loaded_cogs = []
 
@@ -166,7 +161,7 @@ async def restart(ctx):
     os.execl(python, python, *sys.argv)
 
 if __name__ == "__main__":
-    for cog in startup_cogs:
+    for cog in config['bot']['startup_cogs']:
         try:
             bot.load_extension('Cogs.' + cog)
             loaded_cogs.append(cog)

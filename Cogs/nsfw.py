@@ -3,7 +3,6 @@ from discord.ext import commands
 from urllib import parse
 import os
 import aiohttp
-from __main__ import config
 
 class Nsfw():
     """Gives functions for the pervs out there ;-)"""

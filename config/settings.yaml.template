@@ -1,4 +1,4 @@
-Bot:
+bot:
     name: bot_name
     description: bot_description
     prefix: command_prefix
@@ -9,7 +9,7 @@ Bot:
         - cogN
     token: Discord_token
 
-Database:
+database:
     host: host
     user: user
     password: password
