@@ -1,0 +1,8 @@
+version: '2'
+services:
+   db:
+        image: mysql:latest
+        ##  create this file based on docker_environment.template 
+        env_file: docker_environment
+        ports:
+            - 3306:3306

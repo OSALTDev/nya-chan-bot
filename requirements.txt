@@ -1,0 +1,2 @@
+psutil==5.2.2
+PyMySQL==0.7.11
