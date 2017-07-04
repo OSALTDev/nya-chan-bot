@@ -8,9 +8,12 @@ from discord.ext import commands
 import configparser
 import yaml
 
-config_stream = open('config/settings.yaml', 'r')
-config = yaml.load(config_stream)
-config_stream.close()
+try:
+    config_stream = open('config/settings.yaml', 'r')
+    config = yaml.load(config_stream)
+    config_stream.close()
+except Exception as err:
+    
 
 bot = commands.Bot(command_prefix=config['bot']['prefix'], description=config['bot']['description'])
 token = config['bot']['token']
@@ -58,7 +61,7 @@ async def load(ctx, cog_name : str):
     #try:
     if not cog_name in loaded_cogs:      
         try:  
-            bot.load_extension('Cogs.' + cog_name)
+            bot.load_extension('cogs.' + cog_name)
             loaded_cogs.append(cog_name)
             await ctx.send("```{} loaded.```".format(cog_name))
         except (AttributeError, ImportError) as e:
@@ -108,7 +111,7 @@ async def chan_ids(ctx):
 async def unload(ctx, cog_name : str):
     """Unloads a cog."""
     if cog_name in loaded_cogs:
-        bot.unload_extension('Cogs.' + cog_name)
+        bot.unload_extension('cogs.' + cog_name)
         await ctx.send("```{} unloaded.```".format(cog_name))
         loaded_cogs.remove(cog_name)
     else:
@@ -163,7 +166,7 @@ async def restart(ctx):
 if __name__ == "__main__":
     for cog in config['bot']['startup_cogs']:
         try:
-            bot.load_extension('Cogs.' + cog)
+            bot.load_extension('cogs.' + cog)
             loaded_cogs.append(cog)
         except (AttributeError, ImportError) as e:
             pass
