@@ -1,8 +1,4 @@
 from discord.ext import commands
-import asyncio
-import datetime
-import role_ids
-import sys, os
 
 class Squirrel():
     def __init__(self, bot):

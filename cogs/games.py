@@ -1,11 +1,9 @@
 from discord.ext import commands
-import asyncio
-import datetime
-import role_ids
+from cogs.base_cog import BaseCog
 
-class Games():
+class Games(BaseCog):
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     @commands.command(description='Identify yourself as looking for a game (toggle command).')
     @commands.guild_only()

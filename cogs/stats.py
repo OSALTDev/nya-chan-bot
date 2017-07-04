@@ -1,13 +1,10 @@
-import discord
-from discord.ext import commands
-import pymysql
-import role_ids
-from __main__ import config
+from cogs.base_cog import BaseCog
 
-class Stats():
+
+class Stats(BaseCog):
     """Welcomes new members to the server via private message"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     async def on_message(self, message):
         if not message.content.startswith(self.bot.command_prefix) and not message.author.bot:
@@ -15,7 +12,7 @@ class Stats():
             author = message.author
             channel = message.channel
             if not channel is None:
-                connection = pymysql.connect(host=config['database']['host'], user=config['database']['user'], password=config['database']['password'], db=config['database']['database'], charset='utf8')
+                connection = self.config.db_connection()
                 cursor = connection.cursor()
                 cursor.execute("""SELECT id FROM statistics_global WHERE id_server = %s AND id_user = %s AND id_channel = %s""", (guild.id, author.id, channel.id))
                 rows = cursor.fetchall()

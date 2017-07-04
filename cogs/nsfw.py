@@ -1,13 +1,14 @@
-import discord
 from discord.ext import commands
 from urllib import parse
-import os
 import aiohttp
 
-class Nsfw():
+from cogs.base_cog import BaseCog
+
+
+class Nsfw(BaseCog):
     """Gives functions for the pervs out there ;-)"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     async def fetch_image(self, ctx, channel, randomize : bool=False, tags : list=[]):
         guild = ctx.message.guild

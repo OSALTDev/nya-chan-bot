@@ -1,14 +1,13 @@
 import discord
 from discord.ext import commands
-import asyncio
-import role_ids
+from cogs.base_cog import BaseCog
 
 if not discord.opus.is_loaded():
     discord.opus.load_opus('opus')
 
-class Music():
+class Music(BaseCog):
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     @commands.command(description='Add youtube video to the queue and start playing')
     @commands.guild_only()

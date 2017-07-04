@@ -1,13 +1,10 @@
 from discord.ext import commands
-import asyncio
 from datetime import datetime
-import pymysql
-import role_ids
-from __main__ import config
+from cogs.base_cog import BaseCog
 
-class Ama():
+class Ama(BaseCog):
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     @commands.command(description='')
     @commands.guild_only()
@@ -58,7 +55,7 @@ class Ama():
     @commands.guild_only()
     async def processq(self, ctx, timestamp : str = None):
         """Process every question with your :upvote: reaction on it, save it to the database and remove it"""
-        connection = pymysql.connect(host=config['database']['host'], user=config['database']['user'], password=config['database']['password'], db=config['database']['database'], charset='utf8')
+        connection = self.config.db_connection()
         cursor = connection.cursor()
         #Get the last stream ID
         cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""", (ctx.guild.id))

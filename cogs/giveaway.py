@@ -1,12 +1,10 @@
 from discord.ext import commands
-import asyncio
-import datetime
 import random
-import role_ids
+from cogs.base_cog import BaseCog
 
-class Giveaway():
+class Giveaway(BaseCog):
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.giveaways = {}
 
     @commands.command(description='Start a giveaway.')

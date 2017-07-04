@@ -1,11 +1,11 @@
 import random
 from discord.ext import commands
-import asyncio
-import role_ids
+from cogs.base_cog import BaseCog
 
-class RPG():
+
+class RPG(BaseCog):
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     @commands.command(description='Roll some dice ! (Example : 2d6)')
     @commands.guild_only()

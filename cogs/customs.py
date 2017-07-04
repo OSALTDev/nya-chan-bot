@@ -1,13 +1,10 @@
-import discord
 from discord.ext import commands
-import pymysql
-import role_ids
-from __main__ import config
+from cogs.base_cog import BaseCog
 
-class Customs():
+class Customs(BaseCog):
     """Welcomes new members to the server via private message"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     @commands.command(description='Sends a custom message.')
     @commands.guild_only()
@@ -16,7 +13,7 @@ class Customs():
         guild = ctx.guild
         member = ctx.author
         channel = ctx.channel
-        connection = pymysql.connect(host=config['database']['host'], user=config['database']['user'], password=config['database']['password'], db=config['database']['database'], charset='utf8')
+        connection = self.config.db_connection()
         cursor = connection.cursor()
         cursor.execute("""SELECT `message` FROM `custom_commands` WHERE `id_server` = %s AND `command` = %s""", (guild.id, command_name))
         rows = cursor.fetchall()

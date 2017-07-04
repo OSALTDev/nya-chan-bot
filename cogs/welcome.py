@@ -1,17 +1,16 @@
-import discord
 from discord.ext import commands
-import pymysql
-import role_ids
-from __main__ import config
 
-class Welcome():
+from cogs.base_cog import BaseCog
+
+
+class Welcome(BaseCog):
     """Welcomes new members to the server via private message"""
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
 
     def get_message(self, member):
         guild = member.guild
-        connection = pymysql.connect(host=config['database']['host'], user=config['database']['user'], password=config['database']['password'], db=config['database']['database'], charset='utf8')
+        connection = self.config.db_connection()
         cursor = connection.cursor()
         cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", (guild.id))
         rows = cursor.fetchall()

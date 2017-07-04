@@ -5,18 +5,13 @@ import psutil
 import subprocess
 import discord
 from discord.ext import commands
-import configparser
-import yaml
+from nyalib.config import AppConfig
 
-try:
-    config_stream = open('config/settings.yaml', 'r')
-    config = yaml.load(config_stream)
-    config_stream.close()
-except Exception as err:
-    pass
 
-bot = commands.Bot(command_prefix=config['bot']['prefix'], description=config['bot']['description'])
-token = config['bot']['token']
+config = AppConfig()
+
+bot = commands.Bot(command_prefix=config.bot.prefix, description=config.bot.description)
+token = config.bot.token
 
 loaded_cogs = []
 
@@ -164,7 +159,7 @@ async def restart(ctx):
     os.execl(python, python, *sys.argv)
 
 if __name__ == "__main__":
-    for cog in config['bot']['startup_cogs']:
+    for cog in config.bot.cogs:
         try:
             bot.load_extension('cogs.' + cog)
             loaded_cogs.append(cog)
