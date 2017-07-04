@@ -13,7 +13,7 @@ try:
     config = yaml.load(config_stream)
     config_stream.close()
 except Exception as err:
-    
+    pass
 
 bot = commands.Bot(command_prefix=config['bot']['prefix'], description=config['bot']['description'])
 token = config['bot']['token']
