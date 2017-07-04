@@ -8,7 +8,7 @@ from discord.ext import commands
 import configparser
 
 config = configparser.ConfigParser()
-config.read_file(open('settings.ini'))
+config.read_file(open('config/settings.ini'))
 
 startup_cogs = ['welcome', 'giveaway', 'customs', 'misc', 'rpg', 'games', 'squirrel', 'stats']
 
