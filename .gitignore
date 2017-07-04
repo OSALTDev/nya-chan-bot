@@ -1,4 +1,5 @@
 *.ini
+*.yaml
 lib/
 *.conf
 __pycache__/
