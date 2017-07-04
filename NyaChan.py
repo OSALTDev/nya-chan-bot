@@ -148,7 +148,7 @@ async def update(ctx):
         process = subprocess.check_output("git pull origin master", stderr=subprocess.STDOUT, shell=True)
         await ctx.send("```Git pull success```")
     except Exception as e:
-        await ctx.send("```py\nError while git pulling\n```".format(cog_name))
+        await ctx.send("```py\nError while git pulling\n```")
         raise commands.UserInputError(ctx) 
 
 @bot.command()

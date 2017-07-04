@@ -5,3 +5,6 @@ __pycache__/
 .project
 .pydevproject
 .settings/
+docker_environment
+.idea
+venv

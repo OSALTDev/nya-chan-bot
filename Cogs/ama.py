@@ -98,7 +98,8 @@ class Ama():
                     q_timestamp = ''
                 else:
                     q_timestamp = timestamp
-                cursor.execute("""INSERT INTO questions (id, id_server, id_stream, author, datetime, question, timestamp) VALUES (null, %s, %s, %s, %s, %s, %s)""", (ctx.guild.id, stream_id, q_author, q_date.strftime('%Y-%m-%d %H:%M:%S'), q_content, q_timestamp))
+                cursor.execute("""INSERT INTO questions (id, id_server, id_stream, author, datetime, question, timestamp) VALUES (null, %s, %s, %s, %s, %s, %s)""",
+                               (ctx.guild.id, stream_id, q_author, q_date.strftime('%Y-%m-%d %H:%M:%S'), q_content, q_timestamp))
                 connection.commit()
                 await msg.delete()
         await ctx.channel.send('{} message(s) transferred to {}.'.format(nb_saved, destination.name))
