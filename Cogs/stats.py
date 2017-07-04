@@ -10,7 +10,7 @@ class Stats():
         self.bot = bot
 
     async def on_message(self, message):
-        if not message.content.startswith(self.bot.command_prefix):
+        if not message.content.startswith(self.bot.command_prefix) and not message.author.bot:
             guild = message.guild
             author = message.author
             channel = message.channel
