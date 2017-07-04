@@ -28,8 +28,7 @@ class Stats():
                     connection.commit()
                 connection.close()
 
-def Stats(bot):
-    cog = Welcome(bot)
-    bot.add_listener(cog.member_join, "on_member_join")
+def setup(bot):
+    cog = Stats(bot)
     bot.add_cog(cog)
 
