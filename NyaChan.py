@@ -6,6 +6,7 @@ import subprocess
 import discord
 from discord.ext import commands
 import configparser
+import yaml
 
 config = configparser.ConfigParser()
 config.read_file(open('config/settings.ini'))
