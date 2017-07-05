@@ -156,8 +156,8 @@ async def shutdown(ctx):
 async def update(ctx):
     """Updates bot."""
     try:
-        process = subprocess.check_output("git pull origin master", stderr=subprocess.STDOUT, shell=True)
-        await ctx.send("```Git pull success```")
+        process = subprocess.check_output("git pull origin {}".format(config['git']['branch']), stderr=subprocess.STDOUT, shell=True)
+        await ctx.send("```Git pull from '{}' success```".format(config['git']['branch']))
     except Exception as e:
         await ctx.send("```py\nError while git pulling\n```")
         raise commands.UserInputError(ctx)

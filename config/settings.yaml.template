@@ -15,3 +15,5 @@ database:
     password: password
     database: database_name
 
+git:
+    branch: branch_to_pull_from_for_updates
