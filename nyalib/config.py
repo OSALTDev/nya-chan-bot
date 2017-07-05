@@ -37,3 +37,7 @@ class AppConfig(Singleton):
         db_config = self.config['database']
         return pymysql.connect(
             host=db_config['host'], user=db_config['user'], password=db_config['password'], db=db_config['database'], charset='utf8')
+
+    @property
+    def git_branch(self):
+        return self.config.get('git', {}).get('branch', 'dev')
