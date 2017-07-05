@@ -2,6 +2,7 @@ from discord.ext import commands
 from cogs.base_cog import BaseCog
 import discord
 
+
 class Tags(BaseCog):
     def __init__(self, bot):
         super().__init__(bot)
@@ -26,7 +27,8 @@ class Tags(BaseCog):
             if role.name == tag_name:
                 tag_role = role
         if tag_role is None:
-            tag_role = await ctx.guild.create_role(name=tag_name, colour=discord.Colour.from_rgb(147, 23, 17), mentionable=True, reason="Tag creation")
+            tag_role = await ctx.guild.create_role(name=tag_name, colour=discord.Colour.from_rgb(147, 23, 17),
+                                                   mentionable=True, reason="Tag creation")
         # Check if the author already has tag_role
         has_role = False
         for role in ctx.author.roles:
@@ -39,6 +41,20 @@ class Tags(BaseCog):
         else:
             await ctx.author.add_roles(tag_role)
             await ctx.channel.send('You now have the tag "{}", {}'.format(tag_name, ctx.author.mention))
+
+    @commands.command(description='Identify yourself with a tag. Let other people know about you.')
+    @commands.guild_only()
+    async def tags(self, ctx):
+        """List the available tags"""
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        cursor.execute("""SELECT name, description FROM tags WHERE id_server = %s ORDER BY name ASC""", ctx.guild.id)
+        rows = cursor.fetchall()
+        connection.close()
+        embed = discord.embed(title="List of available tags", type="rich", colour=discord.Colour.from_rgb(147, 23, 17))
+        for row in rows:
+            embed.add_field(name=row[0], value=row[1])
+        await ctx.channel.send(embed=embed)
 
 
 def setup(bot):
