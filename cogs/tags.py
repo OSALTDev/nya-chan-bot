@@ -51,7 +51,7 @@ class Tags(BaseCog):
         cursor.execute("""SELECT name, description FROM tags WHERE id_server = %s ORDER BY name ASC""", ctx.guild.id)
         rows = cursor.fetchall()
         connection.close()
-        embed = discord.embed(title="List of available tags", type="rich", colour=discord.Colour.from_rgb(147, 23, 17))
+        embed = discord.Embed(title="List of available tags", type="rich", colour=discord.Colour.from_rgb(147, 23, 17))
         for row in rows:
             embed.add_field(name=row[0], value=row[1])
         await ctx.channel.send(embed=embed)
