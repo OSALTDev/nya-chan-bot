@@ -51,8 +51,10 @@ class Tags(BaseCog):
         cursor.execute("""SELECT name, description FROM tags WHERE id_server = %s ORDER BY name ASC""", ctx.guild.id)
         rows = cursor.fetchall()
         connection.close()
-        embed = discord.Embed(title="__Here is a list of the available tags__", type="rich",
-                              colour=discord.Colour.from_rgb(0, 174, 134))
+        embed = discord.Embed(title="List of the available tags", type="rich",
+                              colour=discord.Colour.from_rgb(0, 174, 134),
+                              description="You can add those tags to your profile by using the command **!n.tag** :\
+                                          ```\nExample: !n.tag Gamer```")
         for row in rows:
             embed.add_field(name=row[0], value=row[1], inline=False)
         await ctx.channel.send(embed=embed)
