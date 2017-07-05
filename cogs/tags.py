@@ -54,7 +54,7 @@ class Tags(BaseCog):
         embed = discord.Embed(title="__Here is a list of the available tags__", type="rich",
                               colour=discord.Colour.from_rgb(0, 174, 134))
         for row in rows:
-            embed.add_field(name=row[0], value=row[1])
+            embed.add_field(name=row[0], value=row[1], inline=False)
         await ctx.channel.send(embed=embed)
 
 
