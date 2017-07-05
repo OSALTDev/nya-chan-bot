@@ -1,6 +1,6 @@
 from discord.ext import commands
 from cogs.base_cog import BaseCog
-
+import discord
 
 class Tags(BaseCog):
     def __init__(self, bot):
@@ -26,7 +26,7 @@ class Tags(BaseCog):
             if role.name == tag_name:
                 tag_role = role
         if tag_role is None:
-            tag_role = await ctx.guild.create_role(name=tag_name, mentionable=True, reason="Tag creation")
+            tag_role = await ctx.guild.create_role(name=tag_name, colour=discord.Colour.from_rgb(95, 137, 165), mentionable=True, reason="Tag creation")
         # Check if the author already has tag_role
         has_role = False
         for role in ctx.author.roles:
