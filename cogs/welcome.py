@@ -12,10 +12,10 @@ class Welcome(BaseCog):
         guild = member.guild
         connection = self.config.db_connection()
         cursor = connection.cursor()
-        cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", (guild.id))
+        cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", guild.id)
         rows = cursor.fetchall()
         if len(rows) == 0:
-            cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""", (guild.id))
+            cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""", guild.id)
             connection.commit()
             text = ""
         else:
