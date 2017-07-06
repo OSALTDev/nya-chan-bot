@@ -15,7 +15,7 @@ class Tags(BaseCog):
         # Check if tag exists in database
         connection = self.config.db_connection()
         cursor = connection.cursor()
-        cursor.execute("""SELECT name FROM tags WHERE id_server = %s AND name=%s""", (ctx.guild.id, tag))
+        cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""", (ctx.guild.id, tag))
         rows = cursor.fetchall()
         connection.close()
         if len(rows) == 0:
@@ -30,6 +30,10 @@ class Tags(BaseCog):
         if tag_role is None:
             tag_role = await ctx.guild.create_role(name=tag_name, colour=discord.Colour.from_rgb(147, 23, 17),
                                                    mentionable=True, reason="Tag creation")
+        # Get the linked channel if applicable
+        channel = None
+        if not rows[0][1] == 'None':
+            channel = self.bot.get_channel(int(rows[0][1]))
         # Check if the author already has tag_role
         has_role = False
         for role in ctx.author.roles:
@@ -38,10 +42,15 @@ class Tags(BaseCog):
                 break
         if has_role:
             await ctx.author.remove_roles(tag_role)
-            await ctx.channel.send('You no longer have the tag "{}", {}'.format(tag_name, ctx.author.mention))
+            msg = 'You no longer have the tag "{}", {}'.format(tag_name, ctx.author.mention)
+            if channel is not None:
+                msg += '. You also no longer have access to {}'.format(channel.mention)
         else:
             await ctx.author.add_roles(tag_role)
-            await ctx.channel.send('You now have the tag "{}", {}'.format(tag_name, ctx.author.mention))
+            msg = 'You now have the tag "{}", {}'.format(tag_name, ctx.author.mention)
+            if channel is not None:
+                msg += '. You also gained access to {}'.format(channel.mention)
+        await ctx.channel.send(msg)
 
     @commands.command(description='Identify yourself with a tag. Let other people know about you.')
     @commands.guild_only()
