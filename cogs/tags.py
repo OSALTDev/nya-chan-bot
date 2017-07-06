@@ -48,7 +48,7 @@ class Tags(BaseCog):
         """List the available tags"""
         connection = self.config.db_connection()
         cursor = connection.cursor()
-        cursor.execute("""SELECT name, description FROM tags WHERE id_server = %s ORDER BY name ASC""", ctx.guild.id)
+        cursor.execute("""SELECT name, description, channel FROM tags WHERE id_server = %s ORDER BY name ASC""", ctx.guild.id)
         rows = cursor.fetchall()
         connection.close()
         embed = discord.Embed(title="List of the available tags", type="rich",
@@ -56,6 +56,11 @@ class Tags(BaseCog):
                               description="You can add those tags to your profile by using the command **!n.tag** :\
                                           ```\nExample: !n.tag Gamer```")
         for row in rows:
+            value = row[1]
+            if not row[2] == 'None':
+                channel = await self.bot.get_channel(int(row[2]))
+                if channel is not None:
+                    value = value + ' (Give access to {})'.format(channel.mention)
             embed.add_field(name=row[0], value=row[1], inline=False)
         await ctx.channel.send(embed=embed)
 
