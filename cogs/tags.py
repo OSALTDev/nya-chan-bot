@@ -61,7 +61,7 @@ class Tags(BaseCog):
                 channel = await self.bot.get_channel(int(row[2]))
                 if channel is not None:
                     value = value + ' (Give access to {})'.format(channel.mention)
-            embed.add_field(name=row[0], value=row[1], inline=False)
+            embed.add_field(name=row[0], value=value, inline=False)
         await ctx.channel.send(embed=embed)
 
 
