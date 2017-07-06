@@ -59,8 +59,7 @@ class Tags(BaseCog):
         for row in rows:
             value = row[1]
             if not row[2] == 'None':
-                channel = await self.bot.get_channel(int(row[2]))
-                print(int(row[2]))
+                channel = self.bot.get_channel(int(row[2]))
                 if channel is not None:
                     value = value + ' (Give access to {})'.format(channel.mention)
             embed.add_field(name=row[0], value=value, inline=False)
