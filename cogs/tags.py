@@ -9,8 +9,9 @@ class Tags(BaseCog):
 
     @commands.command(description='Identify yourself with a tag. Let other people know about you.')
     @commands.guild_only()
-    async def tag(self, ctx, tag: str):
+    async def tag(self, ctx, *tag: str):
         """Identify yourself with a tag."""
+        tag = " ".join(str(x) for x in tag)
         # Check if tag exists in database
         connection = self.config.db_connection()
         cursor = connection.cursor()
@@ -59,6 +60,7 @@ class Tags(BaseCog):
             value = row[1]
             if not row[2] == 'None':
                 channel = await self.bot.get_channel(int(row[2]))
+                print(int(row[2]))
                 if channel is not None:
                     value = value + ' (Give access to {})'.format(channel.mention)
             embed.add_field(name=row[0], value=value, inline=False)
