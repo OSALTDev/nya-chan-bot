@@ -19,12 +19,12 @@ class Singleton(object):
         return class_._instance
 
     def __contruct__(class_):
-        try:
-            config_stream = open('config/settings.yaml', 'r')
-            class_._instance.config = yaml.load(config_stream)
-            config_stream.close()
-        except Exception as err:
-            pass
+        #try:
+        config_stream = open('config/settings.yaml', 'r')
+        class_._instance.config = yaml.load(config_stream)
+        config_stream.close()
+        #except Exception as err:
+        #    pass
 
         if class_._instance.config is not None:
             class_.bot = BotConfig(**class_._instance.config['bot'])
