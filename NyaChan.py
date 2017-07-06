@@ -129,6 +129,19 @@ async def unload(ctx, cog_name: str):
 
 @bot.command()
 @commands.is_owner()
+async def reload(ctx, cog_name: str):
+    """Reloads a cog."""
+    if cog_name in loaded_cogs:
+        bot.unload_extension('cogs.' + cog_name)
+        bot.load_extension('cogs.' + cog_name)
+        await ctx.send("```{} reloaded.```".format(cog_name))
+    else:
+        await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name))
+        raise commands.UserInputError(ctx)
+
+
+@bot.command()
+@commands.is_owner()
 async def list_cogs(ctx):
     """Lists loaded cogs."""
     if len(loaded_cogs) > 0:
