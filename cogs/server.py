@@ -23,7 +23,7 @@ class Server(BaseCog):
         msg = """```
 OS: {} {} ({})
 
-System Uptimes: {} days
+System Uptime: {} days
 
 Load Averages: {} {} {}
 
