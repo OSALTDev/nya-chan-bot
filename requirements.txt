@@ -2,3 +2,4 @@ psutil==5.2.2
 PyMySQL==0.7.11
 PyYAML==3.12
 schedule==0.4.3
+distro==1.0.4
