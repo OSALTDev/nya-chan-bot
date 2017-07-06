@@ -20,29 +20,29 @@ class Server(BaseCog):
         listening_stats = subprocess.getoutput("netstat -l | grep -P '(\*:|\[::]:)'")
         active_connections_v4 = subprocess.getoutput(
             "netstat -Wn --numeric-ports -a -4 | grep -v LISTEN | tail -n +3 | awk '{print $4}' | cut -d':' -f1 | uniq -c | sort -r ")
-        msg = """
-        OS: {} {} ({})
-        
-        System Uptimes: {} days
-        
-        Load Averages: {} {} {}
-        
-        Ram usage:
-        
-        {}
-        
-        Disk Usage:
-        
-        {}
-        
-        Servers Listening:
-        
-        {}
-        
-        Active Connections (v4):
-        
-        {}
-        """.format(os_info[0], os_info[1], os_info[2], str(uptime_days), loadavg[0], loadavg[1], loadavg[2],
+        msg = """```
+OS: {} {} ({})
+
+System Uptimes: {} days
+
+Load Averages: {} {} {}
+
+Ram usage:
+
+{}
+
+Disk Usage:
+
+{}
+
+Servers Listening:
+
+{}
+
+Active Connections (v4):
+
+{}
+        ```""".format(os_info[0], os_info[1], os_info[2], str(uptime_days), loadavg[0], loadavg[1], loadavg[2],
                       ram_usage, disk_usage, listening_stats, active_connections_v4)
         await ctx.channel.send(msg)
 
