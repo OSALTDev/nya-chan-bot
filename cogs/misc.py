@@ -24,7 +24,8 @@ class Misc(BaseCog):
     async def stream(self, ctx):
         """Get the number of minutes to wait until Nixie\'s next steam"""
         now = datetime.datetime.now()
-        launch = datetime.datetime(2017, 6, 27, 22, 0, 0, 0)
+        # TODO : move that out of the main code
+        launch = datetime.datetime(2017, 7, 9, 22, 0, 0, 0)
         delta = launch - now
         minutes = round(delta.days * 24 * 60 + delta.seconds / 60 + delta.microseconds / 60000000)
         if minutes > 0:
