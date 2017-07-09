@@ -28,7 +28,7 @@ python NyaChan.py [dev]
 
 ## Docker integration.
 
-Assuming you have docker and docker compose up and running.
+Assuming you have Docker and Docker compose up and running.
 
 Copy docker_environement.template to docker_environment.  Update the settings as you desire then simply run:
 
