@@ -1,7 +1,9 @@
+import discord
 from discord.ext import commands
 from discord.ext.commands import group
+
 from cogs.base_cog import BaseCog
-import discord
+from nyalib.small_helpers import filterTextForSqlInjection
 
 
 class Tags(BaseCog):
@@ -18,7 +20,7 @@ class Tags(BaseCog):
     @commands.guild_only()
     async def add(self, ctx, *tag: str):
         """Identify yourself with a tag."""
-        tag = " ".join(str(x) for x in tag)
+        tag = " ".join(filterTextForSqlInjection(str(x)) for x in tag)  # because the tags are direct from user input
         # Check if tag exists in database
         connection = self.config.db_connection()
         cursor = connection.cursor()
@@ -56,11 +58,11 @@ class Tags(BaseCog):
             msg += '. You can now see the channel {}'.format(channel.mention)
         await ctx.channel.send(msg)
 
-    @tag.command(description='Removes with a tag.')
+    @tag.command(description='Removes a tag from your profile. Because people change, and so should their tags.')
     @commands.guild_only()
     async def remove(self, ctx, *tag: str):
         """Removes a tag."""
-        tag = " ".join(str(x) for x in tag)
+        tag = " ".join(filterTextForSqlInjection(str(x)) for x in tag)
         # Check if tag exists in database
         connection = self.config.db_connection()
         cursor = connection.cursor()

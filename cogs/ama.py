@@ -1,6 +1,10 @@
-from discord.ext import commands
 from datetime import datetime
+
+from discord.ext import commands
+
 from cogs.base_cog import BaseCog
+from nyalib.small_helpers import filterTextForSqlInjection
+
 
 class Ama(BaseCog):
     def __init__(self, bot):
@@ -88,7 +92,7 @@ class Ama(BaseCog):
                     await ctx.channel.send('question_infos fail.')
                     continue
                 nb_saved += 1
-                q_content = question_details[1]
+                q_content = filterTextForSqlInjection(question_details[1])  # as this is raw user input
                 q_author = question_infos[0].replace('From ', '')
                 q_date = datetime.strptime(question_infos[1].replace(' UTC', ''), '%c') 
                 if timestamp is None:
