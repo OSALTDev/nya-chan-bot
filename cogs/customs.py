@@ -1,5 +1,7 @@
 from discord.ext import commands
+
 from cogs.base_cog import BaseCog
+from nyalib.small_helpers import filterTextForSqlInjection
 
 
 class Customs(BaseCog):
@@ -12,6 +14,7 @@ class Customs(BaseCog):
     @commands.guild_only()
     async def cc(self, ctx, command_name: str):
         """Sends a custom message"""
+        command_name = filterTextForSqlInjection(command_name)  # as the command name is taken directly from user input
         guild = ctx.guild
         connection = self.config.db_connection()
         cursor = connection.cursor()
