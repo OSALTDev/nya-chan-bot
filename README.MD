@@ -51,5 +51,3 @@ docker-compose up -d
 ```
 
 This will create a new MYSQL instance as the initial blank slate.
-
-TODO: initial schema required.
