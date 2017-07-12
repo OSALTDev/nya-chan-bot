@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import discord
 from discord.ext import commands
 from nyalib.NyaBot import NyaBot
