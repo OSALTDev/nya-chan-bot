@@ -16,29 +16,37 @@ class Squirrel(BaseCog):
     @group()
     async def squi(self, ctx):
         """Squirrel commands."""
+        bot_channel = self.bot.get_channel(332644650462478336)
+        if bot_channel is None:
+            await ctx.channel.send('The dedicated bot commands channel cannot be found')
+            return False
         if ctx.invoked_subcommand is None:
-            await ctx.send('Invalid squirrel command passed, {}'.format(ctx.author.mention))
+            await bot_channel.send('Invalid squirrel command passed, {}'.format(ctx.author.mention))
 
     @squi.command(description='Adds a user to the Squirrel Army.')
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Mods', 'Elder Squirrel')
     async def add(self, ctx, username: str):
         """Adds a user to the Squirrel Army"""
+        bot_channel = self.bot.get_channel(332644650462478336)
+        if bot_channel is None:
+            await ctx.channel.send('The dedicated bot commands channel cannot be found')
+            return False
         squirrel_role = self.get_squirrel_role(ctx)
         if squirrel_role is None:
-            await ctx.channel.send('There is no Squirrel Army role on this server.')
+            await bot_channel.send('There is no Squirrel Army role on this server.')
             return False
         converter = commands.converter.MemberConverter()
         future_squirrel = await converter.convert(ctx, username)
         if future_squirrel is None:
-            await ctx.channel.send('The user {} cannot be found'.format(username))
+            await bot_channel.send('The user {} cannot be found'.format(username))
             return False
         squirrel_channel = self.bot.get_channel(329379656576794625)
         if squirrel_channel is None:
-            await ctx.channel.send('The Squirrel Army channel cannot be found')
+            await bot_channel.send('The Squirrel Army channel cannot be found')
             return False
         if squirrel_role in future_squirrel.roles:
-            await ctx.channel.send('The user {} is already a Squirrel'.format(username))
+            await bot_channel.send('The user {} is already a Squirrel'.format(username))
             return False
         await future_squirrel.add_roles(squirrel_role)
         await squirrel_channel.send(
@@ -49,21 +57,25 @@ class Squirrel(BaseCog):
     @commands.has_any_role('Nixie', 'Mods', 'Elder Squirrel')
     async def remove(self, ctx, username: str):
         """Removes a user from the Squirrel Army"""
+        bot_channel = self.bot.get_channel(332644650462478336)
+        if bot_channel is None:
+            await ctx.channel.send('The dedicated bot commands channel cannot be found')
+            return False
         squirrel_role = self.get_squirrel_role(ctx)
         if squirrel_role is None:
-            await ctx.channel.send('There is no Squirrel Army role on this server.')
+            await bot_channel.send('There is no Squirrel Army role on this server.')
             return False
         converter = commands.converter.MemberConverter()
         future_squirrel = await converter.convert(ctx, username)
         if future_squirrel is None:
-            await ctx.channel.send('The user {} cannot be found'.format(username))
+            await bot_channel.send('The user {} cannot be found'.format(username))
             return False
         squirrel_channel = self.bot.get_channel(329379656576794625)
         if squirrel_channel is None:
-            await ctx.channel.send('The Squirrel Army channel cannot be found')
+            await bot_channel.send('The Squirrel Army channel cannot be found')
             return False
         if squirrel_role not in future_squirrel.roles:
-            await ctx.channel.send('The user {} is not a Squirrel'.format(username))
+            await bot_channel.send('The user {} is not a Squirrel'.format(username))
             return False
         await future_squirrel.remove_roles(squirrel_role)
         await squirrel_channel.send('The user **{}** is no longer a squirrel.'.format(future_squirrel.name))

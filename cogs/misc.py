@@ -9,7 +9,7 @@ class Misc(BaseCog):
 
     @commands.command(description='Pat Nya Chan.')
     @commands.guild_only()
-    async def pat(self, ctx, location : str = 'head'):
+    async def pat(self, ctx, location: str = 'head'):
         """Pat Nya Chan"""
         if location in ['head', 'back', 'belly', 'tummy']:
             msg = 'Nyaaaaaah, Thank you {} =^.^='.format(ctx.message.author.mention)
@@ -34,6 +34,7 @@ class Misc(BaseCog):
             await ctx.channel.send("```Stream in progress ... hopefully, have fun !```")
         else:
             await ctx.channel.send("```Stay tuned, next stream date will be announced soon !```")
+
 
 def setup(bot):
     cog = Misc(bot)

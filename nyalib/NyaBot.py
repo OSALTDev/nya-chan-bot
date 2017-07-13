@@ -7,6 +7,7 @@ class NyaBot(commands.Bot):
         self.config = AppConfig()
         self.loaded_cogs = []
         super().__init__(*args, command_prefix=self.config.bot.prefix, description=self.config.bot.description,
+                         pm_help=True,
                          **kwargs)
 
     def load_cog(self, cog: str):

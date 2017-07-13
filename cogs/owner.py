@@ -17,7 +17,7 @@ class Owner(BaseCog):
     async def git(self, ctx):
         """Git commands."""
         if ctx.invoked_subcommand is None:
-            await ctx.send('Invalid git command passed, {}'.format(ctx.author.mention))
+            await ctx.author.send('Invalid git command passed, {}'.format(ctx.author.mention))
 
     @git.command()
     @commands.is_owner()
@@ -30,9 +30,9 @@ class Owner(BaseCog):
                                                shell=True)
             process = subprocess.check_output("git checkout origin/{}".format(branch), stderr=subprocess.STDOUT,
                                               shell=True)
-            await ctx.send("```Git pull from '{}' success```".format(branch))
+            await ctx.author.send("```Git pull from '{}' success```".format(branch))
         except Exception as e:
-            await ctx.send("```py\nError while git pulling\n```")
+            await ctx.author.send("```py\nError while git pulling\n```")
             raise commands.UserInputError(ctx)
 
     @git.command()
@@ -46,26 +46,26 @@ class Owner(BaseCog):
             remotes = repo.remotes[0].refs
 
             for item in remotes:
-                await ctx.send(item.remote_head)
+                await ctx.author.send(item.remote_head)
 
         except Exception as e:
-            await ctx.send("```py\nError listing git branches\n```")
+            await ctx.author.send("```py\nError listing git branches\n```")
             raise commands.UserInputError(ctx)
 
     @group()
     async def cogs(self, ctx):
         """Cogs related commands."""
         if ctx.invoked_subcommand is None:
-            await ctx.send('Invalid cogs command passed, {}'.format(ctx.author.mention))
+            await ctx.author.send('Invalid cogs command passed, {}'.format(ctx.author.mention))
 
     @cogs.command()
     @commands.is_owner()
     async def list(self, ctx):
         """Lists loaded cogs."""
         if len(self.bot.loaded_cogs) > 0:
-            await ctx.send("```Loaded modules : {}```".format(", ".join(self.bot.loaded_cogs)))
+            await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.loaded_cogs)))
         else:
-            await ctx.send("```No module loaded```")
+            await ctx.author.send("```No module loaded```")
 
     @cogs.command()
     @commands.is_owner()
@@ -75,11 +75,11 @@ class Owner(BaseCog):
         if cog_name not in self.bot.loaded_cogs:
             try:
                 self.bot.load_cog(cog_name)
-                await ctx.send("```{} loaded.```".format(cog_name))
+                await ctx.author.send("```{} loaded.```".format(cog_name))
             except (AttributeError, ImportError) as e:
-                await ctx.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+                await ctx.author.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
         else:
-            await ctx.send("```py\n'{}' module is already loaded\n```".format(cog_name))
+            await ctx.author.send("```py\n'{}' module is already loaded\n```".format(cog_name))
 
     @cogs.command()
     @commands.is_owner()
@@ -87,9 +87,9 @@ class Owner(BaseCog):
         """Unloads a cog."""
         if cog_name in self.bot.loaded_cogs:
             self.bot.unload_cog(cog_name)
-            await ctx.send("```{} unloaded.```".format(cog_name))
+            await ctx.author.send("```{} unloaded.```".format(cog_name))
         else:
-            await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name))
+            await ctx.author.send("```py\n'{}' module is not loaded\n```".format(cog_name))
 
     @cogs.command()
     @commands.is_owner()
@@ -97,9 +97,9 @@ class Owner(BaseCog):
         """Reloads a cog."""
         if cog_name in self.bot.loaded_cogs:
             self.bot.reload_cog(cog_name)
-            await ctx.send("```{} reloaded.```".format(cog_name))
+            await ctx.author.send("```{} reloaded.```".format(cog_name))
         else:
-            await ctx.send("```py\n'{}' module is not loaded\n```".format(cog_name))
+            await ctx.author.send("```py\n'{}' module is not loaded\n```".format(cog_name))
 
     @command()
     @commands.is_owner()
@@ -114,7 +114,7 @@ class Owner(BaseCog):
         if channel is not None:
             await channel.send(" ".join(str(x) for x in msg))
         else:
-            await ctx.send("```py\n'{}' channel has not been found\n```".format(channel_name))
+            await ctx.author.send("```py\n'{}' channel has not been found\n```".format(channel_name))
             raise commands.UserInputError(ctx, 'Channel not found')
 
     @command()
