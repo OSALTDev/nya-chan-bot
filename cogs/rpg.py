@@ -9,16 +9,21 @@ class RPG(BaseCog):
 
     @commands.command(description='Roll some dice ! (Example : 2d6)')
     @commands.guild_only()
-    async def roll(self, ctx, dice : str):
+    async def roll(self, ctx, dice: str):
         """Roll some dice"""
+        bot_channel = self.bot.get_channel(332644650462478336)
+        if bot_channel is None:
+            await ctx.channel.send('The dedicated bot commands channel cannot be found')
+            return False
         try:
             rolls, limit = map(int, dice.split('d'))
         except Exception:
-            await ctx.channel.send('```{}, format has to be NdN !```'.format(ctx.author.mention))
+            await bot_channel.send('```{}, format has to be NdN !```'.format(ctx.author.mention))
             return False
         result = [random.randint(1, limit) for r in range(rolls)]
         msg = "```Results for {} : {} (Total : {})```".format(dice, ', '.join(str(x) for x in result), sum(result))
-        await ctx.channel.send(msg)
+        await bot_channel.send(msg)
+
 
 def setup(bot):
     cog = RPG(bot)

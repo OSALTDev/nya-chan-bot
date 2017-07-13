@@ -12,6 +12,10 @@ class Customs(BaseCog):
     @commands.guild_only()
     async def cc(self, ctx, command_name: str):
         """Sends a custom message"""
+        bot_channel = self.bot.get_channel(332644650462478336)
+        if bot_channel is None:
+            await ctx.channel.send('The dedicated bot commands channel cannot be found')
+            return False
         guild = ctx.guild
         connection = self.config.db_connection()
         cursor = connection.cursor()
@@ -20,7 +24,7 @@ class Customs(BaseCog):
         rows = cursor.fetchall()
         connection.close()
         if len(rows) == 0:
-            await ctx.channel.send(
+            await bot_channel.send(
                 'The custom message **{}** doesn\'t exist, {}'.format(command_name, ctx.author.mention))
             return False
         text = rows[0][0]
