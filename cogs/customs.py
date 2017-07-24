@@ -33,7 +33,7 @@ class Customs(BaseCog):
 
     @commands.command(description='Explain the kicks.')
     @commands.guild_only()
-    async def accident(self, ctx, command_name: str):
+    async def accident(self, ctx):
         """Explain the kicks"""
         embed = discord.Embed(title="Announcement Regarding Accidental Kicking",
                               url='https://www.youtube.com/watch?v=I9GcnRAdY2M')
