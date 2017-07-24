@@ -1,5 +1,6 @@
 from discord.ext import commands
 from cogs.base_cog import BaseCog
+import discord
 
 
 class Customs(BaseCog):
@@ -29,6 +30,27 @@ class Customs(BaseCog):
             return False
         text = rows[0][0]
         await ctx.channel.send(text)
+
+    @commands.command(description='Explain the kicks.')
+    @commands.guild_only()
+    async def accident(self, ctx):
+        """Explain the kicks"""
+        embed = discord.Embed(title="Announcement Regarding Accidental Kicking",
+                              url='https://www.youtube.com/watch?v=I9GcnRAdY2M')
+        embed.add_field(name="Joker here, with an announcement for all my lovely adoring fans here at Joker Asylum!",
+                        value="", inline=True)
+        embed.add_field(
+            name="You may have noticed we had some regulars having to rejoin this server, having been kicked!",
+            value="", inline=True)
+        embed.add_field(
+            name="I just gotta say, ya don't know what it's like to really be kicked till you've had Bane's foot on your back...or maybe his knee! Baaaaaahahahaha!",
+            value="", inline=True)
+        embed.add_field(
+            name="I'm only joking! But honestly, Bats really should learn to....watch his back....Nyaaaaahahahahahahaha.",
+            value="", inline=True)
+        embed.set_footer(
+            text="For real though, we just want to sincerely apologize for anyone who may have accidentally been kicked. We were checking some member info in the member listings, specifically regarding activity, and unfortunately that info is listed in the same window as the \"prune\" function. A misclick occurred and *quite* a few of you were boop'd. We all know tech derps sometimes happen, but we want to once more sincerely apologize and hope no one was offended or hurt by it.")
+        await ctx.channel.send(embed=embed)
 
 
 def setup(bot):
