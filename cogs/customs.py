@@ -1,6 +1,7 @@
 from discord.ext import commands
 from cogs.base_cog import BaseCog
 import discord
+import time
 
 
 class Customs(BaseCog):
@@ -62,6 +63,46 @@ class Customs(BaseCog):
                 nb_kicked += 1
         connection.close()
         await ctx.author.send('{} Users were kicked'.format(nb_kicked))
+
+    @commands.command()
+    @commands.is_owner()
+    @commands.guild_only()
+    async def safeguard(self, ctx):
+        # Get "User" role
+        user_role = None
+        for role in ctx.guild.roles:
+            if role.name == "User":
+                user_role = role
+        if user_role is None:
+            await ctx.author.send("There is no User role !")
+            return False
+        nb_user = 0
+        nb_bot = 0
+        nb_has_role = 0
+        message = await ctx.channel.send("Starting to add the **User** role to everyone (max 100 members)...")
+        start = time.time()
+        for member in ctx.guild.members:
+            if member.bot:
+                nb_bot += 1
+                continue
+            has_role = False
+            for m_role in member.roles:
+                if m_role.name == 'User':
+                    has_role = True
+                    break
+            if has_role is True:
+                nb_has_role += 1
+                continue
+            await member.add_roles(user_role, reason="Safeguard against pruning.")
+            nb_user += 1
+            if nb_user == 100:
+                break
+        end = time.time()
+        seconds = end - start
+        await message.delete()
+        await ctx.channel.send("""**{}** / **{}** Members were added to the role **User** in {} seconds.
+Bots skipped : **{}**
+Members who already had the role : **{}**""".format(nb_user, len(ctx.guild.members), round(seconds, 3), nb_bot, nb_has_role))
 
 
 def setup(bot):
