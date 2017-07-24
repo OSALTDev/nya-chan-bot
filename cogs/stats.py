@@ -30,6 +30,24 @@ class Stats(BaseCog):
                     connection.commit()
                 connection.close()
 
+    async def on_member_join(self, member):
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) VALUES (null, %s, %s, NOW(), "joined", 1)""",
+            (member.guild.id, member.id))
+        connection.commit()
+        connection.close()
+
+    async def on_member_remove(self, member):
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) VALUES (null, %s, %s, NOW(), "left", 1)""",
+            (member.guild.id, member.id))
+        connection.commit()
+        connection.close()
+
 
 def setup(bot):
     cog = Stats(bot)
