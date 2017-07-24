@@ -45,6 +45,24 @@ class Customs(BaseCog):
             text="For real though, we just want to sincerely apologize for anyone who may have accidentally been kicked. We were checking some member info in the member listings, specifically regarding activity, and unfortunately that info is listed in the same window as the \"prune\" function. A misclick occurred and *quite* a few of you were boop'd. We all know tech derps sometimes happen, but we want to once more sincerely apologize and hope no one was offended or hurt by it.")
         await ctx.channel.send(embed=embed)
 
+    @commands.command()
+    @commands.is_owner()
+    @commands.guild_only()
+    async def kicked(self, ctx):
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        cursor.execute("""SELECT DISTINCT `id_user` FROM `statistics_global`""")
+        member_ids = cursor.fetchall()
+        nb_kicked = 0
+        for member_id in member_ids:
+            member = ctx.guild.get_member(int(member_id[0]))
+            if member is None:
+                cursor.execute("""INSERT INTO `kicked` (`id`, `id_user`) VALUES (NULL, %s)""", member_id[0])
+                connection.commit()
+                nb_kicked += 1
+        connection.close()
+        await ctx.author.send('{} Users were kicked'.format(nb_kicked))
+
 
 def setup(bot):
     cog = Customs(bot)
