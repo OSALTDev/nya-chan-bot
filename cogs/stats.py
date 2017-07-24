@@ -34,7 +34,7 @@ class Stats(BaseCog):
         connection = self.config.db_connection()
         cursor = connection.cursor()
         cursor.execute(
-            """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) VALUES (null, %s, %s, NOW(), "joined", 1)""",
+            """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) VALUES (null, %s, %s, NOW(), "joined")""",
             (member.guild.id, member.id))
         connection.commit()
         connection.close()
@@ -43,8 +43,26 @@ class Stats(BaseCog):
         connection = self.config.db_connection()
         cursor = connection.cursor()
         cursor.execute(
-            """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) VALUES (null, %s, %s, NOW(), "left", 1)""",
+            """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) VALUES (null, %s, %s, NOW(), "left")""",
             (member.guild.id, member.id))
+        connection.commit()
+        connection.close()
+
+    async def on_member_ban(self, guild, user):
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) VALUES (null, %s, %s, NOW(), "banned")""",
+            (guild.id, user.id))
+        connection.commit()
+        connection.close()
+
+    async def on_member_unban(self, guild, user):
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        cursor.execute(
+            """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) VALUES (null, %s, %s, NOW(), "unbanned")""",
+            (guild.id, user.id))
         connection.commit()
         connection.close()
 
