@@ -28,8 +28,8 @@ class NyaBot(commands.Bot):
 
     def reload_cog(self, cog: str):
         try:
-            self.load_extension('cogs.' + cog)
             self.unload_extension('cogs.' + cog)
+            self.load_extension('cogs.' + cog)
         except (AttributeError, ImportError) as e:
             print("Failed to unload cog: {} due to {}".format(cog, str(e)))
             return False
