@@ -25,6 +25,12 @@ class Welcome(BaseCog):
         return text.format(member, guild)
 
     async def member_join(self, member):
+        user_role = None
+        for role in member.guild.roles:
+            if role.name == "User":
+                user_role = role
+        if user_role is not None:
+            await member.add_roles(user_role, reason="Safeguard against pruning.")
         text = self.get_message(member)
         try:
             await member.send(text)
@@ -36,12 +42,6 @@ class Welcome(BaseCog):
     async def welcome(self, ctx):
         """Resend welcome message"""
         member = ctx.message.author
-        user_role = None
-        for role in ctx.guild.roles:
-            if role.name == "User":
-                user_role = role
-        if user_role is not None:
-            await member.add_roles(user_role, reason="Safeguard against pruning.")
         text = self.get_message(member)
         try:
             await member.send(text)
