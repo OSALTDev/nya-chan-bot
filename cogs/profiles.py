@@ -72,7 +72,7 @@ class Profiles(BaseCog):
     @commands.guild_only()
     async def list(self, ctx, area: str = None):
         """List your current timezone"""
-        bot_channel = self.bot.get_channel(333753806644969472)
+        bot_channel = self.bot.get_channel(332644650462478336)
         if bot_channel is None:
             await ctx.channel.send('The dedicated bot commands channel cannot be found')
             return False
