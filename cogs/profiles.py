@@ -14,7 +14,7 @@ class Profiles(BaseCog):
     @group()
     async def p(self, ctx):
         """Profile commands."""
-        bot_channel = self.bot.get_channel(333753806644969472)
+        bot_channel = self.bot.get_channel(332644650462478336)
         if bot_channel is None:
             await ctx.channel.send('The dedicated bot commands channel cannot be found')
             return False
@@ -24,7 +24,7 @@ class Profiles(BaseCog):
     @group()
     async def tz(self, ctx):
         """Timezone commands."""
-        bot_channel = self.bot.get_channel(333753806644969472)
+        bot_channel = self.bot.get_channel(332644650462478336)
         if bot_channel is None:
             await ctx.channel.send('The dedicated bot commands channel cannot be found')
             return False
@@ -35,7 +35,7 @@ class Profiles(BaseCog):
     @commands.guild_only()
     async def set(self, ctx, tz_name: str):
         """Set your current timezone"""
-        bot_channel = self.bot.get_channel(333753806644969472)
+        bot_channel = self.bot.get_channel(332644650462478336)
         if bot_channel is None:
             await ctx.channel.send('The dedicated bot commands channel cannot be found')
             return False
@@ -71,7 +71,7 @@ class Profiles(BaseCog):
     @commands.guild_only()
     async def time(self, ctx, username: str):
         """Displays a user local time"""
-        bot_channel = self.bot.get_channel(333753806644969472)
+        bot_channel = self.bot.get_channel(332644650462478336)
         if bot_channel is None:
             await ctx.channel.send('The dedicated bot commands channel cannot be found')
             return False
