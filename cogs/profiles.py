@@ -2,6 +2,7 @@ from discord.ext import commands
 from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 import datetime
+import math
 import pytz
 
 
@@ -66,6 +67,37 @@ class Profiles(BaseCog):
                                                                                            time_now_localized.strftime(
                                                                                                '%Y-%m-%d %H:%M:%S'),
                                                                                            ctx.author.mention))
+
+    @tz.command(description='List timezones.')
+    @commands.guild_only()
+    async def list(self, ctx, area: str = None):
+        """List your current timezone"""
+        bot_channel = self.bot.get_channel(333753806644969472)
+        if bot_channel is None:
+            await ctx.channel.send('The dedicated bot commands channel cannot be found')
+            return False
+        tz_dict = {}
+        for tz in pytz.common_timezones:
+            try:
+                tz_left, tz_right = map(str, tz.split('/'))
+            except Exception:
+                continue
+            if tz_left not in tz_dict:
+                tz_dict[tz_left] = set()
+            tz_dict[tz_left].add(tz_right)
+        tz_areas = list(tz_dict.keys())
+        tz_areas.sort()
+        if area is None:
+            await bot_channel.send(
+                'List of available timezone areas : `{}`, {}'.format(', '.join(tz_areas), ctx.author.mention))
+        else:
+            if area in tz_dict:
+                await bot_channel.send(
+                    'List of available timezones for area **{}** : `{}`, {}'.format(area,
+                                                                                    ', '.join(sorted(tz_dict[area])),
+                                                                                    ctx.author.mention))
+            else:
+                await bot_channel.send('The area **{}** has not been found, {}'.format(area, ctx.author.mention))
 
     @commands.command(description='Displays a user local time')
     @commands.guild_only()
