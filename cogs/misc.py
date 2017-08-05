@@ -35,6 +35,13 @@ class Misc(BaseCog):
         else:
             await ctx.channel.send("```Stay tuned, next stream date will be announced soon !```")
 
+    @commands.command(description='Says how many people are on this Discord')
+    @commands.has_any_role('Nixie', 'Admin', 'GeeksAbroad')
+    async def servercount(self, ctx):
+        """Says how many people are on this Discord"""
+        await self.bot_reply(ctx, 'There is **{}** members on this Discord, {}'.format(len(ctx.guild.members),
+                                                                                       ctx.author.mention))
+
 
 def setup(bot):
     cog = Misc(bot)
