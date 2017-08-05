@@ -27,35 +27,35 @@ async def on_message(message):
     await bot.process_commands(message)
 
 
-# @bot.event
-# async def on_command_error(ctx, error):
-#     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-#         await ctx.author.send(
-#             "{}, this command does not exist!```{}```".format(ctx.message.author.mention, ctx.message.content))
-#     elif isinstance(error, discord.ext.commands.errors.NotOwner):
-#         await ctx.author.send("{}, only my Owner can ask me to do that, nya!```{}```".format(ctx.message.author.mention,
-#                                                                                       ctx.message.content))
-#     elif isinstance(error, discord.ext.commands.errors.UserInputError):
-#         await ctx.author.send(
-#             "{}, Input error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
-#     elif isinstance(error, discord.ext.commands.errors.NoPrivateMessage):
-#         await ctx.author.send(
-#             "{}, this command cannot be send in a PM!```{}```".format(ctx.message.author.mention, ctx.message.content))
-#     elif isinstance(error, discord.ext.commands.errors.CheckFailure):
-#         await ctx.author.send(
-#             "You don\'t have the permission to use this command, {}```{}```".format(ctx.message.author.mention,
-#                                                                                     ctx.message.content))
-#     else:
-#         await ctx.author.send(
-#             "{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
-#     has_mention = False
-#     for arg in ctx.args:
-#         if '@' in str(arg):
-#             has_mention = True
-#             break
-#     if has_mention is True:
-#         return False
-#     await ctx.message.delete()
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        await ctx.author.send(
+            "{}, this command does not exist!```{}```".format(ctx.message.author.mention, ctx.message.content))
+    elif isinstance(error, discord.ext.commands.errors.NotOwner):
+        await ctx.author.send("{}, only my Owner can ask me to do that, nya!```{}```".format(ctx.message.author.mention,
+                                                                                             ctx.message.content))
+    elif isinstance(error, discord.ext.commands.errors.UserInputError):
+        await ctx.author.send(
+            "{}, Input error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
+    elif isinstance(error, discord.ext.commands.errors.NoPrivateMessage):
+        await ctx.author.send(
+            "{}, this command cannot be send in a PM!```{}```".format(ctx.message.author.mention, ctx.message.content))
+    elif isinstance(error, discord.ext.commands.errors.CheckFailure):
+        await ctx.author.send(
+            "You don\'t have the permission to use this command, {}```{}```".format(ctx.message.author.mention,
+                                                                                    ctx.message.content))
+    else:
+        await ctx.author.send(
+            "{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
+    has_mention = False
+    for arg in ctx.args:
+        if '@' in str(arg):
+            has_mention = True
+            break
+    if has_mention is True:
+        return False
+    await ctx.message.delete()
 
 
 @bot.event
