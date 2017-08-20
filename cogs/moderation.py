@@ -14,7 +14,7 @@ class Moderation(BaseCog):
             await ctx.author.send('Invalid mod command passed, {}'.format(ctx.author.mention))
 
     @mod.command(description='Promotes an user to be a Mod')
-    @commands.has_any_role('Nixie', 'Admin')
+    @commands.has_any_role('Nixie', 'Supervisor')
     async def set(self, ctx, *username):
         """Promotes an user to be a Mod"""
         user_name = " ".join(username)
@@ -60,7 +60,7 @@ class Moderation(BaseCog):
         await self.bot_reply(ctx, '{} is now a Mod, {}'.format(user.nick, ctx.author.mention))
 
     @mod.command(description='Removes an user Mod status')
-    @commands.has_any_role('Nixie', 'Admin')
+    @commands.has_any_role('Nixie', 'Supervisor')
     async def remove(self, ctx, *username):
         """Removes an user Mod status"""
         user_name = " ".join(username)
@@ -92,7 +92,7 @@ class Moderation(BaseCog):
         await self.bot_reply(ctx, '{} is not a Mod anymore, {}'.format(user.nick, ctx.author.mention))
 
     @mod.command(description='Promotes an user to be a Mod Trainee')
-    @commands.has_any_role('Nixie', 'Admin')
+    @commands.has_any_role('Nixie', 'Supervisor')
     async def set_trainee(self, ctx, *username):
         """Promotes an user to be a Mod Trainee"""
         user_name = " ".join(username)
@@ -138,7 +138,7 @@ class Moderation(BaseCog):
         await self.bot_reply(ctx, '{} is now a Mod Trainee, {}'.format(user.nick, ctx.author.mention))
 
     @mod.command(description='Removes an user Mod Trainee status')
-    @commands.has_any_role('Nixie', 'Admin')
+    @commands.has_any_role('Nixie', 'Supervisor')
     async def remove_trainee(self, ctx, *username):
         """Removes an user Mod Trainee status"""
         user_name = " ".join(username)

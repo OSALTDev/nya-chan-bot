@@ -15,6 +15,7 @@ class BaseCog(object):
         # - If command issued in bot-command, reply in bot-command
         # - If command issued elsewhere, reply in DM, if that fails, reply in bot-command,
         #   if not found reply in same channel
+        # TODO: Disable commands outside of bot-commands
         if ctx.guild is None:
             self.bot_channel = ctx.author
         elif ctx.channel.name == "bot-commands":

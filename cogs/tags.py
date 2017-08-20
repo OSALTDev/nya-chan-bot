@@ -8,6 +8,58 @@ class Tags(BaseCog):
     def __init__(self, bot):
         super().__init__(bot)
 
+    async def member_message(self, message):
+        if message.author.bot:
+            return False
+        if message.channel.name != "bot-commands":
+            return False
+        if not message.content.startswith('+') and not message.content.startswith('-'):
+            return False
+        sign = message.content[:1]
+        specified_tag = message.content[1:]
+        # Check if tag exists in database
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        if specified_tag == "":
+            return False
+        cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""",
+                       (message.guild.id, specified_tag))
+        rows = cursor.fetchall()
+        connection.close()
+        if len(rows) == 0:
+            await message.channel.send(
+                'The tag **{}** does not exist, {}.'.format(specified_tag, message.author.mention))
+            return False
+        tag_name = rows[0][0]
+        tag_role = None
+        for role in message.guild.roles:
+            if role.name == tag_name:
+                tag_role = role
+                break
+        if tag_role is None:
+            tag_role = await message.guild.create_role(name=tag_name, mentionable=False, reason="Tag creation")
+        has_role = False
+        for member_role in message.author.roles:
+            if member_role.id == tag_role.id:
+                has_role = True
+                break
+        if sign == '+':
+            if has_role is True:
+                await message.channel.send(
+                    'You already have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
+            else:
+                await message.author.add_roles(tag_role)
+                await message.channel.send(
+                    'You now have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
+        elif sign == '-':
+            if has_role is True:
+                await message.author.remove_roles(tag_role)
+                await message.channel.send(
+                    'You no longer have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
+            else:
+                await message.channel.send(
+                    'You don\'t have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
+
     @group()
     async def tag(self, ctx):
         """Tag commands."""
@@ -110,14 +162,10 @@ class Tags(BaseCog):
             msg += '. The channel {} is now hidden'.format(channel.mention)
         await bot_channel.send(msg)
 
-    @tag.command(description='Lists the available tags.')
+    @commands.command(description='Lists the available tags.')
     @commands.guild_only()
-    async def list(self, ctx):
+    async def tags(self, ctx):
         """Lists the available tags"""
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return False
         connection = self.config.db_connection()
         cursor = connection.cursor()
         cursor.execute("""SELECT name, description, channel FROM tags WHERE id_server = %s ORDER BY name ASC""",
@@ -126,9 +174,9 @@ class Tags(BaseCog):
         connection.close()
         embed = discord.Embed(title="List of the available tags", type="rich",
                               colour=discord.Colour.from_rgb(0, 174, 134),
-                              description="You can add those tags to your profile by using the command **!n.tag add** :\
-```\nExample: !n.tag add Gamer```or remove them by using the command **!n.tag remove** :\
-```\nExample: !n.tag remove Gamer```\n")
+                              description="You can add those tags to your profile by using the command **+tag** :\
+```\nExample: +Gamer```or remove them by using the command **-tag** :\
+```\nExample: -Gamer```\n**These commands only work in #bot-commands **\n")
         for row in rows:
             value = row[1]
             if not row[2] == 'None':
@@ -136,9 +184,10 @@ class Tags(BaseCog):
                 if channel is not None:
                     value = value + ' (Make {} visible)'.format(channel.mention)
             embed.add_field(name=row[0], value=value, inline=False)
-        await bot_channel.send(embed=embed)
+        await self.bot_reply(ctx, '', embed=embed)
 
 
 def setup(bot):
     cog = Tags(bot)
+    bot.add_listener(cog.member_message, "on_message")
     bot.add_cog(cog)
