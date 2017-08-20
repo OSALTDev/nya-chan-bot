@@ -49,7 +49,7 @@ class Moderation(BaseCog):
             elif user_role.name == 'Mod Trainee':
                 has_trainee_role = True
         if has_mod_role is True:
-            await self.bot_reply(ctx, '{} is a Mod already, {}'.format(user.nick, ctx.author.mention))
+            await self.bot_reply(ctx, '{} is a Mod already, {}'.format(user.name, ctx.author.mention))
             return False
         if has_trainee_role is True:
             await user.add_roles(mod_role, reason="Promoted to Mod")
@@ -57,7 +57,7 @@ class Moderation(BaseCog):
             await user.remove_roles(mod_trainee_role, reason="Promoted to Mod")
         else:
             await user.add_roles(mod_role, moderator_role, reason="Promoted to Mod")
-        await self.bot_reply(ctx, '{} is now a Mod, {}'.format(user.nick, ctx.author.mention))
+        await self.bot_reply(ctx, '{} is now a Mod, {}'.format(user.name, ctx.author.mention))
 
     @mod.command(description='Removes an user Mod status')
     @commands.has_any_role('Nixie', 'Supervisor')
@@ -86,10 +86,10 @@ class Moderation(BaseCog):
             if user_role.name == 'Mod':
                 has_mod_role = True
         if has_mod_role is not True:
-            await self.bot_reply(ctx, '{} is a not a Mod, {}'.format(user.nick, ctx.author.mention))
+            await self.bot_reply(ctx, '{} is a not a Mod, {}'.format(user.name, ctx.author.mention))
             return False
         await user.remove_roles(mod_role, moderator_role, reason="User demoted from Mod")
-        await self.bot_reply(ctx, '{} is not a Mod anymore, {}'.format(user.nick, ctx.author.mention))
+        await self.bot_reply(ctx, '{} is not a Mod anymore, {}'.format(user.name, ctx.author.mention))
 
     @mod.command(description='Promotes an user to be a Mod Trainee')
     @commands.has_any_role('Nixie', 'Supervisor')
@@ -127,7 +127,7 @@ class Moderation(BaseCog):
             elif user_role.name == 'Mod Trainee':
                 has_trainee_role = True
         if has_trainee_role is True:
-            await self.bot_reply(ctx, '{} is a Mod Trainee already, {}'.format(user.nick, ctx.author.mention))
+            await self.bot_reply(ctx, '{} is a Mod Trainee already, {}'.format(user.name, ctx.author.mention))
             return False
         if has_mod_role is True:
             await user.add_roles(mod_trainee_role, reason="Promoted to Mod Trainee")
@@ -135,7 +135,7 @@ class Moderation(BaseCog):
             await user.remove_roles(mod_role, reason="Promoted to Mod Trainee")
         else:
             await user.add_roles(mod_trainee_role, moderator_role, reason="Promoted to Mod Trainee")
-        await self.bot_reply(ctx, '{} is now a Mod Trainee, {}'.format(user.nick, ctx.author.mention))
+        await self.bot_reply(ctx, '{} is now a Mod Trainee, {}'.format(user.name, ctx.author.mention))
 
     @mod.command(description='Removes an user Mod Trainee status')
     @commands.has_any_role('Nixie', 'Supervisor')
@@ -170,10 +170,10 @@ class Moderation(BaseCog):
             if user_role.name == 'Mod Trainee':
                 has_trainee_role = True
         if has_trainee_role is not True:
-            await self.bot_reply(ctx, '{} is a not a Mod Trainee, {}'.format(user.nick, ctx.author.mention))
+            await self.bot_reply(ctx, '{} is a not a Mod Trainee, {}'.format(user.name, ctx.author.mention))
             return False
         await user.remove_roles(mod_trainee_role, moderator_role, reason="User demoted from Mod Trainee")
-        await self.bot_reply(ctx, '{} is not a Mod Trainee anymore, {}'.format(user.nick, ctx.author.mention))
+        await self.bot_reply(ctx, '{} is not a Mod Trainee anymore, {}'.format(user.name, ctx.author.mention))
 
 
 def setup(bot):
