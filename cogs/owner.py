@@ -160,6 +160,23 @@ class Owner(BaseCog):
         python = sys.executable
         os.execl(python, python, *sys.argv)
 
+    @command()
+    @commands.is_owner()
+    async def name(self, ctx):
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        cursor.execute("""SELECT DISTINCT id_user FROM event_logs WHERE id_server = %s""", 325197025719091201)
+        rows = cursor.fetchall()
+        for row in rows:
+            user = await self.bot.get_user_info(row[0])
+            if user is None:
+                continue
+            username = "{}#{}".format(user.name, user.discriminator)
+            cursor.execute("""INSERT INTO users (id, id_user, user_name) VALUES (null, %s, %s)""", (user.id, username))
+            connection.commit()
+        connection.close()
+        await ctx.author.send('Done')
+
 
 def setup(bot):
     cog = Owner(bot)
