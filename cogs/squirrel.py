@@ -25,7 +25,7 @@ class Squirrel(BaseCog):
 
     @squi.command(description='Adds a user to the Squirrel Army.')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods', 'Elder Squirrel')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators', 'Elder Squirrels')
     async def add(self, ctx, username: str):
         """Adds a user to the Squirrel Army"""
         bot_channel = self.bot.get_channel(332644650462478336)
@@ -54,7 +54,7 @@ class Squirrel(BaseCog):
 
     @squi.command(description='Removes a user from the Squirrel Army.')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods', 'Elder Squirrel')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators', 'Elder Squirrels')
     async def remove(self, ctx, username: str):
         """Removes a user from the Squirrel Army"""
         bot_channel = self.bot.get_channel(332644650462478336)
