@@ -8,7 +8,7 @@ class Server(BaseCog):
         super().__init__(bot)
 
     @commands.command(description='Pat Nya Chan.')
-    @commands.has_any_role('Nixie', 'Mods')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     @commands.guild_only()
     async def serverstats(self, ctx):
         """Get server stats"""

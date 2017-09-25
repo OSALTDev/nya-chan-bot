@@ -25,7 +25,7 @@ class Channels(BaseCog):
             await self.bot_reply(ctx, 'Invalid Text Channel Edition command passed, {}'.format(ctx.author.mention))
 
     @tch.command(description='Create a new text channel with Supervisor permission.')
-    @commands.has_any_role('Nixie', 'Supervisor')
+    @commands.has_any_role('Nixie', 'Supervisors')
     @commands.guild_only()
     async def create(self, ctx, *channel_name):
         """Create a new text channel with Supervisor permission."""
@@ -37,7 +37,7 @@ class Channels(BaseCog):
                 return False
         supervisor_role = None
         for role in guild.roles:
-            if role.name == 'Supervisor':
+            if role.name == 'Supervisors':
                 supervisor_role = role
                 break
         if supervisor_role is None:
