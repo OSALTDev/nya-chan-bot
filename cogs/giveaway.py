@@ -21,7 +21,7 @@ class Giveaway(BaseCog):
 
     @ga.command(description='Starts a giveaway.')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods')
+    @commands.has_any_role('Nixie', 'Supervisors',  'Moderators')
     async def start(self, ctx, giveaway_name: str):
         """Starts a giveaway"""
         bot_channel = self.bot.get_channel(332644650462478336)
@@ -43,7 +43,7 @@ this giveaway\n```!n.ga enter {0}``````!n.ga leave {0}```'.format(giveaway_name)
 
     @ga.command(description='Stop a giveaway.')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def stop(self, ctx, giveaway_name: str):
         """Stop a giveaway"""
         bot_channel = self.bot.get_channel(332644650462478336)
@@ -140,7 +140,7 @@ this giveaway\n```!n.ga enter {0}``````!n.ga leave {0}```'.format(giveaway_name)
 
     @ga.command(description='Pick a winner from the people who entered the giveaway')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def pick(self, ctx, giveaway_name: str):
         """Pick a winner"""
         bot_channel = self.bot.get_channel(332644650462478336)
@@ -173,7 +173,7 @@ this giveaway\n```!n.ga enter {0}``````!n.ga leave {0}```'.format(giveaway_name)
 
     @ga.command(description='List winners ID')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def winners(self, ctx, giveaway_name: str):
         """List winners ID"""
         bot_channel = self.bot.get_channel(332644650462478336)

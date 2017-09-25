@@ -20,7 +20,7 @@ class Ama(BaseCog):
 
     @qna.command(description='')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def validate(self, ctx):
         """Copy every question with your :upvote: reaction on it to the Question- channel"""
         bot_channel = self.bot.get_channel(332644650462478336)
@@ -54,7 +54,7 @@ class Ama(BaseCog):
 
     @qna.command(description='')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def clean(self, ctx):
         """Delete every message with your :downvote: reaction"""
         bot_channel = self.bot.get_channel(332644650462478336)
@@ -78,7 +78,7 @@ class Ama(BaseCog):
 
     @qna.command(description='')
     @commands.guild_only()
-    @commands.has_any_role('Nixie', 'Mods')
+    @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def process(self, ctx, timestamp: str = None):
         """Process every question with your :upvote: reaction on it, save it to the database and remove it"""
         bot_channel = self.bot.get_channel(332644650462478336)
@@ -126,7 +126,9 @@ class Ama(BaseCog):
                 else:
                     q_timestamp = timestamp
                 cursor.execute(
-                    """INSERT INTO questions (id, id_server, id_stream, author, datetime, question, timestamp) VALUES (null, %s, %s, %s, %s, %s, %s)""",
+                    """INSERT INTO
+                        questions (id, id_server, id_stream, author, datetime, question, timestamp)
+                        VALUES (null, %s, %s, %s, %s, %s, %s)""",
                     (ctx.guild.id, stream_id, q_author, q_date.strftime('%Y-%m-%d %H:%M:%S'), q_content, q_timestamp))
                 connection.commit()
                 await msg.delete()

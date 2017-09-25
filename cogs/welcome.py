@@ -27,7 +27,7 @@ class Welcome(BaseCog):
     async def member_join(self, member):
         user_role = None
         for role in member.guild.roles:
-            if role.name == "User":
+            if role.name == "Users":
                 user_role = role
         if user_role is not None:
             await member.add_roles(user_role, reason="Safeguard against pruning.")
