@@ -14,7 +14,7 @@ class Vchannels(BaseCog):
         if ctx.invoked_subcommand is None:
             await self.bot_reply(ctx, 'Invalid Voice Channel Edition command passed, {}'.format(ctx.author.mention))
 
-    @tch.command(description='Create a new voice channel with Supervisor permission.')
+    @vch.command(description='Create a new voice channel with Supervisor permission.')
     @commands.has_any_role('Nixie', 'Supervisors')
     @commands.guild_only()
     async def create(self, ctx, *channel_name):
