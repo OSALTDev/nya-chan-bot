@@ -4,24 +4,24 @@ from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 
 
-class Channels(BaseCog):
+class Vchannels(BaseCog):
     def __init__(self, bot):
         super().__init__(bot)
 
     @group()
-    async def tch(self, ctx):
-        """Text Channel edition commands."""
+    async def vch(self, ctx):
+        """Voice Channel edition commands."""
         if ctx.invoked_subcommand is None:
-            await self.bot_reply(ctx, 'Invalid Text Channel Edition command passed, {}'.format(ctx.author.mention))
+            await self.bot_reply(ctx, 'Invalid Voice Channel Edition command passed, {}'.format(ctx.author.mention))
 
-    @tch.command(description='Create a new text channel with Supervisor permission.')
+    @tch.command(description='Create a new voice channel with Supervisor permission.')
     @commands.has_any_role('Nixie', 'Supervisors')
     @commands.guild_only()
     async def create(self, ctx, *channel_name):
-        """Create a new text channel with Supervisor permission."""
+        """Create a new voice channel with Supervisor permission."""
         guild = ctx.guild
         channel_name = " ".join(channel_name)
-        for channel in guild.text_channels:
+        for channel in guild.voice_channels:
             if channel.name == channel_name:
                 await self.bot_reply(ctx, 'Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
                 return False
@@ -33,12 +33,11 @@ class Channels(BaseCog):
         if supervisor_role is None:
             return False
         perms = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False),
-            supervisor_role: discord.PermissionOverwrite(read_messages=True, manage_roles=True)
+            supervisor_role: discord.PermissionOverwrite(manage_roles=True)
         }
-        await guild.create_text_channel(channel_name, overwrites=perms)
+        await guild.create_voice_channel(channel_name, overwrites=perms)
 
 
 def setup(bot):
-    cog = Channels(bot)
+    cog = Vchannels(bot)
     bot.add_cog(cog)
