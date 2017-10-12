@@ -121,7 +121,7 @@ class Owner(BaseCog):
     @commands.is_owner()
     async def nowplaying(self, ctx, *game_name):
         """Sets the now playing message."""
-        await self.bot.change_presence(game=discord.Game(name=" ".join(str(x) for x in game_name)))
+        await self.bot.change_presence(game=discord.Game(name=" ".join(str(x) for x in game_name), type=0))
 
     @command()
     @commands.is_owner()
