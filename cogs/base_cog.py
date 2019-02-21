@@ -26,11 +26,9 @@ class BaseCog(object):
                                       delete_after=delete_after, nonce=nonce)
                 return False
             except discord.Forbidden:
-                for channel in ctx.guild.channels:
-                    if channel.name == "bot-commands":
-                        self.bot_channel = channel
-                        break
+                self.bot_channel = discord.utils.get(ctx.guild.channels, name="bot-commands")
                 if self.bot_channel is None:
                     self.bot_channel = ctx.channel
+
         await self.bot_channel.send(content=content, tts=tts, embed=embed, file=file, files=files, reason=reason,
                                     delete_after=delete_after, nonce=nonce)
