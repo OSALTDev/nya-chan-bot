@@ -22,9 +22,9 @@ async def on_ready():
 
 @bot.event
 async def on_message(message):
-    if message.author.bot:
-        return False
-    await bot.process_commands(message)
+    # If author not a bot
+    if not message.author.bot:
+        await bot.process_commands(message)
 
 
 @bot.event
@@ -48,26 +48,16 @@ async def on_command_error(ctx, error):
     else:
         await ctx.author.send(
             "{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
-    has_mention = False
-    for arg in ctx.args:
-        if '@' in str(arg):
-            has_mention = True
-            break
-    if has_mention is True:
-        return False
-    await ctx.message.delete()
+
+    if not ctx.message.mentions:
+        await ctx.message.delete()
 
 
 @bot.event
 async def on_command_completion(ctx):
-    has_mention = False
-    for arg in ctx.args:
-        if '@' in str(arg):
-            has_mention = True
-            break
-    if has_mention is True:
-        return False
-    await ctx.message.delete()
+    # Deletes message if no mentions
+    if not ctx.message.mentions:
+        await ctx.message.delete()
 
 
 class MainDriver:
