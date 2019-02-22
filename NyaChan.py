@@ -7,20 +7,6 @@ bot = NyaBot()
 
 
 @bot.event
-async def on_ready():
-    print('######################################################')
-    print('#                      Nya Chan                      #')
-    print('######################################################')
-    print('Discord.py version : ' + discord.__version__)
-    print('Bot User : ' + str(bot.user))
-    app_infos = await bot.application_info()
-    bot.owner_id = app_infos.owner.id
-    print('Bot Owner : ' + str(bot.owner_id))
-    url = discord.utils.oauth_url(app_infos.id)
-    print('Oauth URL : ' + str(url))
-
-
-@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await ctx.author.send(

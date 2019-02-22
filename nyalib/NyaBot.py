@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 from nyalib.config import AppConfig
 
@@ -12,3 +13,15 @@ class NyaBot(commands.Bot):
         super().__init__(*args, command_prefix=self.config.bot.prefix, description=self.config.bot.description,
                          pm_help=True,
                          **kwargs)
+
+    async def on_ready(self):
+        print('######################################################')
+        print('#                      Nya Chan                      #')
+        print('######################################################')
+        print('Discord.py version : ' + discord.__version__)
+        print('Bot User : ' + str(self.user))
+        app_infos = await self.application_info()
+        self.owner_id = app_infos.owner.id
+        print('Bot Owner : ' + str(self.owner_id))
+        url = discord.utils.oauth_url(app_infos.id)
+        print('Oauth URL : ' + str(url))
