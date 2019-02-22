@@ -16,7 +16,7 @@ class Games(BaseCog):
             await ctx.channel.send('There is no LFG role on this server.')
             return
 
-        has_role = discord.utils.get(ctx.author.roles, name="LFG") is None
+        has_role = discord.utils.get(ctx.author.roles, name="LFG") is not None
         if has_role is False:
             await ctx.author.add_roles(lfg_role)
             await ctx.channel.send('You are now tagged as looking for a game, {}'.format(ctx.author.mention))
