@@ -19,18 +19,17 @@ class Channels(BaseCog):
     @commands.guild_only()
     async def create(self, ctx, *, channel_name: str):
         """Create a new text channel with Supervisor permission."""
-        guild = ctx.guild
-        if discord.utils.get(guild.text_channels, name=channel_name) is not None:
+        if discord.utils.get(ctx.guild.text_channels, name=channel_name) is not None:
             await self.bot_reply(ctx, 'Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
-            return False
-        supervisor_role = discord.utils.get(guild.roles, name="Supervisors")
+            return
+        supervisor_role = discord.utils.get(ctx.guild.roles, name="Supervisors")
         if supervisor_role is None:
-            return False
+            return
         perms = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
             supervisor_role: discord.PermissionOverwrite(read_messages=True, manage_roles=True)
         }
-        await guild.create_text_channel(channel_name, overwrites=perms)
+        await ctx.guild.create_text_channel(channel_name, overwrites=perms)
 
 
 def setup(bot):
