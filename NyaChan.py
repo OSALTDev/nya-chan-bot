@@ -21,13 +21,6 @@ async def on_ready():
 
 
 @bot.event
-async def on_message(message):
-    # If author not a bot
-    if not message.author.bot:
-        await bot.process_commands(message)
-
-
-@bot.event
 async def on_command_error(ctx, error):
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
         await ctx.author.send(
@@ -48,9 +41,6 @@ async def on_command_error(ctx, error):
     elif not isinstance(error, ThrowawayException):
         await ctx.author.send(
             "{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
-
-    if not ctx.message.mentions:
-        await ctx.message.delete()
 
 
 @bot.event
