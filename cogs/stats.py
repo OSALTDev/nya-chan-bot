@@ -13,7 +13,7 @@ class Stats(BaseCog):
             author = message.author
             channel = message.channel
             if channel is not None:
-                with self.cursor_context() as cursor:
+                with self.cursor_context(commit=True) as cursor:
                     cursor.execute(
                         """SELECT id FROM statistics_global 
                         WHERE id_server = %s AND id_user = %s AND id_channel = %s""",
@@ -33,28 +33,28 @@ class Stats(BaseCog):
                         )
 
     async def on_member_join(self, member):
-        with self.cursor_context() as cursor:
+        with self.cursor_context(commit=True) as cursor:
             cursor.execute(
                 """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) 
                 VALUES (null, %s, %s, NOW(), "joined")""",
                 (member.guild.id, member.id))
 
     async def on_member_remove(self, member):
-        with self.cursor_context() as cursor:
+        with self.cursor_context(commit=True) as cursor:
             cursor.execute(
                 """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) 
                 VALUES (null, %s, %s, NOW(), "left")""",
                 (member.guild.id, member.id))
 
     async def on_member_ban(self, guild, user):
-        with self.cursor_context() as cursor:
+        with self.cursor_context(commit=True) as cursor:
             cursor.execute(
                 """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) 
                 VALUES (null, %s, %s, NOW(), "banned")""",
                 (guild.id, user.id))
 
     async def on_member_unban(self, guild, user):
-        with self.cursor_context() as cursor:
+        with self.cursor_context(commit=True) as cursor:
             cursor.execute(
                 """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) 
                 VALUES (null, %s, %s, NOW(), "unbanned")""",

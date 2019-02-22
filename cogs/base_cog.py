@@ -10,11 +10,12 @@ class BaseCog(object):
         # TODO: add logger here.
 
     @contextlib.contextmanager
-    def cursor_context(self):
+    def cursor_context(self, commit=False):
         connection = self.config.db_connection()
         cursor = connection.cursor()
         yield cursor
-        connection.commit()
+        if commit:
+            connection.commit()
         connection.close()
 
     async def bot_reply(self, ctx, content, tts=False, embed=None, file=None, files=None, reason=None,
