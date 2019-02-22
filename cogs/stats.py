@@ -1,5 +1,4 @@
 from cogs.base_cog import BaseCog
-import contextlib
 
 
 class Stats(BaseCog):
@@ -7,14 +6,6 @@ class Stats(BaseCog):
 
     def __init__(self, bot):
         super().__init__(bot)
-
-    @contextlib.contextmanager
-    def cursor_context(self):
-        connection = self.config.db_connection()
-        cursor = connection.cursor()
-        yield cursor
-        connection.commit()
-        connection.close()
 
     async def on_message(self, message):
         if not message.content.startswith(self.bot.command_prefix) and not message.author.bot:

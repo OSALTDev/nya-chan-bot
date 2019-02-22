@@ -1,4 +1,5 @@
 import discord
+import contextlib
 
 
 class BaseCog(object):
@@ -7,6 +8,14 @@ class BaseCog(object):
         self.config = self.bot.config
         self.bot_channel = None
         # TODO: add logger here.
+
+    @contextlib.contextmanager
+    def cursor_context(self):
+        connection = self.config.db_connection()
+        cursor = connection.cursor()
+        yield cursor
+        connection.commit()
+        connection.close()
 
     async def bot_reply(self, ctx, content, tts=False, embed=None, file=None, files=None, reason=None,
                         delete_after=None, nonce=None):
