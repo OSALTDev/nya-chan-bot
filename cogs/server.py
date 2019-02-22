@@ -23,7 +23,7 @@ class Server(BaseCog):
             "awk '{print $4}' | cut -d':' -f1 | uniq -c | sort -r "
         )
 
-        msg = [
+        msg = (
             "OS: {} {} ({})".format(os_info[0], os_info[1], os_info[2]),
             "System Uptime: {} days".format(str(uptime_days)),
             "Load Averages: {} {} {}".format(loadavg[0], loadavg[1], loadavg[2]),
@@ -31,7 +31,7 @@ class Server(BaseCog):
             "Disk Usage:\n\n{}".format(disk_usage),
             "Servers Listening:\n\n{}".format(listening_stats),
             "Active Connections (v4):\n\n{}".format(active_connections_v4)
-        ]
+        )
         await ctx.channel.send("\n\n".join(msg))
 
 
