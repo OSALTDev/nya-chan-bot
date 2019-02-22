@@ -17,19 +17,13 @@ class Channels(BaseCog):
     @tch.command(description='Create a new text channel with Supervisor permission.')
     @commands.has_any_role('Nixie', 'Supervisors')
     @commands.guild_only()
-    async def create(self, ctx, *channel_name):
+    async def create(self, ctx, *, channel_name: str):
         """Create a new text channel with Supervisor permission."""
         guild = ctx.guild
-        channel_name = " ".join(channel_name)
-        for channel in guild.text_channels:
-            if channel.name == channel_name:
-                await self.bot_reply(ctx, 'Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
-                return False
-        supervisor_role = None
-        for role in guild.roles:
-            if role.name == 'Supervisors':
-                supervisor_role = role
-                break
+        if discord.utils.get(guild.text_channels, name=channel_name) is not None:
+            await self.bot_reply(ctx, 'Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
+            return False
+        supervisor_role = discord.utils.get(guild.roles, name="Supervisors")
         if supervisor_role is None:
             return False
         perms = {
