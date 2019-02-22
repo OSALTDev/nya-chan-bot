@@ -64,17 +64,19 @@ class Giveaway(BaseCog):
     @commands.guild_only()
     async def list(self, ctx):
         """List giveaways"""
-        ga_roles = []
-        for x in ctx.guild.roles:
-            if x.name.startswith('giveaway_'):
-                ga_roles.append(x.name.replace('giveaway_', ''))
-        if len(ga_roles) == 0:
+        ga_roles = [
+            x.name.replace('giveaway_', '')
+            for x in ctx.guild.roles
+            if x.name.startswith('giveaway_')
+        ]
+        if not ga_roles:
             await ctx.bot_channel.send('There is no active giveaways, {}.'.format(ctx.author.mention))
-            return False
-        await ctx.bot_channel.send('Here is the list of the active giveaways ({}) :\n```{}```'.format(len(ga_roles),
-                                                                                                  ", ".join(
-                                                                                                      str(x) for x in
-                                                                                                      ga_roles)))
+            return
+        await ctx.bot_channel.send(
+            'Here is the list of the active giveaways ({}) :\n```{}```'.format(
+                len(ga_roles), ", ".join(ga_roles)
+            )
+        )
 
     @ga.command(description='Enters a giveaway.')
     @commands.guild_only()
@@ -83,8 +85,11 @@ class Giveaway(BaseCog):
         roles = ctx.author.roles
         has_role = discord.utils.get(roles, id=ctx.ga_role.id) is not None
         if has_role is not False:
-            await ctx.bot_channel.send('You already are in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
-            return False
+            await ctx.bot_channel.send(
+                'You already are in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention)
+            )
+            return
+
         await ctx.author.add_roles(ctx.ga_role)
         await ctx.bot_channel.send('You just entered the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
 
@@ -96,7 +101,8 @@ class Giveaway(BaseCog):
         has_role = discord.utils.get(roles, id=ctx.ga_role.id) is not None
         if has_role is False:
             await ctx.bot_channel.send('You are not in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
-            return False
+            return
+
         await ctx.author.remove_roles(ctx.ga_role)
         await ctx.bot_channel.send('You just left the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
 
@@ -106,17 +112,19 @@ class Giveaway(BaseCog):
     async def pick(self, ctx, giveaway_name: str):
         """Pick a winner"""
         participants = ctx.ga_role.members
-        if len(participants) == 0:
+        if not participants:
             await ctx.bot_channel.send('Nobody entered the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
-            return False
-        updated_participants = []
-        for participant in participants:
-            if participant.id not in self.giveaways[giveaway_name]:
-                updated_participants.append(participant)
-        if len(updated_participants) == 0:
+            return
+
+        updated_participants = [
+            participant
+            for participant in participants
+            if participant.id not in self.giveaways[giveaway_name]
+        ]
+        if not updated_participants:
             await ctx.bot_channel.send(
                 'Every participants already won the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
-            return False
+            return
         winner = random.choice(updated_participants)
         self.giveaways[giveaway_name].append(winner.id)
         await ctx.channel.send(
@@ -132,10 +140,11 @@ class Giveaway(BaseCog):
             winner = self.bot.get_user(winner_id)
             if winner is not None:
                 winners.append(winner.mention)
-        if len(winners) == 0:
+
+        if not winners:
             await ctx.bot_channel.send(
                 'There is no winners for the giveaway "{}" yet, {}.'.format(giveaway_name, ctx.author.mention))
-            return False
+            return
         await ctx.bot_channel.send('List of winner :\n{}'.format("\n".join(str(x) for x in winners)))
 
 
