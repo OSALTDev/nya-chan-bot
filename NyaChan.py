@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import discord
 from discord.ext import commands
-from nyalib.NyaBot import NyaBot
+from nyalib.NyaBot import NyaBot, ThrowawayException
 
 bot = NyaBot()
 
@@ -45,7 +45,7 @@ async def on_command_error(ctx, error):
         await ctx.author.send(
             "You don\'t have the permission to use this command, {}```{}```".format(ctx.message.author.mention,
                                                                                     ctx.message.content))
-    else:
+    elif not isinstance(error, ThrowawayException):
         await ctx.author.send(
             "{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
 

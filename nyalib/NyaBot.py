@@ -2,6 +2,10 @@ from discord.ext import commands
 from nyalib.config import AppConfig
 
 
+class ThrowawayException(Exception):
+    pass
+
+
 class NyaBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.config = AppConfig()
