@@ -1,4 +1,5 @@
 from discord.ext import commands
+import discord
 
 from cogs.base_cog import BaseCog
 
@@ -10,25 +11,21 @@ class Welcome(BaseCog):
         super().__init__(bot)
 
     def get_message(self, member):
-        guild = member.guild
-        connection = self.config.db_connection()
-        cursor = connection.cursor()
-        cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", guild.id)
-        rows = cursor.fetchall()
-        if len(rows) == 0:
-            cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""", guild.id)
-            connection.commit()
-            text = ""
-        else:
-            text = rows[0][0]
-        connection.close()
-        return text.format(member, guild)
+        with self.cursor_context(connection_yield=True) as (cursor, connection):
+            cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", member.guild.id)
+            row = cursor.fetchone()
+            if not row:
+                cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""",
+                               member.guild.id)
+                text = ""
+                connection.commit()
+            else:
+                text = row[0]
+
+        return text.format(member, member.guild)
 
     async def member_join(self, member):
-        user_role = None
-        for role in member.guild.roles:
-            if role.name == "Users":
-                user_role = role
+        user_role = discord.utils.get(member.guild.roles, name="Users")
         if user_role is not None:
             await member.add_roles(user_role, reason="Safeguard against pruning.")
         text = self.get_message(member)
@@ -41,10 +38,9 @@ class Welcome(BaseCog):
     @commands.guild_only()
     async def welcome(self, ctx):
         """Resend welcome message"""
-        member = ctx.message.author
-        text = self.get_message(member)
+        text = self.get_message(ctx.author)
         try:
-            await member.send(text)
+            await ctx.author.send(text)
         except:
             pass
 
