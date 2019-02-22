@@ -10,10 +10,13 @@ class BaseCog(object):
         # TODO: add logger here.
 
     @contextlib.contextmanager
-    def cursor_context(self, commit=False):
+    def cursor_context(self, commit=False, connection_yield=False):
         connection = self.config.db_connection()
         cursor = connection.cursor()
-        yield cursor
+        if connection_yield:
+            yield cursor, connection
+        else:
+            yield cursor
         if commit:
             connection.commit()
         connection.close()
