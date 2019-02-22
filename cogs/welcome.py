@@ -24,7 +24,7 @@ class Welcome(BaseCog):
 
         return text.format(member, member.guild)
 
-    async def member_join(self, member):
+    async def on_member_join(self, member):
         user_role = discord.utils.get(member.guild.roles, name="Users")
         if user_role is not None:
             await member.add_roles(user_role, reason="Safeguard against pruning.")
@@ -47,5 +47,4 @@ class Welcome(BaseCog):
 
 def setup(bot):
     cog = Welcome(bot)
-    bot.add_listener(cog.member_join, "on_member_join")
     bot.add_cog(cog)
