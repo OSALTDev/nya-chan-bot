@@ -64,7 +64,10 @@ class MainDriver:
     def __init__(self, bot):
         self.bot = bot
         for cog in self.bot.config.bot.cogs:
-            self.bot.load_cog(cog)
+            try:
+                self.bot.load_extension('cogs.' + cog)
+            except (AttributeError, ImportError) as e:
+                print("Failed to load cog: {} due to {}".format(cog, str(e)))
 
     def run(self):
         token = self.bot.config.bot.token
