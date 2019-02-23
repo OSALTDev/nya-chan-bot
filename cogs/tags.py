@@ -37,24 +37,22 @@ class Tags(BaseCog):
             tag_role = await message.guild.create_role(name=tag_name, mentionable=False, reason="Tag creation")
 
         has_role = discord.utils.get(message.author.roles, id=tag_role.id) is not None
-        if sign == '+':
-            if has_role is True:
-                await message.channel.send(
-                    'You already have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
-                return
+        msg_str = {
+            "+": {
+                "pre": "You already" if has_role else "You now",
+                "method": message.author.add_roles
+            },
+            "-": {
+                "pre": "You no longer" if has_role else "You don\'t ",
+                "method": message.author.remove_roles
+            }
+        }[sign]
 
-            await message.author.add_roles(tag_role)
-            await message.channel.send(
-                'You now have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
-        elif sign == '-':
-            if has_role is not True:
-                await message.channel.send(
-                    'You don\'t have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
-                return
+        await message.channel.send(
+            '{} have the **{}** tag, {}.'.format(msg_str["pre"], tag_role.name, message.author.mention))
 
-            await message.author.remove_roles(tag_role)
-            await message.channel.send(
-                'You no longer have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
+        if (has_role and sign == "-") or (not has_role and sign == "+"):
+            msg_str["method"](tag_role)
 
     async def cog_before_invoke(self, ctx):
         await setup_reply(ctx)
