@@ -10,21 +10,19 @@ bot = NyaBot()
 async def on_command_error(ctx, error):
     if not isinstance(error, ThrowawayException):
         msg_list = {
-            commands.CommandNotFound: "{msg.author}, this command does not exist!```{msg.content}```",
-            commands.NotOwner: "{msg.author}, only my Owner can ask me to do that, nya!```{msg.content}```",
-            commands.UserInputError: "{msg.author}, Input error```py\n{errn}: {errs}\n```",
-            commands.NoPrivateMessage: "{msg.author}, this command cannot be send in a PM!```{msg.content}```",
-            commands.CheckFailure: "You don\'t have the permission to use this command, {msg.author}```{msg.content}```"
+            commands.CommandNotFound: "{msg.author.mention}, this command does not exist!```{msg.content}```",
+            commands.NotOwner: "{msg.author.mention}, only my Owner can ask me to do that, nya!```{msg.content}```",
+            commands.UserInputError: "{msg.author.mention}, Input error```py\n{errn}: {errs}\n```",
+            commands.NoPrivateMessage: "{msg.author.mention}, this command cannot be send in a PM!```{msg.content}```",
+            commands.CheckFailure: "You don\'t have the permission to use this command, {msg.author.mention}"
+                                   "```\n{msg.content}```"
         }
 
+        # Get error message by class
+        # If error not handled in dict, use general error message
         msg = msg_list.get(error.__class__, "{msg.author}, error```py\n{errn}: {errs}\n```")
         print("\"" + msg + "\"")
         await ctx.author.send(msg.format(msg=ctx.message, errn=type(error).__name__, errs=str(error)))
-
-
-# @bot.event
-# async def on_error(*args, **kwargs):
-#     pass
 
 
 @bot.event
