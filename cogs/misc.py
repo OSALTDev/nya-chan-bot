@@ -36,11 +36,11 @@ class Misc(BaseCog):
             await ctx.channel.send("```Stay tuned, next stream date will be announced soon !```")
 
     @commands.command(description='Says how many people are on this Discord')
+    @commands.guild_only()
     @commands.has_any_role('Nixie', 'Supervisors', 'GeeksAbroad')
     async def servercount(self, ctx):
         """Says how many people are on this Discord"""
-        await self.bot_reply(ctx, 'There is **{}** members on this Discord, {}'.format(len(ctx.guild.members),
-                                                                                       ctx.author.mention))
+        await ctx.reply('There are **{}** members on this Discord'.format(len(ctx.guild.members)))
 
 
 def setup(bot):

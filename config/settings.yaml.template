@@ -8,6 +8,11 @@ bot:
         - cog...
         - cogN
     token: Discord_token
+    custom_channels:
+        bot_commands: channel_id
+        ama_destination: channel_id
+        squirrel: channel_id
+        nsfw: channel_id
 
 database:
     host: host

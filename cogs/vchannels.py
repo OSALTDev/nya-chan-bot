@@ -12,7 +12,7 @@ class Vchannels(BaseCog):
     async def vch(self, ctx):
         """Voice Channel edition commands."""
         if ctx.invoked_subcommand is None:
-            await self.bot_reply(ctx, 'Invalid Voice Channel Edition command passed, {}'.format(ctx.author.mention))
+            await ctx.reply('Invalid Voice Channel Edition command passed, {}'.format(ctx.author.mention))
 
     @vch.command(description='Create a new voice channel with Supervisor permission.')
     @commands.has_any_role('Nixie', 'Supervisors')
@@ -20,7 +20,7 @@ class Vchannels(BaseCog):
     async def create(self, ctx, *, channel_name: str):
         """Create a new voice channel with Supervisor permission."""
         if discord.utils.get(ctx.guild.voice_channels, name=channel_name):
-            await self.bot_reply(ctx, 'Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
+            await ctx.reply('Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
             return
 
         supervisor_role = discord.utils.get(ctx.guild.roles, name="Supervisors")

@@ -158,7 +158,7 @@ class Tags(BaseCog):
 
             embed.add_field(name=row[0], value=value, inline=False)
 
-        await self.bot_reply(ctx, '', embed=embed)
+        await ctx.reply(embed=embed)
 
 
 def setup(bot):

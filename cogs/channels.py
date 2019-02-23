@@ -12,7 +12,7 @@ class Channels(BaseCog):
     async def tch(self, ctx):
         """Text Channel edition commands."""
         if ctx.invoked_subcommand is None:
-            await self.bot_reply(ctx, 'Invalid Text Channel Edition command passed, {}'.format(ctx.author.mention))
+            await ctx.reply('Invalid Text Channel Edition command passed')
 
     @tch.command(description='Create a new text channel with Supervisor permission.')
     @commands.has_any_role('Nixie', 'Supervisors')
@@ -20,7 +20,7 @@ class Channels(BaseCog):
     async def create(self, ctx, *, channel_name: str):
         """Create a new text channel with Supervisor permission."""
         if discord.utils.get(ctx.guild.text_channels, name=channel_name) is not None:
-            await self.bot_reply(ctx, 'Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
+            await ctx.reply('Channel **{}** already exists'.format(channel_name))
             return
         supervisor_role = discord.utils.get(ctx.guild.roles, name="Supervisors")
         if supervisor_role is None:
