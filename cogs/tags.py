@@ -3,12 +3,14 @@ from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 import discord
 from nyalib.NyaBot import ThrowawayException
+from NyaChan import before_invoke_event as setup_reply
 
 
 class Tags(BaseCog):
     def __init__(self, bot):
         super().__init__(bot)
 
+    @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.bot or message.content[:1] not in '+-' or message.channel.name != "bot-commands":
             return
@@ -54,16 +56,10 @@ class Tags(BaseCog):
             await message.channel.send(
                 'You no longer have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
 
-    async def _Tags__before_invoke(self, ctx):
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            raise ThrowawayException
-
-        ctx.bot_channel = bot_channel
-
-        if ctx.invoked_command is not None:
-            tag = " ".join(ctx.args)
+    async def cog_before_invoke(self, ctx):
+        await setup_reply(ctx)
+        if ctx.invoked_subcommand is not None:
+            tag = ctx.kwargs.get("tag")
 
             # Check if tag exists in database
             with self.cursor_context() as cursor:
@@ -72,7 +68,7 @@ class Tags(BaseCog):
                 row = cursor.fetchone()
 
             if not row:
-                await bot_channel.send('The tag "{}" does not exist, {}'.format(tag, ctx.author.mention))
+                await ctx.reply('The tag "{}" does not exist, {}'.format(tag, ctx.author.mention))
                 raise ThrowawayException
 
             tag_name = row[0]
@@ -89,51 +85,47 @@ class Tags(BaseCog):
             # Check if the author already has tag_role
             has_role = discord.utils.get(ctx.author.roles, id=tag_role.id) is not None
 
-            ctx.tag_role = tag_role
             ctx.linked_channel = channel
+            ctx.tag_role = tag_role
             ctx.has_role = has_role
 
     @group()
     async def tag(self, ctx):
         """Tag commands."""
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return
         if ctx.invoked_subcommand is None:
-            await bot_channel.send('Invalid tag command passed, {}'.format(ctx.author.mention))
+            await ctx.reply('Invalid tag command passed, {}'.format(ctx.author.mention))
 
     @tag.command(description='Identify yourself with a tag. Let other people know about you.')
     @commands.guild_only()
     async def add(self, ctx, *, tag: str):
         """Identify yourself with a tag."""
         if ctx.has_role:
-            await ctx.bot_channel.send('You already have the tag "{}", {}'.format(ctx.tag_role.name, ctx.author.mention))
+            await ctx.reply('You already have the tag "{}"'.format(ctx.tag_role.name))
             return
 
         await ctx.author.add_roles(ctx.tag_role.role)
 
-        msg = 'You now have the tag "{}", {}'.format(ctx.tag_role.name, ctx.author.mention)
+        msg = 'You now have the tag "{}"'.format(ctx.tag_role.name)
         if ctx.linked_channel is not None:
             msg += '. You can now see the channel {}'.format(ctx.linked_channel.mention)
 
-        await ctx.bot_channel.send(msg)
+        await ctx.reply(msg)
 
     @tag.command(description='Removes with a tag.')
     @commands.guild_only()
     async def remove(self, ctx, *, tag: str):
         """Removes a tag."""
         if not ctx.has_role:
-            await ctx.bot_channel.send('You don\'t have the tag "{}", {}'.format(ctx.tag_role.name, ctx.author.mention))
+            await ctx.reply('You don\'t have the tag "{}"'.format(ctx.tag_role.name))
             return
 
         await ctx.author.remove_roles(ctx.tag_role.name)
 
-        msg = 'You no longer have the tag "{}", {}'.format(ctx.tag_role.name, ctx.author.mention)
+        msg = 'You no longer have the tag "{}"'.format(ctx.tag_role.name)
         if ctx.linked_channel is not None:
             msg += '. The channel {} is now hidden'.format(ctx.linked_channel.mention)
 
-        await ctx.bot_channel.send(msg)
+        await ctx.reply(msg)
 
     @commands.command(description='Lists the available tags.')
     @commands.guild_only()
