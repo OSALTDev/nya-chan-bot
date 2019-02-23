@@ -9,6 +9,19 @@ from NyaChan import before_invoke_event as setup_reply
 class Tags(BaseCog):
     def __init__(self, bot):
         super().__init__(bot)
+        self.on_msg_dict = {
+            "+": {
+                "pre": {
+                    bool(1): "You already", bool(0): "You now"
+                }
+            },
+            "-": {
+                "pre": {
+                    bool(1): "You no longer", bool(0): "You don\'t "
+                }
+            },
+            "method": lambda message, has_role: getattr(message.author, "remove_roles" if has_role else "add_roles")
+        }
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -37,22 +50,13 @@ class Tags(BaseCog):
             tag_role = await message.guild.create_role(name=tag_name, mentionable=False, reason="Tag creation")
 
         has_role = discord.utils.get(message.author.roles, id=tag_role.id) is not None
-        msg_str = {
-            "+": {
-                "pre": "You already" if has_role else "You now",
-                "method": message.author.add_roles
-            },
-            "-": {
-                "pre": "You no longer" if has_role else "You don\'t ",
-                "method": message.author.remove_roles
-            }
-        }[sign]
+        msg_str = self.on_msg_dict[sign]
 
         await message.channel.send(
             '{} have the **{}** tag, {}.'.format(msg_str["pre"], tag_role.name, message.author.mention))
 
         if (has_role and sign == "-") or (not has_role and sign == "+"):
-            msg_str["method"](tag_role)
+            self.on_msg_dict["method"](tag_role, has_role)
 
     async def cog_before_invoke(self, ctx):
         await setup_reply(ctx)
