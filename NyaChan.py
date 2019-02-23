@@ -2,6 +2,10 @@
 import discord
 from discord.ext import commands
 from nyalib.NyaBot import NyaBot, ThrowawayException
+import sys
+import traceback
+import re
+import os
 
 bot = NyaBot()
 
@@ -34,6 +38,36 @@ async def on_command_completion(ctx):
         except discord.Forbidden:
             # Can't execute on DM channel
             pass
+
+
+@bot.event
+async def on_error(_, msg):
+    await msg.add_reaction("🚫")
+    cls, exc, tb = sys.exc_info()
+
+    err_str = str(cls) + ": " + str(exc.args[1]) + "\n\nTraceback:\n"
+    ttb = []
+
+    sep = "\\" if os.name == "nt" else "/"
+    for ln in traceback.format_tb(tb, 50):
+        ln_m = re.match("  File \"(.*)\", line (\d+), in ([^\s]+)\n(.*)", ln, re.DOTALL)
+
+        p = ln_m.group(1).split(sep)
+        lnn = ln_m.group(2)
+
+        tp = []
+        for i in p:
+            if not tp:
+                if i != "site-packages":
+                    continue
+                i = "<pip_pkg>"
+            tp.append(i)
+
+        ttb.append("  {} : {} ({})\n{} {}".format(
+            sep.join(tp or p), lnn, ln_m.group(3), " " if tp else ">", ln_m.group(4)))
+
+    err_str += "".join(ttb)
+    print(err_str)
 
 
 @bot.before_invoke
