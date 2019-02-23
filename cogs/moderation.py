@@ -31,7 +31,7 @@ class Moderation(BaseCog):
             }
         }
 
-    async def _Moderation__before_invoke(self, ctx):
+    async def cog_before_invoke(self, ctx):
         if ctx.invoked_subcommand is not None:
             username = ctx.kwargs.get("user")
 

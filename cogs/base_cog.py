@@ -1,8 +1,8 @@
-import discord
+from discord.ext import commands
 import contextlib
 
 
-class BaseCog(object):
+class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = self.bot.config
@@ -10,13 +10,10 @@ class BaseCog(object):
         # TODO: add logger here.
 
     @contextlib.contextmanager
-    def cursor_context(self, commit=False, connection_yield=False):
+    def cursor_context(self, commit=False):
         connection = self.config.db_connection()
         cursor = connection.cursor()
-        if connection_yield:
-            yield cursor, connection
-        else:
-            yield cursor
+        yield cursor
         if commit:
             connection.commit()
         connection.close()

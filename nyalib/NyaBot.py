@@ -24,4 +24,4 @@ class NyaBot(commands.Bot):
         self.owner_id = app_infos.owner.id
         print('Bot Owner : ' + str(self.owner_id))
         url = discord.utils.oauth_url(app_infos.id)
-        print('Oauth URL : ' + str(url))
+        print('Oauth URL : ' + url)

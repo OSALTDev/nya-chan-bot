@@ -14,19 +14,13 @@ class Customs(BaseCog):
     @commands.guild_only()
     async def cc(self, ctx, command_name: str):
         """Sends a custom message"""
-        bot_channel = ctx.guild.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return
-
         with self.cursor_context() as cursor:
             cursor.execute("""SELECT `message` FROM `custom_commands` WHERE `id_server` = %s AND `command` = %s""",
                            (ctx.guild.id, command_name))
             row = cursor.fetchone()
 
         if not row:
-            await bot_channel.send(
-                'The custom message **{}** doesn\'t exist, {}'.format(command_name, ctx.author.mention))
+            await ctx.reply('The custom message **{}** doesn\'t exist, {}'.format(command_name, ctx.author.mention))
             return
 
         text = row[0]
@@ -40,10 +34,19 @@ class Customs(BaseCog):
                               url='https://www.youtube.com/watch?v=I9GcnRAdY2M')
         embed.set_thumbnail(url='https://i.ytimg.com/vi/I9GcnRAdY2M/maxresdefault.jpg')
         embed.add_field(name="▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬",
-                        value="**Joker here, with an announcement for all my lovely adoring fans here at Joker Asylum!**\n\n**You may have noticed we had some regulars having to rejoin this server, having been kicked!**\n\n**I just gotta say, ya don't know what it's like to really be kicked till you've had Bane's foot on your back...or maybe his knee! Baaaaaahahahaha!**\n\n**I'm only joking! Honestly, Bats really should learn to watch his back... Nyaaaaahahahahahaha.**",
+                        value="**Joker here, with an announcement for all my lovely adoring fans here at "
+                              "Joker Asylum!**\n\n**You may have noticed we had some regulars having to rejoin "
+                              "this server, having been kicked!**\n\n**I just gotta say, ya don't know what it's "
+                              "like to really be kicked till you've had Bane's foot on your back...or maybe his knee! "
+                              "Baaaaaahahahaha!**\n\n**I'm only joking! Honestly, Bats really should learn to watch "
+                              "his back... Nyaaaaahahahahahaha.**",
                         inline=True)
         embed.set_footer(
-            text="For real though, we just want to sincerely apologize for anyone who may have accidentally been kicked. We were checking some member info in the member listings, specifically regarding activity, and unfortunately that info is listed in the same window as the \"prune\" function. A misclick occurred and *quite* a few of you were boop'd. We all know tech derps sometimes happen, but we want to once more sincerely apologize and hope no one was offended or hurt by it.")
+            text="For real though, we just want to sincerely apologize for anyone who may have accidentally "
+                 "been kicked. We were checking some member info in the member listings, specifically regarding "
+                 "activity, and unfortunately that info is listed in the same window as the \"prune\" function. "
+                 "A mis-click occurred and *quite* a few of you were boop'd. We all know tech derps sometimes "
+                 "happen, but we want to once more sincerely apologize and hope no one was offended or hurt by it.")
         await ctx.channel.send(embed=embed)
 
     @commands.command()
