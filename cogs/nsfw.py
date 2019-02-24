@@ -7,10 +7,6 @@ from cogs.base_cog import BaseCog
 
 class Nsfw(BaseCog):
     """Gives functions for the pervs out there ;-)"""
-
-    def __init__(self, bot):
-        super().__init__(bot)
-
     async def fetch_image(self, ctx, channel, randomize=False, tags=[]):
         search = "https://konachan.com/post.json?limit=1&tags="
         tag_search = "{} ".format(" ".join(tags))

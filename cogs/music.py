@@ -7,9 +7,6 @@ if not discord.opus.is_loaded():
 
 
 class Music(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
     @commands.command(description='Add youtube video to the queue and start playing')
     @commands.guild_only()
     async def play(self, ctx):

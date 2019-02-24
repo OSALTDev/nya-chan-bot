@@ -4,23 +4,22 @@ import discord
 import psutil
 import sys
 from discord.ext import commands
-from discord.ext.commands import command
-from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 
 
 class Owner(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
-    @group()
+    @commands.group()
     async def git(self, ctx):
         """Git commands."""
         if ctx.invoked_subcommand is None:
             await ctx.author.send('Invalid git command passed, {}'.format(ctx.author.mention))
 
+    async def cog_check(self, ctx):
+        if not await ctx.bot.is_owner(ctx.author):
+            raise commands.NotOwner('You do not own this bot.')
+        return True
+
     @git.command()
-    @commands.is_owner()
     async def update(self, ctx, args='default'):
         """Updates bot."""
         try:
@@ -36,7 +35,6 @@ class Owner(BaseCog):
             raise commands.UserInputError(ctx)
 
     @git.command()
-    @commands.is_owner()
     async def branches(self, ctx):
         """Lists branches."""
 
@@ -52,14 +50,13 @@ class Owner(BaseCog):
             await ctx.author.send("```py\nError listing git branches\n```")
             raise commands.UserInputError(ctx)
 
-    @group()
+    @commands.group()
     async def cogs(self, ctx):
         """Cogs related commands."""
         if ctx.invoked_subcommand is None:
             await ctx.author.send('Invalid cogs command passed, {}'.format(ctx.author.mention))
 
     @cogs.command()
-    @commands.is_owner()
     async def list(self, ctx):
         """Lists loaded cogs."""
         if not self.bot.extensions:
@@ -69,7 +66,6 @@ class Owner(BaseCog):
         await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.loaded_cogs)))
 
     @cogs.command()
-    @commands.is_owner()
     async def load(self, ctx, cog_name: str):
         """Loads a cog."""
         # try:
@@ -85,7 +81,6 @@ class Owner(BaseCog):
             await ctx.author.send("```py\n'{}' module is already loaded\n```".format(cog_name))
 
     @cogs.command()
-    @commands.is_owner()
     async def unload(self, ctx, cog_name: str):
         """Unloads a cog."""
         if cog_name in self.bot.extensions:
@@ -100,7 +95,6 @@ class Owner(BaseCog):
             await ctx.author.send("```py\n'{}' module is not loaded\n```".format(cog_name))
 
     @cogs.command()
-    @commands.is_owner()
     async def reload(self, ctx, cog_name: str):
         """Reloads a cog."""
         if cog_name in self.bot.extensions:
@@ -115,8 +109,7 @@ class Owner(BaseCog):
         else:
             await ctx.author.send("```py\n'{}' module is not loaded\n```".format(cog_name))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     @commands.guild_only()
     async def say(self, ctx, channel_name: str, *msg):
         """Says something as Nya."""
@@ -127,14 +120,12 @@ class Owner(BaseCog):
 
         await channel.send(" ".join(str(x) for x in msg))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     async def nowplaying(self, ctx, *, game_name):
         """Sets the now playing message."""
         await self.bot.change_presence(game=discord.Game(name=" ".join(str(x) for x in game_name), type=0))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     @commands.guild_only()
     async def role_ids(self, ctx):
         role_list = [
@@ -143,8 +134,7 @@ class Owner(BaseCog):
         ]
         await ctx.author.send('{}'.format("\n".join(role_list)))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     @commands.guild_only()
     async def chan_ids(self, ctx):
         chan_list = [
@@ -153,14 +143,12 @@ class Owner(BaseCog):
         ]
         await ctx.author.send('{}'.format("\n".join(chan_list)))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     async def shutdown(self, ctx):
         """Shutdown bot."""
         await self.bot.logout()
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     async def restart(self, ctx):
         """Restarts bot."""
         try:
@@ -172,8 +160,7 @@ class Owner(BaseCog):
         python = sys.executable
         os.execl(python, python, *sys.argv)
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     async def name(self, ctx):
         with self.cursor_context(commit=True) as cursor:
             cursor.execute("""SELECT DISTINCT id_user FROM event_logs WHERE id_server = %s""", 325197025719091201)

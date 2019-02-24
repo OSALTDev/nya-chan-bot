@@ -4,9 +4,6 @@ from cogs.base_cog import BaseCog
 
 
 class Misc(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
     @commands.command(description='Pat Nya Chan.')
     @commands.guild_only()
     async def pat(self, ctx, location: str = 'head'):
