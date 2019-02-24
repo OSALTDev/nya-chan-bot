@@ -149,7 +149,7 @@ class Tags(BaseCog):
         for row in rows:
             value = row[1]
 
-            channel = self.bot.get_channel(int(row[2])) if row[2] is int else None
+            channel = self.bot.get_channel(row[2]) if row[2] else None
             if channel is not None:
                 value += ' (Make {} visible)'.format(channel.mention)
 
