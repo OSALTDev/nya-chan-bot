@@ -4,9 +4,6 @@ from cogs.base_cog import BaseCog
 
 
 class Server(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
     @commands.command(description='Pat Nya Chan.')
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     @commands.guild_only()

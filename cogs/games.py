@@ -4,9 +4,6 @@ from cogs.base_cog import BaseCog
 
 
 class Games(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
     @commands.command(description='Identify yourself as looking for a game (toggle command).')
     @commands.guild_only()
     async def lfg(self, ctx):

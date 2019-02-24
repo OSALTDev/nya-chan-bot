@@ -6,10 +6,6 @@ import time
 
 class Customs(BaseCog):
     """Welcomes new members to the server via private message"""
-
-    def __init__(self, bot):
-        super().__init__(bot)
-
     @commands.command(description='Sends a custom message.')
     @commands.guild_only()
     async def cc(self, ctx, command_name: str):

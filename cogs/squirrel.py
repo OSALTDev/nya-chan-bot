@@ -6,9 +6,6 @@ from nyalib.NyaBot import ThrowawayException
 
 
 class Squirrel(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
     def _Squirrel__before_invoke(self, ctx):
         bot_channel = ctx.guild.get_channel(332644650462478336)
         if bot_channel is None:

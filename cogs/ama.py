@@ -1,15 +1,11 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import group
 from datetime import datetime
 from cogs.base_cog import BaseCog
 
 
 class Ama(BaseCog, name="Ask me anything"):
-    def __init__(self, bot):
-        super().__init__(bot)
-
-    @group()
+    @commands.group()
     async def qna(self, ctx):
         """Ask me Anything commands."""
         if ctx.invoked_subcommand is None:
@@ -82,7 +78,8 @@ class Ama(BaseCog, name="Ask me anything"):
         saved = []
         with self.cursor_context() as cursor:
             # Get the last stream ID
-            res = cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""", (ctx.guild.id))
+            res = cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""",
+                                 (ctx.guild.id))
             if not res:
                 await ctx.reply('No streams have been found !')
                 return

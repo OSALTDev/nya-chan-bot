@@ -6,10 +6,6 @@ from cogs.base_cog import BaseCog
 
 class Welcome(BaseCog, name="Welcome"):
     """Welcomes new members to the server via private message"""
-
-    def __init__(self, bot):
-        super().__init__(bot)
-
     def get_message(self, guild):
         with self.cursor_context() as cursor:
             res = cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", guild.id)
