@@ -15,6 +15,12 @@ class CustomContext(commands.Context):
         self.destination = destination
 
     async def reply(self, content=None, **kwargs):
+        # Set a method in the current context allowing replies to different destinations
+        # - If command issued in DM, reply in DM
+        # - If command issued in bot-command, reply in bot-command
+        # - If command issued elsewhere, reply in DM, if that fails, reply in bot-command,
+        #   if not found reply in same channel
+        # TODO: Disable commands outside of bot-commands
         if self.guild and self.channel.id != self.bot.config.bot.channel.bot_commands:
             if content:
                 content = "{1}, {0.mention}".format(self.author, content)
