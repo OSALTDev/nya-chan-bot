@@ -4,7 +4,7 @@ import discord
 from cogs.base_cog import BaseCog
 
 
-class Welcome(BaseCog):
+class Welcome(BaseCog, name="Welcome"):
     """Welcomes new members to the server via private message"""
 
     def __init__(self, bot):

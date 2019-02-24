@@ -5,7 +5,7 @@ from datetime import datetime
 from cogs.base_cog import BaseCog
 
 
-class Ama(BaseCog):
+class Ama(BaseCog, name="Ask me anything"):
     def __init__(self, bot):
         super().__init__(bot)
 

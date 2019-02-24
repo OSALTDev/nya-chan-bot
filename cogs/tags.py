@@ -6,7 +6,7 @@ from nyalib.NyaBot import ThrowawayException
 from NyaChan import before_invoke_event as setup_reply
 
 
-class Tags(BaseCog):
+class Tags(BaseCog, name="Tags"):
     def __init__(self, bot):
         super().__init__(bot)
         self.on_msg_dict = {

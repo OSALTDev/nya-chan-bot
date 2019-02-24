@@ -5,7 +5,7 @@ from discord.ext import commands
 from types import SimpleNamespace
 
 
-class TriggerWords(commands.Cog):
+class TriggerWords(commands.Cog, name="Trigger words"):
     """
     Trigger responses from certain regular expression triggers.
     """

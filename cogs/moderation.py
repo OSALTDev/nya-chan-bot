@@ -6,7 +6,7 @@ from nyalib.NyaBot import ThrowawayException
 from types import SimpleNamespace
 
 
-class Moderation(BaseCog):
+class Moderation(BaseCog, name="Moderation"):
     def __init__(self, bot):
         super().__init__(bot)
         self.roles = {
