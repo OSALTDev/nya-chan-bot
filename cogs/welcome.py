@@ -10,39 +10,41 @@ class Welcome(BaseCog):
     def __init__(self, bot):
         super().__init__(bot)
 
-    def get_message(self, member):
-        with self.cursor_context(connection_yield=True) as (cursor, connection):
-            cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", member.guild.id)
-            row = cursor.fetchone()
-            if not row:
+    def get_message(self, guild):
+        with self.cursor_context() as cursor:
+            res = cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", guild.id)
+            if not res:
                 cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""",
-                               member.guild.id)
-                text = ""
-                connection.commit()
+                               guild.id)
+                return None
             else:
+                row = cursor.fetchone()
                 text = row[0]
 
-        return text.format(member, member.guild)
+        return text
 
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         user_role = discord.utils.get(member.guild.roles, name="Users")
         if user_role is not None:
             await member.add_roles(user_role, reason="Safeguard against pruning.")
-        text = self.get_message(member)
-        try:
-            await member.send(text)
-        except:
-            pass
+        text = self.get_message(member.guild)
+        if text:
+            try:
+                await member.send(text.format(member, member.guild))
+            except discord.Forbidden:
+                pass
 
     @commands.command(description='Send the welcome message via private message again.')
     @commands.guild_only()
     async def welcome(self, ctx):
         """Resend welcome message"""
-        text = self.get_message(ctx.author)
-        try:
-            await ctx.author.send(text)
-        except:
-            pass
+        text = self.get_message(ctx.guild)
+        if text:
+            try:
+                await ctx.author.send(text.format(ctx.author, ctx.guild))
+            except discord.Forbidden:
+                pass
 
 
 def setup(bot):
