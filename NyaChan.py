@@ -42,9 +42,12 @@ async def on_command_completion(ctx):
 
 @bot.event
 async def on_error(_, msg):
-    await msg.add_reaction("🚫")
     cls, exc, tb = sys.exc_info()
 
+    if cls == ThrowawayException:
+        return
+
+    await msg.add_reaction("🚫")
     err_str = str(cls) + ": " + str(exc.args[1]) + "\n\nTraceback:\n"
     ttb = []
 

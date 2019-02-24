@@ -17,7 +17,7 @@ class Tags(BaseCog):
             },
             "-": {
                 "pre": {
-                    bool(1): "You no longer", bool(0): "You don\'t "
+                    bool(1): "You no longer", bool(0): "You don\'t"
                 }
             },
             "method": lambda message, has_role: getattr(message.author, "remove_roles" if has_role else "add_roles")
@@ -25,7 +25,8 @@ class Tags(BaseCog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.bot or message.content[:1] not in '+-' or message.channel.name != "bot-commands":
+        if message.author.bot or message.content[:1] not in '+-' or \
+                message.channel.id != self.bot.config.bot.channel.bot_commands:
             return
 
         sign = message.content[:1]
@@ -53,10 +54,11 @@ class Tags(BaseCog):
         msg_str = self.on_msg_dict[sign]
 
         await message.channel.send(
-            '{} have the **{}** tag, {}.'.format(msg_str["pre"], tag_role.name, message.author.mention))
+            '{} have the **{}** tag, {}.'.format(msg_str["pre"][has_role], tag_role.name, message.author.mention))
 
         if (has_role and sign == "-") or (not has_role and sign == "+"):
-            self.on_msg_dict["method"](tag_role, has_role)
+            callback = self.on_msg_dict["method"](message, has_role)
+            await callback(tag_role)
 
     async def cog_before_invoke(self, ctx):
         await setup_reply(ctx)
@@ -74,7 +76,7 @@ class Tags(BaseCog):
                 raise ThrowawayException
 
             tag_name = row[0]
-            channel_id = int(row[1]) if row[1].isdigit() else None
+            channel_id = row[1]
 
             # Check if the role associated with the tag exists, if not, create it
             tag_role = discord.utils.get(ctx.guild.roles, name=tag_name)
@@ -105,7 +107,7 @@ class Tags(BaseCog):
             await ctx.reply('You already have the tag "{}"'.format(ctx.tag_role.name))
             return
 
-        await ctx.author.add_roles(ctx.tag_role.role)
+        await ctx.author.add_roles(ctx.tag_role)
 
         msg = 'You now have the tag "{}"'.format(ctx.tag_role.name)
         if ctx.linked_channel is not None:
@@ -121,7 +123,7 @@ class Tags(BaseCog):
             await ctx.reply('You don\'t have the tag "{}"'.format(ctx.tag_role.name))
             return
 
-        await ctx.author.remove_roles(ctx.tag_role.name)
+        await ctx.author.remove_roles(ctx.tag_role)
 
         msg = 'You no longer have the tag "{}"'.format(ctx.tag_role.name)
         if ctx.linked_channel is not None:
@@ -142,15 +144,19 @@ class Tags(BaseCog):
                               colour=discord.Colour.from_rgb(0, 174, 134),
                               description="You can add those tags to your profile by using the command **+tag** :"
                                           "```\nExample: +Gamer```or remove them by using the command **-tag** :"
-                                          "```\nExample: -Gamer```\n**These commands only work in #bot-commands **\n")
+                                          "```\nExample: -Gamer```\n**These commands only work in #bot-commands **\n\n"
+                                          "Role list:")
         for row in rows:
             value = row[1]
 
-            channel = self.bot.get_channel(int(row[2])) if row[2].isdigit() else None
+            channel = self.bot.get_channel(int(row[2])) if row[2] is int else None
             if channel is not None:
                 value += ' (Make {} visible)'.format(channel.mention)
 
             embed.add_field(name=row[0], value=value, inline=False)
+
+        if not embed.fields:
+            embed.add_field(name="None defined", value="No roles have been defined for self-assignment")
 
         await ctx.reply(embed=embed)
 
