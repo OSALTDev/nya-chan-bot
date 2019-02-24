@@ -1,12 +1,10 @@
 from cogs.base_cog import BaseCog
+from discord.ext import commands
 
 
 class Stats(BaseCog):
     """Keep track of the amount of messages everyone send"""
-
-    def __init__(self, bot):
-        super().__init__(bot)
-
+    @commands.Cog.listener()
     async def on_message(self, message):
         if not message.content.startswith(self.bot.command_prefix) and not message.author.bot:
             guild = message.guild
@@ -32,6 +30,7 @@ class Stats(BaseCog):
                             WHERE id = %s""", (row_id)
                         )
 
+    @commands.Cog.listener()
     async def on_member_join(self, member):
         with self.cursor_context(commit=True) as cursor:
             cursor.execute(
@@ -39,6 +38,7 @@ class Stats(BaseCog):
                 VALUES (null, %s, %s, NOW(), "joined")""",
                 (member.guild.id, member.id))
 
+    @commands.Cog.listener()
     async def on_member_remove(self, member):
         with self.cursor_context(commit=True) as cursor:
             cursor.execute(
@@ -46,6 +46,7 @@ class Stats(BaseCog):
                 VALUES (null, %s, %s, NOW(), "left")""",
                 (member.guild.id, member.id))
 
+    @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         with self.cursor_context(commit=True) as cursor:
             cursor.execute(
@@ -53,6 +54,7 @@ class Stats(BaseCog):
                 VALUES (null, %s, %s, NOW(), "banned")""",
                 (guild.id, user.id))
 
+    @commands.Cog.listener()
     async def on_member_unban(self, guild, user):
         with self.cursor_context(commit=True) as cursor:
             cursor.execute(
