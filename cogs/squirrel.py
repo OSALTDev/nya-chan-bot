@@ -12,7 +12,7 @@ class Squirrel(BaseCog):
                 await ctx.reply('There is no Squirrel Army role on this server.')
                 raise ThrowawayException
 
-            squirrel_channel = ctx.guild.get_channel(329379656576794625)
+            squirrel_channel = ctx.guild.get_channel(self.config.bot.channel.squirrel)
             if squirrel_channel is None:
                 await ctx.reply('The Squirrel Army channel cannot be found')
                 raise ThrowawayException

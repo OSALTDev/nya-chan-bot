@@ -31,7 +31,7 @@ class Nsfw(BaseCog):
     @commands.guild_only()
     async def kona(self, ctx, *, tags):
         """Grabs a random picture from Konachan that matches your keywords."""
-        channel = self.bot.get_channel(329911858423398401)
+        channel = self.bot.get_channel(self.config.bot.channel.nsfw)
         if channel is not None:
             try:
                 await self.fetch_image(ctx, channel, True, tags)

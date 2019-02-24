@@ -16,7 +16,7 @@ class Ama(BaseCog, name="Ask me anything"):
     async def validate(self, ctx):
         """Copy every question with your :upvote: reaction on it to the Question- channel"""
         copied = []
-        destination = self.bot.get_channel(331363194780254210)
+        destination = self.bot.get_channel(self.config.bot.channel.ama_destination)
         if destination is None:
             await ctx.reply('There is no destination channel.')
             return
@@ -86,7 +86,7 @@ class Ama(BaseCog, name="Ask me anything"):
             row = cursor.fetchone()
 
         stream_id = row[0]
-        destination = self.bot.get_channel(331363194780254210)
+        destination = self.bot.get_channel(self.config.bot.channel.ama_destination)
         if destination is None:
             await ctx.reply('There is no destination channel.')
             return

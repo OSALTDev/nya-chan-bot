@@ -11,11 +11,6 @@ class Giveaway(BaseCog):
         self.giveaways = {}
 
     async def cog_before_invoke(self, ctx):
-        ctx.bot_channel = self.bot.get_channel(332644650462478336)
-        if ctx.bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            raise ThrowawayException
-
         if ctx.invoked_subcommand.name != "list":
             giveaway_name = ctx.args[0]
             ctx.ga_role = discord.utils.get(giveaway_name)
@@ -68,9 +63,9 @@ class Giveaway(BaseCog):
             if x.name.startswith('giveaway_')
         ]
         if not ga_roles:
-            await ctx.bot_channel.send('There is no active giveaways, {}.'.format(ctx.author.mention))
+            await ctx.reply('There is no active giveaways, {}.'.format(ctx.author.mention))
             return
-        await ctx.bot_channel.send(
+        await ctx.reply(
             'Here is the list of the active giveaways ({}) :\n```{}```'.format(
                 len(ga_roles), ", ".join(ga_roles)
             )
@@ -83,13 +78,13 @@ class Giveaway(BaseCog):
         roles = ctx.author.roles
         has_role = discord.utils.get(roles, id=ctx.ga_role.id) is not None
         if has_role is not False:
-            await ctx.bot_channel.send(
+            await ctx.reply(
                 'You already are in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention)
             )
             return
 
         await ctx.author.add_roles(ctx.ga_role)
-        await ctx.bot_channel.send('You just entered the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
+        await ctx.reply('You just entered the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
 
     @ga.command(description='Leaves a giveaway.')
     @commands.guild_only()
@@ -98,11 +93,11 @@ class Giveaway(BaseCog):
         roles = ctx.author.roles
         has_role = discord.utils.get(roles, id=ctx.ga_role.id) is not None
         if has_role is False:
-            await ctx.bot_channel.send('You are not in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
+            await ctx.reply('You are not in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
             return
 
         await ctx.author.remove_roles(ctx.ga_role)
-        await ctx.bot_channel.send('You just left the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
+        await ctx.reply('You just left the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
 
     @ga.command(description='Pick a winner from the people who entered the giveaway')
     @commands.guild_only()
@@ -111,7 +106,7 @@ class Giveaway(BaseCog):
         """Pick a winner"""
         participants = ctx.ga_role.members
         if not participants:
-            await ctx.bot_channel.send('Nobody entered the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
+            await ctx.reply('Nobody entered the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
             return
 
         updated_participants = [
@@ -120,7 +115,7 @@ class Giveaway(BaseCog):
             if participant.id not in self.giveaways[giveaway_name]
         ]
         if not updated_participants:
-            await ctx.bot_channel.send(
+            await ctx.reply(
                 'Every participants already won the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
             return
         winner = random.choice(updated_participants)
@@ -140,10 +135,10 @@ class Giveaway(BaseCog):
                 winners.append(winner.mention)
 
         if not winners:
-            await ctx.bot_channel.send(
+            await ctx.reply(
                 'There is no winners for the giveaway "{}" yet, {}.'.format(giveaway_name, ctx.author.mention))
             return
-        await ctx.bot_channel.send('List of winner :\n{}'.format("\n".join(str(x) for x in winners)))
+        await ctx.reply('List of winner :\n{}'.format("\n".join(str(x) for x in winners)))
 
 
 def setup(bot):

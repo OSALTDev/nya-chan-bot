@@ -6,7 +6,6 @@ class BaseCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.config = self.bot.config
-        self.bot_channel = None
         # TODO: add logger here.
 
     @contextlib.contextmanager
