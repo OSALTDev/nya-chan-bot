@@ -73,37 +73,6 @@ async def on_error(_, msg):
     print(err_str)
 
 
-@bot.before_invoke
-async def before_invoke_event(ctx):
-    # Set a variable in the current context for the destination
-    # Set a method in the current context allowing replies to different destinations
-    # - If command issued in DM, reply in DM
-    # - If command issued in bot-command, reply in bot-command
-    # - If command issued elsewhere, reply in DM, if that fails, reply in bot-command,
-    #   if not found reply in same channel
-    # TODO: Disable commands outside of bot-commands
-    destination = discord.utils.get(ctx.guild.channels, id=bot.config.bot.channel.bot_commands) \
-        if ctx.guild is not None else ctx.author
-
-    if destination is None:
-        destination = ctx.channel
-
-    async def reply(content=None, **kwargs):
-        if ctx.guild and ctx.channel.id != bot.config.bot.channel.bot_commands:
-            if content:
-                content = "{1}, {0.mention}".format(ctx.author, content)
-            else:
-                content = "{0.mention}".format(ctx.author)
-
-        try:
-            await destination.send(content, **kwargs)
-        except discord.Forbidden:
-            await ctx.channel.send(content, **kwargs)
-
-    setattr(ctx, "reply", reply)
-    ctx.destination = destination
-
-
 class MainDriver:
     def __init__(self, bot):
         self.bot = bot

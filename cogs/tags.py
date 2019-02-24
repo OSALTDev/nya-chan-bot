@@ -1,9 +1,7 @@
 from discord.ext import commands
-from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 import discord
 from nyalib.NyaBot import ThrowawayException
-from NyaChan import before_invoke_event as setup_reply
 
 
 class Tags(BaseCog, name="Tags"):
@@ -61,8 +59,7 @@ class Tags(BaseCog, name="Tags"):
             await callback(tag_role)
 
     async def cog_before_invoke(self, ctx):
-        await setup_reply(ctx)
-        if ctx.invoked_subcommand is not None:
+        if ctx.invoked_subcommand.name != "list":
             tag = ctx.kwargs.get("tag")
 
             # Check if tag exists in database
@@ -72,7 +69,7 @@ class Tags(BaseCog, name="Tags"):
                 row = cursor.fetchone()
 
             if not row:
-                await ctx.reply('The tag "{}" does not exist, {}'.format(tag, ctx.author.mention))
+                await ctx.reply('The tag "{}" does not exist'.format(tag))
                 raise ThrowawayException
 
             tag_name = row[0]
@@ -93,11 +90,10 @@ class Tags(BaseCog, name="Tags"):
             ctx.tag_role = tag_role
             ctx.has_role = has_role
 
-    @group()
+    @commands.group(invoke_without_command=True)
     async def tag(self, ctx):
         """Tag commands."""
-        if ctx.invoked_subcommand is None:
-            await ctx.reply('Invalid tag command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     @tag.command(description='Identify yourself with a tag. Let other people know about you.')
     @commands.guild_only()
@@ -131,9 +127,9 @@ class Tags(BaseCog, name="Tags"):
 
         await ctx.reply(msg)
 
-    @commands.command(description='Lists the available tags.')
+    @tag.command(description='Lists the available tags.')
     @commands.guild_only()
-    async def tags(self, ctx):
+    async def list(self, ctx):
         """Lists the available tags"""
         with self.cursor_context() as cursor:
             cursor.execute("""SELECT name, description, channel FROM tags WHERE id_server = %s ORDER BY name ASC""",
