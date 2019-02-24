@@ -3,26 +3,17 @@ from discord.ext import commands
 from discord.ext.commands import group
 from datetime import datetime
 from cogs.base_cog import BaseCog
-from nyalib.NyaBot import ThrowawayException
 
 
 class Ama(BaseCog):
     def __init__(self, bot):
         super().__init__(bot)
 
-    async def _Ama__before_invoke(self, ctx):
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            raise ThrowawayException
-
-        ctx.bot_channel = bot_channel
-
     @group()
     async def qna(self, ctx):
         """Ask me Anything commands."""
         if ctx.invoked_subcommand is None:
-            await ctx.bot_channel.send('Invalid Ask me Anything command passed, {}'.format(ctx.author.mention))
+            await ctx.reply('Invalid Ask me Anything command passed, {}'.format(ctx.author.mention))
 
     @qna.command(description='')
     @commands.guild_only()
@@ -32,7 +23,7 @@ class Ama(BaseCog):
         copied = []
         destination = self.bot.get_channel(331363194780254210)
         if destination is None:
-            await ctx.bot_channel.send('There is no destination channel.')
+            await ctx.reply('There is no destination channel.')
             return
 
         async for msg in ctx.channel.history(limit=200):
@@ -54,10 +45,11 @@ class Ama(BaseCog):
                              ctx.author.mention, msg.content)
                 )
 
-        for msg in copied:
-            await msg.delete()
+        if copied:
+            for msg in copied:
+                await msg.delete()
 
-        await ctx.bot_channel.send('{} message(s) transferred to {}.'.format(len(copied), destination.name))
+        await ctx.reply('{} message(s) transferred to {}.'.format(len(copied), destination.name))
 
     @qna.command(description='')
     @commands.guild_only()
@@ -76,10 +68,11 @@ class Ama(BaseCog):
             if to_delete:
                 deleted.append(msg)
 
-        for msg in deleted:
-            await msg.delete()
+        if deleted:
+            for msg in deleted:
+                await msg.delete()
 
-        await ctx.bot_channel.send('{} message(s) have been removed in {}.'.format(len(deleted), ctx.channel.mention))
+        await ctx.reply('{} message(s) have been removed in {}.'.format(len(deleted), ctx.channel.mention))
 
     @qna.command(description='')
     @commands.guild_only()
@@ -87,45 +80,47 @@ class Ama(BaseCog):
     async def process(self, ctx, timestamp: str = None):
         """Process every question with your :upvote: reaction on it, save it to the database and remove it"""
         saved = []
-        with self.cursor_context(commit=True) as cursor:
+        with self.cursor_context() as cursor:
             # Get the last stream ID
-            cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""", (ctx.guild.id))
+            res = cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""", (ctx.guild.id))
+            if not res:
+                await ctx.reply('No streams have been found !')
+                return
+
             row = cursor.fetchone()
-            if not row:
-                await ctx.bot_channel.send('No streams have been found !')
-                return
 
-            stream_id = row[0]
-            destination = self.bot.get_channel(331363194780254210)
-            if destination is None:
-                await ctx.bot_channel.send('There is no destination channel.')
-                return
+        stream_id = row[0]
+        destination = self.bot.get_channel(331363194780254210)
+        if destination is None:
+            await ctx.reply('There is no destination channel.')
+            return
 
-            async for msg in ctx.channel.history(limit=200):
-                to_save = False
-                for reaction in msg.reactions:
-                    if reaction.emoji.name == 'upvote':
-                        from_me = discord.utils.get(reaction.users().flatten(), id=ctx.author.id) is not None
-                        to_save = from_me
-                        break
+        async for msg in ctx.channel.history(limit=200):
+            to_save = False
+            for reaction in msg.reactions:
+                if reaction.emoji.name == 'upvote':
+                    from_me = discord.utils.get(reaction.users().flatten(), id=ctx.author.id) is not None
+                    to_save = from_me
+                    break
 
-                if to_save:
-                    question_details = msg.content.split('\n-----------------------\n')
-                    if len(question_details) != 2:
-                        await ctx.bot_channel.send('question_details fail.')
-                        continue
+            if to_save:
+                question_details = msg.content.split('\n-----------------------\n')
+                if len(question_details) != 2:
+                    await ctx.reply('question_details fail.')
+                    continue
 
-                    question_infos = question_details[0].split(' | ')
-                    if len(question_infos) != 3:
-                        await ctx.bot_channel.send('question_infos fail.')
-                        continue
+                question_infos = question_details[0].split(' | ')
+                if len(question_infos) != 3:
+                    await ctx.reply('question_infos fail.')
+                    continue
 
-                    saved.append(msg)
-                    q_content = question_details[1]
-                    q_author = question_infos[0].replace('From ', '')
-                    q_date = datetime.strptime(question_infos[1].replace(' UTC', ''), '%c')
-                    q_timestamp = '' if timestamp is None else timestamp
+                saved.append(msg)
+                q_content = question_details[1]
+                q_author = question_infos[0].replace('From ', '')
+                q_date = datetime.strptime(question_infos[1].replace(' UTC', ''), '%c')
+                q_timestamp = '' if timestamp is None else timestamp
 
+                with self.cursor_context(commit=True) as cursor:
                     cursor.execute(
                         "INSERT INTO questions (id, id_server, id_stream, author, datetime, question, timestamp)"
                         "VALUES (null, %s, %s, %s, %s, %s, %s)",
@@ -135,10 +130,11 @@ class Ama(BaseCog):
                         )
                     )
 
-        for msg in saved:
-            await msg.delete()
+        if saved:
+            for msg in saved:
+                await msg.delete()
 
-        await ctx.bot_channel.send('{} message(s) transferred to {}.'.format(len(saved), destination.name))
+        await ctx.reply('{} message(s) transferred to {}.'.format(len(saved), destination.name))
 
 
 def setup(bot):
