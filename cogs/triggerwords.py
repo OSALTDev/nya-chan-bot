@@ -1,40 +1,41 @@
 import re
 
 from discord import Message
-from discord.ext.commands import Bot
+from discord.ext import commands
 from types import SimpleNamespace
 
 
-# Add regex here, along with the response the bot should give if it finds a match.
-# We're using {bot} and {user} to refer
-
-
-class TriggerWords:
+class TriggerWords(commands.Cog):
     """
     Trigger responses from certain regular expression triggers.
     """
 
-    def __init__(self, bot: Bot):
+    def __init__(self, bot):
         self.bot = bot
         self.triggers = None
 
+    @commands.Cog.listener()
     async def on_ready(self):
         """
         Generates the regex and responses once
         the bot has booted. This information is not
         available until runtime.
         """
-        self.triggers = [
+
+        # Add regex here, along with the response the bot should give if it finds a match.
+        # We're using {bot} and {user} to refer
+        self.triggers = (
             SimpleNamespace(
                 regex=re.compile("(:?i'?m|i am) (going|gonna go) to (:?bed|sleep)"),
-                response="Good night {}!"
+                response="Good night {user}!"
             ),
             SimpleNamespace(
                 regex=re.compile(f"(:?hi|hello|hey there|sup) {self.bot.user.mention}!?"),
-                response="Hey {}!"
+                response="Hey {user}!"
             )
-        ]
+        )
 
+    @commands.Cog.listener()
     async def on_message(self, message: Message):
         """
         This event triggers whenever someone sends a message into any channel.
@@ -46,7 +47,7 @@ class TriggerWords:
             return
 
         response = None
-        for trigger in self.triggers.keys():
+        for trigger in self.triggers:
             if trigger.regex.search(message.content):
                 response = trigger.response
                 break
