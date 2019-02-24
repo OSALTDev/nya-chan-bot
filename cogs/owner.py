@@ -8,11 +8,10 @@ from cogs.base_cog import BaseCog
 
 
 class Owner(BaseCog):
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     async def git(self, ctx):
         """Git commands."""
-        if ctx.invoked_subcommand is None:
-            await ctx.author.send('Invalid git command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     async def cog_check(self, ctx):
         if not await ctx.bot.is_owner(ctx.author):
@@ -50,11 +49,10 @@ class Owner(BaseCog):
             await ctx.author.send("```py\nError listing git branches\n```")
             raise commands.UserInputError(ctx)
 
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     async def cogs(self, ctx):
         """Cogs related commands."""
-        if ctx.invoked_subcommand is None:
-            await ctx.author.send('Invalid cogs command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     @cogs.command()
     async def list(self, ctx):

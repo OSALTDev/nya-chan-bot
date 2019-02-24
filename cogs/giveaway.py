@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import group
 from nyalib.NyaBot import ThrowawayException
 import random
 from cogs.base_cog import BaseCog
@@ -11,7 +10,7 @@ class Giveaway(BaseCog):
         super().__init__(bot)
         self.giveaways = {}
 
-    async def _Giveaway__before_invoke(self, ctx):
+    async def cog_before_invoke(self, ctx):
         ctx.bot_channel = self.bot.get_channel(332644650462478336)
         if ctx.bot_channel is None:
             await ctx.channel.send('The dedicated bot commands channel cannot be found')
@@ -27,11 +26,10 @@ class Giveaway(BaseCog):
                 await ctx.channel.send(message.format(giveaway_name, ctx.author.mention))
                 raise ThrowawayException
 
-    @group()
+    @commands.group(invoke_without_command=True)
     async def ga(self, ctx):
         """Giveaway commands."""
-        if ctx.invoked_subcommand is None:
-            await ctx.bot_channel.send('Invalid giveaway command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     @ga.command(description='Starts a giveaway.')
     @commands.guild_only()

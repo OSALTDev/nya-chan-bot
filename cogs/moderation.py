@@ -1,6 +1,5 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 from nyalib.NyaBot import ThrowawayException
 from types import SimpleNamespace
@@ -66,11 +65,10 @@ class Moderation(BaseCog, name="Moderation"):
 
             setattr(ctx, "roles", roles)
 
-    @group()
+    @commands.group(invoke_without_command=True)
     async def mod(self, ctx):
         """Mod commands."""
-        if ctx.invoked_subcommand is None:
-            await ctx.reply('Invalid mod command passed')
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     @mod.command(description='Promotes an user to be a Mod')
     @commands.has_any_role('Nixie', 'Supervisors')

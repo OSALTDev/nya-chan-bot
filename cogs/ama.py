@@ -5,13 +5,12 @@ from cogs.base_cog import BaseCog
 
 
 class Ama(BaseCog, name="Ask me anything"):
-    @commands.group()
+    @commands.group(invoke_without_command=True)
     async def qna(self, ctx):
         """Ask me Anything commands."""
-        if ctx.invoked_subcommand is None:
-            await ctx.reply('Invalid Ask me Anything command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
-    @qna.command(description='')
+    @qna.command()
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def validate(self, ctx):
@@ -47,7 +46,7 @@ class Ama(BaseCog, name="Ask me anything"):
 
         await ctx.reply('{} message(s) transferred to {}.'.format(len(copied), destination.name))
 
-    @qna.command(description='')
+    @qna.command()
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def clean(self, ctx):
@@ -70,7 +69,7 @@ class Ama(BaseCog, name="Ask me anything"):
 
         await ctx.reply('{} message(s) have been removed in {}.'.format(len(deleted), ctx.channel.mention))
 
-    @qna.command(description='')
+    @qna.command()
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def process(self, ctx, timestamp: str = None):
