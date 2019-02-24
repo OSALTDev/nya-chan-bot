@@ -5,3 +5,4 @@ schedule==0.4.3
 distro==1.0.4
 GitPython==2.1.5
 pytz==2017.2
+git+https://github.com/Rapptz/discord.py@d5d91648105b1617f3387b5563e88cca9173b882#egg=discord.py[voice]
