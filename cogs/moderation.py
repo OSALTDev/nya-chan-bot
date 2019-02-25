@@ -3,6 +3,7 @@ from discord.ext import commands
 from cogs.base_cog import BaseCog
 from nyalib.NyaBot import ThrowawayException
 from types import SimpleNamespace
+import functools
 
 
 class Moderation(BaseCog, name="Moderation"):
@@ -29,6 +30,12 @@ class Moderation(BaseCog, name="Moderation"):
                 "Mod Trainees": SimpleNamespace(name="trainee", checked=True)
             }
         }
+
+    async def cog_check(self, ctx):
+        if ctx.guild is None:
+            raise commands.NoPrivateMessage('This command cannot be used in private messages.')
+        getter = functools.partial(discord.utils.get, ctx.author.roles)
+        return any(getter(name=item) is not None for item in ('Nixie', 'Supervisors'))
 
     async def cog_before_invoke(self, ctx):
         if ctx.invoked_subcommand is not None:
@@ -61,7 +68,6 @@ class Moderation(BaseCog, name="Moderation"):
         await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     @mod.command(description='Promotes an user to be a Mod')
-    @commands.has_any_role('Nixie', 'Supervisors')
     async def set(self, ctx, *, user: discord.Member = None):
         """Promotes an user to be a Mod"""
         if ctx.custom.has_role.mod is True:
@@ -76,7 +82,6 @@ class Moderation(BaseCog, name="Moderation"):
         await ctx.reply('{} is now a Mod'.format(user.name))
 
     @mod.command(description='Removes an user Mod status')
-    @commands.has_any_role('Nixie', 'Supervisors')
     async def remove(self, ctx, *, user: discord.Member):
         """Removes an user Mod status"""
         if ctx.custom.has_role.mod is False:
@@ -87,7 +92,6 @@ class Moderation(BaseCog, name="Moderation"):
         await ctx.reply('{} is not a Mod anymore'.format(user.name))
 
     @mod.command(description='Promotes an user to be a Mod Trainee')
-    @commands.has_any_role('Nixie', 'Supervisors')
     async def set_trainee(self, ctx, *, user: discord.Member):
         """Promotes an user to be a Mod Trainee"""
         if ctx.custom.has_role.trainee is True:
@@ -102,7 +106,6 @@ class Moderation(BaseCog, name="Moderation"):
         await ctx.reply('{} is now a Mod Trainee'.format(user.name))
 
     @mod.command(description='Removes an user Mod Trainee status')
-    @commands.has_any_role('Nixie', 'Supervisors')
     async def remove_trainee(self, ctx, *, user: discord.Member = None):
         """Removes an user Mod Trainee status"""
         if ctx.custom.has_role.trainee is False:
