@@ -38,7 +38,11 @@ class Moderation(BaseCog, name="Moderation"):
         return any(getter(name=item) is not None for item in ('Nixie', 'Supervisors'))
 
     async def cog_before_invoke(self, ctx):
-        if ctx.subcommand_passed:
+        if not ctx.subcommand_passed:
+            return
+
+        if ctx.command.callback.__name__ in self.roles:
+            # If a set or remove command
             user = ctx.args[2]
             command_name = ctx.command.callback.__name__
 
@@ -114,6 +118,25 @@ class Moderation(BaseCog, name="Moderation"):
 
         await user.remove_roles(ctx.custom.roles.trainee, ctx.custom.roles.moderator, reason="User demoted from Mod Trainees")
         await ctx.reply(f'{user.name} is not a Mod Trainee anymore')
+
+    @mod.group(invoke_without_command=True, description="Setup mod roles")
+    async def roles(self, ctx):
+        pass
+
+    @roles.command(name="mod", description="Set the roles for core Mod role")
+    async def mod_role(self, ctx, primary_role: discord.Role,
+                       secondary_roles: commands.Greedy[discord.Role] = None):
+        pass
+
+    @roles.command(name="trainee", description="Set the roles for trainee moderator (displayed separately)")
+    async def trainee_role(self, ctx, primary_role: discord.Role,
+                           secondary_roles: commands.Greedy[discord.Role] = None):
+        pass
+
+    @roles.command(name="moderator", description="Set the roles for macho moderator (displayed separately)")
+    async def moderator_role(self, ctx, primary_role: discord.Role,
+                             secondary_roles: commands.Greedy[discord.Role] = None):
+        pass
 
 
 def setup(bot):
