@@ -13,13 +13,17 @@ class Giveaway(BaseCog):
     async def cog_before_invoke(self, ctx):
         if ctx.invoked_subcommand.name != "list":
             giveaway_name = ctx.args[0]
-            ctx.ga_role = discord.utils.get(giveaway_name)
+            ga_role = discord.utils.get(ctx.guild.roles, name=giveaway_name)
+
             if ctx.ga_role is None:
-                message = 'The giveaway "{}" doesn\'t exist, {}.'
+                message = 'The giveaway "{}" doesn\'t exist.'
                 if ctx.invoked_subcommand.name == "start":
-                    message = 'The giveaway "{}" already exists, {}.'
-                await ctx.channel.send(message.format(giveaway_name, ctx.author.mention))
+                    message = 'The giveaway "{}" already exists.'
+
+                await ctx.channel.send(message.format(giveaway_name))
                 raise ThrowawayException
+
+            ctx.custom["ga_role"] = ga_role
 
     @commands.group(invoke_without_command=True)
     async def ga(self, ctx):

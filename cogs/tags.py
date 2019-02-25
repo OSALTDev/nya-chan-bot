@@ -86,9 +86,9 @@ class Tags(BaseCog, name="Tags"):
             # Check if the author already has tag_role
             has_role = discord.utils.get(ctx.author.roles, id=tag_role.id) is not None
 
-            ctx.linked_channel = channel
-            ctx.tag_role = tag_role
-            ctx.has_role = has_role
+            ctx.custom["linked_channel"] = channel
+            ctx.custom["tag_role"] = tag_role
+            ctx.custom["has_role"] = has_role
 
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx):
@@ -99,15 +99,15 @@ class Tags(BaseCog, name="Tags"):
     @commands.guild_only()
     async def add(self, ctx, *, tag: str):
         """Identify yourself with a tag."""
-        if ctx.has_role:
-            await ctx.reply('You already have the tag "{}"'.format(ctx.tag_role.name))
+        if ctx.custom.has_role:
+            await ctx.reply('You already have the tag "{}"'.format(ctx.custom.tag_role.name))
             return
 
-        await ctx.author.add_roles(ctx.tag_role)
+        await ctx.author.add_roles(ctx.custom.tag_role)
 
-        msg = 'You now have the tag "{}"'.format(ctx.tag_role.name)
-        if ctx.linked_channel is not None:
-            msg += '. You can now see the channel {}'.format(ctx.linked_channel.mention)
+        msg = 'You now have the tag "{}"'.format(ctx.custom.tag_role.name)
+        if ctx.custom.linked_channel is not None:
+            msg += '. You can now see the channel {}'.format(ctx.custom.linked_channel.mention)
 
         await ctx.reply(msg)
 
@@ -115,15 +115,15 @@ class Tags(BaseCog, name="Tags"):
     @commands.guild_only()
     async def remove(self, ctx, *, tag: str):
         """Removes a tag."""
-        if not ctx.has_role:
-            await ctx.reply('You don\'t have the tag "{}"'.format(ctx.tag_role.name))
+        if not ctx.custom.has_role:
+            await ctx.reply('You don\'t have the tag "{}"'.format(ctx.custom.tag_role.name))
             return
 
-        await ctx.author.remove_roles(ctx.tag_role)
+        await ctx.author.remove_roles(ctx.custom.tag_role)
 
-        msg = 'You no longer have the tag "{}"'.format(ctx.tag_role.name)
-        if ctx.linked_channel is not None:
-            msg += '. The channel {} is now hidden'.format(ctx.linked_channel.mention)
+        msg = 'You no longer have the tag "{}"'.format(ctx.custom.tag_role.name)
+        if ctx.custom.linked_channel is not None:
+            msg += '. The channel {} is now hidden'.format(ctx.custom.linked_channel.mention)
 
         await ctx.reply(msg)
 
