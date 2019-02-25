@@ -121,11 +121,12 @@ class Tags(BaseCog, name="Tags"):
 
         await ctx.author.remove_roles(ctx.custom.tag_role)
 
-        msg = 'You no longer have the tag "{}"'.format(ctx.custom.tag_role.name)
+        msg = 'You no longer have the tag "{tag_name}"'
         if ctx.custom.linked_channel is not None:
-            msg += '. The channel {} is now hidden'.format(ctx.custom.linked_channel.mention)
+            msg += '. The channel {channel_mention} is now hidden'
 
-        await ctx.reply(msg)
+        await ctx.reply(msg.format(
+            tag_name=ctx.custom.tag_role.name, channel_mention=ctx.custom.linked_channel.mention))
 
     @tag.command(description='Lists the available tags.')
     @commands.guild_only()
@@ -147,7 +148,7 @@ class Tags(BaseCog, name="Tags"):
 
             channel = self.bot.get_channel(row[2]) if row[2] else None
             if channel is not None:
-                value += ' (Make {} visible)'.format(channel.mention)
+                value += f' (Make {channel.mention} visible)'
 
             embed.add_field(name=row[0], value=value, inline=False)
 
