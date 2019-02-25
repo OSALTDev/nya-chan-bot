@@ -66,7 +66,7 @@ class Moderation(BaseCog, name="Moderation"):
         """Promotes an user to be a Mod"""
         if ctx.custom.has_role.mod is True:
             await ctx.reply('{} is a Mod already'.format(user))
-            return False
+            return
 
         if ctx.custom.has_role.trainee is True:
             await user.add_roles(ctx.custom.roles.mod, reason="Promoted to Mods")
