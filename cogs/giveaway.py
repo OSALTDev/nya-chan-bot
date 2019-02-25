@@ -16,7 +16,7 @@ class Giveaway(BaseCog):
             ga_role = discord.utils.get(ctx.guild.roles, name=giveaway_name)
 
             message = None
-            if ctx.ga_role is None:
+            if ctx.custom.ga_role is None:
                 message = 'The giveaway "{}" doesn\'t exist.'
             elif ctx.invoked_subcommand.name == "start":
                 message = 'The giveaway "{}" already exists.'
@@ -51,11 +51,11 @@ class Giveaway(BaseCog):
     async def stop(self, ctx, giveaway_name: str):
         """Stop a giveaway"""
         # Remove the role from people
-        for participant in ctx.ga_role.members:
-            await participant.remove_roles(ctx.ga_role, reason="Give away stopped by {}".format(ctx.author.name))
+        for participant in ctx.custom.ga_role.members:
+            await participant.remove_roles(ctx.custom.ga_role, reason="Give away stopped by {}".format(ctx.author.name))
         # Remove the role from server
         del self.giveaways[giveaway_name]
-        await ctx.ga_role.delete()
+        await ctx.custom.ga_role.delete()
         await ctx.channel.send(
             '**The giveaway "{}" has now ended, thank you all for your participation !**'.format(giveaway_name))
 
@@ -82,14 +82,14 @@ class Giveaway(BaseCog):
     async def enter(self, ctx, giveaway_name: str):
         """Enters a giveaway"""
         roles = ctx.author.roles
-        has_role = discord.utils.get(roles, id=ctx.ga_role.id) is not None
+        has_role = discord.utils.get(roles, id=ctx.custom.ga_role.id) is not None
         if has_role is not False:
             await ctx.reply(
                 'You already are in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention)
             )
             return
 
-        await ctx.author.add_roles(ctx.ga_role)
+        await ctx.author.add_roles(ctx.custom.ga_role)
         await ctx.reply('You just entered the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
 
     @ga.command(description='Leaves a giveaway.')
@@ -97,12 +97,12 @@ class Giveaway(BaseCog):
     async def leave(self, ctx, giveaway_name: str):
         """Leaves a giveaway"""
         roles = ctx.author.roles
-        has_role = discord.utils.get(roles, id=ctx.ga_role.id) is not None
+        has_role = discord.utils.get(roles, id=ctx.custom.ga_role.id) is not None
         if has_role is False:
             await ctx.reply('You are not in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
             return
 
-        await ctx.author.remove_roles(ctx.ga_role)
+        await ctx.author.remove_roles(ctx.custom.ga_role)
         await ctx.reply('You just left the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
 
     @ga.command(description='Pick a winner from the people who entered the giveaway')
@@ -110,7 +110,7 @@ class Giveaway(BaseCog):
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     async def pick(self, ctx, giveaway_name: str):
         """Pick a winner"""
-        participants = ctx.ga_role.members
+        participants = ctx.custom.ga_role.members
         if not participants:
             await ctx.reply('Nobody entered the giveaway "{}", {}.'.format(giveaway_name, ctx.author.mention))
             return
