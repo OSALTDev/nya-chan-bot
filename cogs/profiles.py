@@ -25,7 +25,7 @@ class Profiles(BaseCog):
         try:
             local_tz = pytz.timezone(tz_name)
         except pytz.exceptions.UnknownTimeZoneError:
-            await ctx.reply('The timezone "**{}**" does not exist, {}'.format(tz_name, ctx.author.mention))
+            await ctx.reply(f'The timezone "**{tz_name}**" does not exist')
             return
 
         with self.cursor_context(commit=True) as cursor:
@@ -44,11 +44,8 @@ class Profiles(BaseCog):
         time_now = datetime.datetime.utcnow()
         time_now_utc = utc.localize(time_now)
         time_now_localized = time_now_utc.astimezone(local_tz)
-        await ctx.reply(
-            'Your timezone has been set to "**{}**", '
-            'your local time is **{}**, {}'.format(
-                tz_name, time_now_localized.strftime('%Y-%m-%d %H:%M:%S'), ctx.author.mention
-            ))
+        time_now_formatted = time_now_localized.strftime('%Y-%m-%d %H:%M:%S')
+        await ctx.reply(f'Your timezone has been set to "**{tz_name}**", your local time is **{time_now_formatted}**')
 
     @tz.command(description='List timezones.')
     @commands.guild_only()
@@ -69,23 +66,19 @@ class Profiles(BaseCog):
         tz_areas.sort()
         if area is None:
             await ctx.reply(
-                'List of available timezone areas : `{}`, {}'.format(', '.join(tz_areas), ctx.author.mention))
+                'List of available timezone areas : `{}`'.format(', '.join(tz_areas)))
         else:
             if area in tz_dict:
                 await ctx.reply(
-                    'List of available timezones for area **{}** : `{}`, {}'
-                    .format(area, ', '.join(sorted(tz_dict[area])), ctx.author.mention))
+                    'List of available timezones for area **{}** : `{}`'
+                    .format(area, ', '.join(sorted(tz_dict[area]))))
             else:
-                await ctx.reply('The area **{}** has not been found, {}'.format(area, ctx.author.mention))
+                await ctx.reply(f'The area **{area}** has not been found')
 
     @commands.command(description='Displays a user local time')
     @commands.guild_only()
-    async def time(self, ctx, user: discord.Member = None):
+    async def time(self, ctx, user: discord.Member):
         """Displays a user local time"""
-        if user is None:
-            await ctx.reply('The user **{}** cannot be found, {}'.format(user, ctx.author.mention))
-            return
-
         utc = pytz.utc
         time_now = datetime.datetime.utcnow()
         time_now_utc = utc.localize(time_now)
@@ -95,15 +88,14 @@ class Profiles(BaseCog):
             row = cursor.fetchone()
 
         if not row:
-            await ctx.reply('The user **{}** has not set his timezone, {}'.format(user.name, ctx.author.mention))
+            await ctx.reply(f'The user **{user.name}** has not set his timezone')
             return
         tz_name = row[0]
 
         local_tz = pytz.timezone(tz_name)
         time_now_localized = time_now_utc.astimezone(local_tz)
-        await ctx.reply(
-            '**{}**\'s local time is **{}**, {}'.format(user.name, time_now_localized.strftime('%Y-%m-%d %H:%M:%S'),
-                                                        ctx.author.mention))
+        time_now_formatted = time_now_localized.strftime('%Y-%m-%d %H:%M:%S')
+        await ctx.reply(f'**{user.name}**\'s local time is **{time_now_formatted}**')
 
 
 def setup(bot):

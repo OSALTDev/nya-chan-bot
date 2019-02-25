@@ -11,7 +11,7 @@ class RPG(BaseCog):
         try:
             rolls, limit = map(int, dice.split('d'))
         except Exception:
-            await ctx.reply('```{}, format has to be NdN !```'.format(ctx.author.mention))
+            await ctx.reply(f'```{ctx.author.mention}, format has to be NdN !```')
         else:
             result = [random.randint(1, limit) for _ in range(rolls)]
             msg = "```Results for {} : {} (Total : {})```".format(dice, ', '.join(str(x) for x in result), sum(result))

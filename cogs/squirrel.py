@@ -21,11 +21,6 @@ class Squirrel(BaseCog):
                 await ctx.reply('You need to provide a user to act on')
                 raise ThrowawayException
 
-            future_squirrel = ctx.args[0]
-            if not future_squirrel:
-                await ctx.reply('The user {} cannot be found'.format(future_squirrel.name))
-                raise ThrowawayException
-
             ctx.custom["squirrel_channel"] = squirrel_channel
             ctx.custom["squirrel_role"] = squirrel_role
 
@@ -37,25 +32,25 @@ class Squirrel(BaseCog):
     @squi.command(description='Adds a user to the Squirrel Army.')
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators', 'Elder Squirrels')
-    async def add(self, ctx, future_squirrel: discord.Member = None):
+    async def add(self, ctx, future_squirrel: discord.Member):
         """Adds a user to the Squirrel Army"""
         if ctx.custom.squirrel_role in future_squirrel.roles:
-            await ctx.reply('The user {} is already a Squirrel'.format(future_squirrel.name))
+            await ctx.reply(f'The user {future_squirrel.name} is already a Squirrel')
             return
         await future_squirrel.add_roles(ctx.custom.squirrel_role)
-        await ctx.custom.squirrel_channel.send(
-            'Welcome to the Squirrel Army {}, happy squirreling =^.^='.format(future_squirrel.mention))
+        await ctx.custom.squirrel_channel.send(f'Welcome to the Squirrel Army {future_squirrel.name}, '
+                                               'happy squirreling =^.^=')
 
     @squi.command(description='Removes a user from the Squirrel Army.')
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators', 'Elder Squirrels')
-    async def remove(self, ctx, future_squirrel: discord.Member = None):
+    async def remove(self, ctx, future_squirrel: discord.Member):
         """Removes a user from the Squirrel Army"""
         if ctx.custom.squirrel_role not in future_squirrel.roles:
-            await ctx.reply('The user {} is not a Squirrel'.format(future_squirrel.name))
+            await ctx.reply(f'The user {future_squirrel.name} is not a Squirrel')
             return
         await future_squirrel.remove_roles(ctx.custom.squirrel_role)
-        await ctx.custom.squirrel_channel.send('The user **{}** is no longer a squirrel.'.format(future_squirrel.name))
+        await ctx.custom.squirrel_channel.send(f'The user **{future_squirrel.name}** is no longer a squirrel.')
 
 
 def setup(bot):

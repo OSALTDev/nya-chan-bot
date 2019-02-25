@@ -8,7 +8,19 @@ import re
 import os
 
 bot = NyaBot()
+arg_regs = (
+    {
+        "match": re.compile("Member \"(.*)\" not found"),
+        "replaced": r"The user **\1** cannot be found"
+    },
+)
 
+
+def bad_argument_to_reply_string(err):
+    for item in arg_regs:
+        if item["match"].match(err.args[0]):
+            return item["match"].sub(item["replaced"], err.args[0])
+    return err.args[0]
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -19,13 +31,17 @@ async def on_command_error(ctx, error):
             commands.UserInputError: "{msg.author.mention}, Input error```py\n{errn}: {errs}\n```",
             commands.NoPrivateMessage: "{msg.author.mention}, this command cannot be send in a PM!```{msg.content}```",
             commands.CheckFailure: "You don\'t have the permission to use this command, {msg.author.mention}"
-                                   "```\n{msg.content}```"
+                                   "```\n{msg.content}```",
+            commands.BadArgument: bad_argument_to_reply_string(error)
         }
 
         # Get error message by class
         # If error not handled in dict, use general error message
         msg = msg_list.get(error.__class__, "{msg.author}, error```py\n{errn}: {errs}\n```")
-        await ctx.author.send(msg.format(msg=ctx.message, errn=type(error).__name__, errs=str(error)))
+        if isinstance(error, commands.BadArgument):
+            await ctx.reply(msg)
+        else:
+            await ctx.author.send(msg.format(msg=ctx.message, errn=type(error).__name__, errs=str(error)))
 
 
 @bot.event
