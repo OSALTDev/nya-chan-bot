@@ -25,7 +25,6 @@ async def on_command_error(ctx, error):
         # Get error message by class
         # If error not handled in dict, use general error message
         msg = msg_list.get(error.__class__, "{msg.author}, error```py\n{errn}: {errs}\n```")
-        print("\"" + msg + "\"")
         await ctx.author.send(msg.format(msg=ctx.message, errn=type(error).__name__, errs=str(error)))
 
 
