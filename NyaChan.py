@@ -22,12 +22,12 @@ def bad_argument_to_reply_string(err):
             return item["match"].sub(item["replaced"], err.args[0])
     return err.args[0]
 
+
 @bot.event
 async def on_command_error(ctx, error):
-    if not isinstance(error, ThrowawayException):
+    if error.__class__ not in (commands.CommandNotFound, ThrowawayException):
         msg_list = {
-            commands.CommandNotFound: "{msg.author.mention}, this command does not exist!```{msg.content}```",
-            commands.NotOwner: "{msg.author.mention}, only my Owner can ask me to do that, nya!```{msg.content}```",
+            commands.NotOwner: "Only my Owner can ask me to do that, nya!```{msg.content}```",
             commands.UserInputError: "{msg.author.mention}, Input error```py\n{errn}: {errs}\n```",
             commands.NoPrivateMessage: "{msg.author.mention}, this command cannot be send in a PM!```{msg.content}```",
             commands.CheckFailure: "You don\'t have the permission to use this command, {msg.author.mention}"
@@ -38,8 +38,10 @@ async def on_command_error(ctx, error):
         # Get error message by class
         # If error not handled in dict, use general error message
         msg = msg_list.get(error.__class__, "{msg.author}, error```py\n{errn}: {errs}\n```")
-        if isinstance(error, commands.BadArgument):
-            await ctx.reply(msg)
+        if error.__class__ in (commands.BadArgument, commands.NotOwner, commands.CheckFailure):
+            # Only use the reply method if a certain type of error
+            # If note one of the set types, then DM
+            await ctx.reply(msg.format(msg=ctx.message))
         else:
             await ctx.author.send(msg.format(msg=ctx.message, errn=type(error).__name__, errs=str(error)))
 
