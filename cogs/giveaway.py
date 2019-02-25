@@ -15,11 +15,13 @@ class Giveaway(BaseCog):
             giveaway_name = ctx.args[0]
             ga_role = discord.utils.get(ctx.guild.roles, name=giveaway_name)
 
+            message = None
             if ctx.ga_role is None:
                 message = 'The giveaway "{}" doesn\'t exist.'
-                if ctx.invoked_subcommand.name == "start":
-                    message = 'The giveaway "{}" already exists.'
+            elif ctx.invoked_subcommand.name == "start":
+                message = 'The giveaway "{}" already exists.'
 
+            if message:
                 await ctx.channel.send(message.format(giveaway_name))
                 raise ThrowawayException
 
