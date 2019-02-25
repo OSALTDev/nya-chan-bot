@@ -44,6 +44,8 @@ async def on_command_error(ctx, error):
             await ctx.reply(msg.format(msg=ctx.message))
         else:
             await ctx.author.send(msg.format(msg=ctx.message, errn=type(error).__name__, errs=str(error)))
+            if os.getenv("DEBUG"):
+                raise error
 
 
 @bot.event
@@ -59,6 +61,9 @@ async def on_command_completion(ctx):
 
 @bot.event
 async def on_error(_, msg):
+    if not os.getenv("DEBUG"):
+        return
+
     cls, exc, tb = sys.exc_info()
 
     if cls == ThrowawayException:
