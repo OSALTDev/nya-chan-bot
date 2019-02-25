@@ -69,7 +69,7 @@ class Giveaway(BaseCog):
             if x.name.startswith('giveaway_')
         ]
         if not ga_roles:
-            await ctx.reply('There is no active giveaways, {}.'.format(ctx.author.mention))
+            await ctx.reply('There are no active giveaways.')
             return
         await ctx.reply(
             'Here is the list of the active giveaways ({}) :\n```{}```'.format(
@@ -85,12 +85,12 @@ class Giveaway(BaseCog):
         has_role = discord.utils.get(roles, id=ctx.custom.ga_role.id) is not None
         if has_role is not False:
             await ctx.reply(
-                'You already are in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention)
+                'You already are in the giveaway "{}"'.format(giveaway_name)
             )
             return
 
         await ctx.author.add_roles(ctx.custom.ga_role)
-        await ctx.reply('You just entered the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
+        await ctx.reply('You just entered the giveaway "{}"'.format(giveaway_name))
 
     @ga.command(description='Leaves a giveaway.')
     @commands.guild_only()
@@ -99,11 +99,11 @@ class Giveaway(BaseCog):
         roles = ctx.author.roles
         has_role = discord.utils.get(roles, id=ctx.custom.ga_role.id) is not None
         if has_role is False:
-            await ctx.reply('You are not in the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
+            await ctx.reply('You are not in the giveaway "{}"'.format(giveaway_name))
             return
 
         await ctx.author.remove_roles(ctx.custom.ga_role)
-        await ctx.reply('You just left the giveaway "{}", {}'.format(giveaway_name, ctx.author.mention))
+        await ctx.reply('You just left the giveaway "{}"'.format(giveaway_name))
 
     @ga.command(description='Pick a winner from the people who entered the giveaway')
     @commands.guild_only()
