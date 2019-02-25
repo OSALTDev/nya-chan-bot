@@ -13,10 +13,10 @@ class Welcome(BaseCog, name="Welcome"):
                 cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""",
                                guild.id)
                 return None
-            else:
-                row = cursor.fetchone()
-                text = row[0]
 
+            row = cursor.fetchone()
+
+        text = row[0]
         return text
 
     @commands.Cog.listener()
