@@ -67,6 +67,6 @@ class CustomContext(commands.Context):
                 content = "{0.mention}".format(self.author)
 
         try:
-            await self.destination.send(content, **kwargs)
+            return await self.destination.send(content, **kwargs)
         except discord.Forbidden:
-            await self.channel.send(content, **kwargs)
+            return await self.channel.send(content, **kwargs)
