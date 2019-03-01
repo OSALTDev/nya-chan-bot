@@ -1,193 +1,163 @@
 from discord.ext import commands
-from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 import discord
+from nyalib.NyaBot import ThrowawayException
 
 
-class Tags(BaseCog):
+class Tags(BaseCog, name="Tags"):
     def __init__(self, bot):
         super().__init__(bot)
+        self.on_msg_dict = {
+            "+": {
+                "pre": {
+                    bool(1): "You already", bool(0): "You now"
+                }
+            },
+            "-": {
+                "pre": {
+                    bool(1): "You no longer", bool(0): "You don\'t"
+                }
+            },
+            "method": lambda message, has_role: getattr(message.author, "remove_roles" if has_role else "add_roles")
+        }
 
-    async def member_message(self, message):
-        if message.author.bot:
-            return False
-        if message.channel.name != "bot-commands":
-            return False
-        if not message.content.startswith('+') and not message.content.startswith('-'):
-            return False
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.bot or message.content[:1] not in '+-' or \
+                message.channel.id != self.bot.config.bot.channel.bot_commands:
+            return
+
         sign = message.content[:1]
         specified_tag = message.content[1:]
-        # Check if tag exists in database
-        connection = self.config.db_connection()
-        cursor = connection.cursor()
         if specified_tag == "":
-            return False
-        cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""",
-                       (message.guild.id, specified_tag))
-        rows = cursor.fetchall()
-        connection.close()
-        if len(rows) == 0:
+            return
+
+        # Check if tag exists in database
+        with self.cursor_context() as cursor:
+            cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""",
+                           (message.guild.id, specified_tag))
+            row = cursor.fetchone()
+
+        if not row:
             await message.channel.send(
                 'The tag **{}** does not exist, {}.'.format(specified_tag, message.author.mention))
-            return False
-        tag_name = rows[0][0]
-        tag_role = None
-        for role in message.guild.roles:
-            if role.name == tag_name:
-                tag_role = role
-                break
+            return
+
+        tag_name = row[0]
+        tag_role = discord.utils.get(message.guild.roles, name=tag_name)
         if tag_role is None:
             tag_role = await message.guild.create_role(name=tag_name, mentionable=False, reason="Tag creation")
-        has_role = False
-        for member_role in message.author.roles:
-            if member_role.id == tag_role.id:
-                has_role = True
-                break
-        if sign == '+':
-            if has_role is True:
-                await message.channel.send(
-                    'You already have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
-            else:
-                await message.author.add_roles(tag_role)
-                await message.channel.send(
-                    'You now have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
-        elif sign == '-':
-            if has_role is True:
-                await message.author.remove_roles(tag_role)
-                await message.channel.send(
-                    'You no longer have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
-            else:
-                await message.channel.send(
-                    'You don\'t have the **{}** tag, {}.'.format(tag_role.name, message.author.mention))
 
-    @group()
+        has_role = discord.utils.get(message.author.roles, id=tag_role.id) is not None
+        msg_str = self.on_msg_dict[sign]
+
+        await message.channel.send(
+            '{} have the **{}** tag, {}.'.format(msg_str["pre"][has_role], tag_role.name, message.author.mention))
+
+        if (has_role and sign == "-") or (not has_role and sign == "+"):
+            callback = self.on_msg_dict["method"](message, has_role)
+            await callback(tag_role)
+
+    async def cog_before_invoke(self, ctx):
+        if ctx.invoked_subcommand.name != "list":
+            tag = ctx.kwargs.get("tag")
+
+            # Check if tag exists in database
+            with self.cursor_context() as cursor:
+                cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""",
+                               (ctx.guild.id, tag))
+                row = cursor.fetchone()
+
+            if not row:
+                await ctx.reply('The tag "{}" does not exist'.format(tag))
+                raise ThrowawayException
+
+            tag_name = row[0]
+            channel_id = row[1]
+
+            # Check if the role associated with the tag exists, if not, create it
+            tag_role = discord.utils.get(ctx.guild.roles, name=tag_name)
+            if tag_role is None:
+                tag_role = await ctx.guild.create_role(name=tag_name, mentionable=True, reason="Tag creation")
+
+            # Get the linked channel if applicable
+            channel = self.bot.get_channel(channel_id) if channel_id else None
+
+            # Check if the author already has tag_role
+            has_role = discord.utils.get(ctx.author.roles, id=tag_role.id) is not None
+
+            ctx.custom["linked_channel"] = channel
+            ctx.custom["tag_role"] = tag_role
+            ctx.custom["has_role"] = has_role
+
+    @commands.group(invoke_without_command=True)
     async def tag(self, ctx):
         """Tag commands."""
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return False
-        if ctx.invoked_subcommand is None:
-            await bot_channel.send('Invalid tag command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     @tag.command(description='Identify yourself with a tag. Let other people know about you.')
     @commands.guild_only()
-    async def add(self, ctx, *tag: str):
+    async def add(self, ctx, *, tag: str):
         """Identify yourself with a tag."""
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return False
-        tag = " ".join(str(x) for x in tag)
-        # Check if tag exists in database
-        connection = self.config.db_connection()
-        cursor = connection.cursor()
-        cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""",
-                       (ctx.guild.id, tag))
-        rows = cursor.fetchall()
-        connection.close()
-        if len(rows) == 0:
-            await bot_channel.send('The tag "{}" does not exist, {}'.format(tag, ctx.author.mention))
-            return False
-        tag_name = rows[0][0]
-        # Check if the role associated with the tag exists, if not, create it
-        tag_role = None
-        for role in ctx.guild.roles:
-            if role.name == tag_name:
-                tag_role = role
-        if tag_role is None:
-            tag_role = await ctx.guild.create_role(name=tag_name, mentionable=True, reason="Tag creation")
-        # Get the linked channel if applicable
-        channel = None
-        if not rows[0][1] == 'None':
-            channel = self.bot.get_channel(int(rows[0][1]))
-        # Check if the author already has tag_role
-        has_role = False
-        for role in ctx.author.roles:
-            if role.id == tag_role.id:
-                has_role = True
-                break
-        if has_role:
-            await bot_channel.send('You already have the tag "{}", {}'.format(tag_name, ctx.author.mention))
-            return False
-        await ctx.author.add_roles(tag_role)
-        msg = 'You now have the tag "{}", {}'.format(tag_name, ctx.author.mention)
-        if channel is not None:
-            msg += '. You can now see the channel {}'.format(channel.mention)
-        await bot_channel.send(msg)
+        if ctx.custom.has_role:
+            await ctx.reply('You already have the tag "{}"'.format(ctx.custom.tag_role.name))
+            return
+
+        await ctx.author.add_roles(ctx.custom.tag_role)
+
+        msg = 'You now have the tag "{}"'.format(ctx.custom.tag_role.name)
+        if ctx.custom.linked_channel is not None:
+            msg += '. You can now see the channel {}'.format(ctx.custom.linked_channel.mention)
+
+        await ctx.reply(msg)
 
     @tag.command(description='Removes with a tag.')
     @commands.guild_only()
-    async def remove(self, ctx, *tag: str):
+    async def remove(self, ctx, *, tag: str):
         """Removes a tag."""
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return False
-        tag = " ".join(str(x) for x in tag)
-        # Check if tag exists in database
-        connection = self.config.db_connection()
-        cursor = connection.cursor()
-        cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""",
-                       (ctx.guild.id, tag))
-        rows = cursor.fetchall()
-        connection.close()
-        if len(rows) == 0:
-            await bot_channel.send('The tag "{}" does not exist, {}'.format(tag, ctx.author.mention))
-            return False
-        tag_name = rows[0][0]
-        # Check if the role associated with the tag exists, if not, create it
-        tag_role = None
-        for role in ctx.guild.roles:
-            if role.name == tag_name:
-                tag_role = role
-        if tag_role is None:
-            tag_role = await ctx.guild.create_role(name=tag_name, mentionable=True, reason="Tag creation")
-        # Get the linked channel if applicable
-        channel = None
-        if not rows[0][1] == 'None':
-            channel = self.bot.get_channel(int(rows[0][1]))
-        # Check if the author already has tag_role
-        has_role = False
-        for role in ctx.author.roles:
-            if role.id == tag_role.id:
-                has_role = True
-                break
-        if not has_role:
-            await bot_channel.send('You don\'t have the tag "{}", {}'.format(tag_name, ctx.author.mention))
-            return False
-        await ctx.author.remove_roles(tag_role)
-        msg = 'You no longer have the tag "{}", {}'.format(tag_name, ctx.author.mention)
-        if channel is not None:
-            msg += '. The channel {} is now hidden'.format(channel.mention)
-        await bot_channel.send(msg)
+        if not ctx.custom.has_role:
+            await ctx.reply('You don\'t have the tag "{}"'.format(ctx.custom.tag_role.name))
+            return
 
-    @commands.command(description='Lists the available tags.')
+        await ctx.author.remove_roles(ctx.custom.tag_role)
+
+        msg = 'You no longer have the tag "{tag_name}"'
+        if ctx.custom.linked_channel is not None:
+            msg += '. The channel {channel_mention} is now hidden'
+
+        await ctx.reply(msg.format(
+            tag_name=ctx.custom.tag_role.name, channel_mention=ctx.custom.linked_channel.mention))
+
+    @tag.command(description='Lists the available tags.')
     @commands.guild_only()
-    async def tags(self, ctx):
+    async def list(self, ctx):
         """Lists the available tags"""
-        connection = self.config.db_connection()
-        cursor = connection.cursor()
-        cursor.execute("""SELECT name, description, channel FROM tags WHERE id_server = %s ORDER BY name ASC""",
-                       ctx.guild.id)
-        rows = cursor.fetchall()
-        connection.close()
+        with self.cursor_context() as cursor:
+            cursor.execute("""SELECT name, description, channel FROM tags WHERE id_server = %s ORDER BY name ASC""",
+                           ctx.guild.id)
+            rows = cursor.fetchall()
+
         embed = discord.Embed(title="List of the available tags", type="rich",
                               colour=discord.Colour.from_rgb(0, 174, 134),
-                              description="You can add those tags to your profile by using the command **+tag** :\
-```\nExample: +Gamer```or remove them by using the command **-tag** :\
-```\nExample: -Gamer```\n**These commands only work in #bot-commands **\n")
+                              description="You can add those tags to your profile by using the command **+tag** :"
+                                          "```\nExample: +Gamer```or remove them by using the command **-tag** :"
+                                          "```\nExample: -Gamer```\n**These commands only work in #bot-commands **\n\n"
+                                          "Role list:")
         for row in rows:
             value = row[1]
-            if not row[2] == 'None':
-                channel = self.bot.get_channel(int(row[2]))
-                if channel is not None:
-                    value = value + ' (Make {} visible)'.format(channel.mention)
+
+            channel = self.bot.get_channel(row[2]) if row[2] else None
+            if channel is not None:
+                value += f' (Make {channel.mention} visible)'
+
             embed.add_field(name=row[0], value=value, inline=False)
-        await self.bot_reply(ctx, '', embed=embed)
+
+        if not embed.fields:
+            embed.add_field(name="None defined", value="No roles have been defined for self-assignment")
+
+        await ctx.reply(embed=embed)
 
 
 def setup(bot):
     cog = Tags(bot)
-    bot.add_listener(cog.member_message, "on_message")
     bot.add_cog(cog)

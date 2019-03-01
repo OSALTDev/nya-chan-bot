@@ -4,23 +4,21 @@ import discord
 import psutil
 import sys
 from discord.ext import commands
-from discord.ext.commands import command
-from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 
 
 class Owner(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
-    @group()
+    @commands.group(invoke_without_command=True)
     async def git(self, ctx):
         """Git commands."""
-        if ctx.invoked_subcommand is None:
-            await ctx.author.send('Invalid git command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+
+    async def cog_check(self, ctx):
+        if not await ctx.bot.is_owner(ctx.author):
+            raise commands.NotOwner('You do not own this bot.')
+        return True
 
     @git.command()
-    @commands.is_owner()
     async def update(self, ctx, args='default'):
         """Updates bot."""
         try:
@@ -36,8 +34,7 @@ class Owner(BaseCog):
             raise commands.UserInputError(ctx)
 
     @git.command()
-    @commands.is_owner()
-    async def branches(self, ctx, args='default'):
+    async def branches(self, ctx):
         """Lists branches."""
 
         try:
@@ -52,103 +49,104 @@ class Owner(BaseCog):
             await ctx.author.send("```py\nError listing git branches\n```")
             raise commands.UserInputError(ctx)
 
-    @group()
+    @commands.group(invoke_without_command=True)
     async def cogs(self, ctx):
         """Cogs related commands."""
-        if ctx.invoked_subcommand is None:
-            await ctx.author.send('Invalid cogs command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     @cogs.command()
-    @commands.is_owner()
     async def list(self, ctx):
         """Lists loaded cogs."""
-        if len(self.bot.loaded_cogs) > 0:
-            await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.loaded_cogs)))
-        else:
-            await ctx.author.send("```No module loaded```")
+        if not self.bot.extensions:
+            await ctx.author.send("```No modules loaded```")
+            return
+
+        await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.loaded_cogs)))
 
     @cogs.command()
-    @commands.is_owner()
     async def load(self, ctx, cog_name: str):
         """Loads a cog."""
         # try:
-        if cog_name not in self.bot.loaded_cogs:
+        if cog_name not in self.bot.extensions:
             try:
-                self.bot.load_cog(cog_name)
-                await ctx.author.send("```{} loaded.```".format(cog_name))
+                self.bot.load_extension('cogs.' + cog_name)
             except (AttributeError, ImportError) as e:
+                print("Failed to load cog: {} due to {}".format(cog_name, str(e)))
                 await ctx.author.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+            else:
+                await ctx.author.send("```{} loaded.```".format(cog_name))
         else:
             await ctx.author.send("```py\n'{}' module is already loaded\n```".format(cog_name))
 
     @cogs.command()
-    @commands.is_owner()
     async def unload(self, ctx, cog_name: str):
         """Unloads a cog."""
-        if cog_name in self.bot.loaded_cogs:
-            self.bot.unload_cog(cog_name)
-            await ctx.author.send("```{} unloaded.```".format(cog_name))
+        if cog_name in self.bot.extensions:
+            try:
+                self.bot.unload_extension('cogs.' + cog_name)
+            except (AttributeError, ImportError) as e:
+                print("Failed to unload cog: {} due to {}".format(cog_name, str(e)))
+                await ctx.author.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+            else:
+                await ctx.author.send("```{} unloaded.```".format(cog_name))
         else:
             await ctx.author.send("```py\n'{}' module is not loaded\n```".format(cog_name))
 
     @cogs.command()
-    @commands.is_owner()
     async def reload(self, ctx, cog_name: str):
         """Reloads a cog."""
-        if cog_name in self.bot.loaded_cogs:
-            self.bot.reload_cog(cog_name)
-            await ctx.author.send("```{} reloaded.```".format(cog_name))
+        if cog_name in self.bot.extensions:
+            try:
+                self.bot.unload_extension('cogs.' + cog_name)
+                self.bot.load_extension('cogs.' + cog_name)
+            except (AttributeError, ImportError) as e:
+                print("Failed to unload cog: {} due to {}".format(cog_name, str(e)))
+                await ctx.author.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
+            else:
+                await ctx.author.send("```{} reloaded.```".format(cog_name))
         else:
             await ctx.author.send("```py\n'{}' module is not loaded\n```".format(cog_name))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     @commands.guild_only()
     async def say(self, ctx, channel_name: str, *msg):
         """Says something as Nya."""
-        channel = None
-        for chan in ctx.guild.channels:
-            if chan.name == channel_name:
-                channel = chan
-
-        if channel is not None:
-            await channel.send(" ".join(str(x) for x in msg))
-        else:
+        channel = discord.utils.get(ctx.guild.channels, name=channel_name)
+        if channel is None:
             await ctx.author.send("```py\n'{}' channel has not been found\n```".format(channel_name))
             raise commands.UserInputError(ctx, 'Channel not found')
 
-    @command()
-    @commands.is_owner()
-    async def nowplaying(self, ctx, *game_name):
+        await channel.send(" ".join(str(x) for x in msg))
+
+    @commands.command()
+    async def nowplaying(self, ctx, *, game_name):
         """Sets the now playing message."""
         await self.bot.change_presence(game=discord.Game(name=" ".join(str(x) for x in game_name), type=0))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     @commands.guild_only()
     async def role_ids(self, ctx):
-        role_list = []
-        for role in ctx.guild.roles:
-            role_list.append('{} - {}'.format(role.name, role.id))
-        await ctx.author.send('{}'.format("\n".join(str(x) for x in role_list)))
+        role_list = [
+            '{} - {}'.format(role.name, role.id)
+            for role in ctx.guild.roles
+        ]
+        await ctx.author.send('{}'.format("\n".join(role_list)))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     @commands.guild_only()
     async def chan_ids(self, ctx):
-        chan_list = []
-        for chan in ctx.guild.channels:
-            chan_list.append('{} - {}'.format(chan.name, chan.id))
-        await ctx.author.send('{}'.format("\n".join(str(x) for x in chan_list)))
+        chan_list = [
+            '{} - {}'.format(chan.name, chan.id)
+            for chan in ctx.guild.channels
+        ]
+        await ctx.author.send('{}'.format("\n".join(chan_list)))
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     async def shutdown(self, ctx):
         """Shutdown bot."""
         await self.bot.logout()
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     async def restart(self, ctx):
         """Restarts bot."""
         try:
@@ -160,21 +158,17 @@ class Owner(BaseCog):
         python = sys.executable
         os.execl(python, python, *sys.argv)
 
-    @command()
-    @commands.is_owner()
+    @commands.command()
     async def name(self, ctx):
-        connection = self.config.db_connection()
-        cursor = connection.cursor()
-        cursor.execute("""SELECT DISTINCT id_user FROM event_logs WHERE id_server = %s""", 325197025719091201)
-        rows = cursor.fetchall()
-        for row in rows:
-            user = await self.bot.get_user_info(row[0])
-            if user is None:
-                continue
-            username = "{}#{}".format(user.name, user.discriminator)
-            cursor.execute("""INSERT INTO users (id, id_user, user_name) VALUES (null, %s, %s)""", (user.id, username))
-            connection.commit()
-        connection.close()
+        with self.cursor_context(commit=True) as cursor:
+            cursor.execute("""SELECT DISTINCT id_user FROM event_logs WHERE id_server = %s""", 325197025719091201)
+            rows = cursor.fetchall()
+            for row in rows:
+                user = await self.bot.get_user_info(row[0])
+                if user is None:
+                    continue
+
+                cursor.execute("INSERT INTO users (id, id_user, user_name) VALUES (null, %s, %s)", (user.id, str(user)))
         await ctx.author.send('Done')
 
 

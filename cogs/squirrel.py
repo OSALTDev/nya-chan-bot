@@ -1,84 +1,56 @@
+import discord
 from discord.ext import commands
-from discord.ext.commands import group
 from cogs.base_cog import BaseCog
+from nyalib.NyaBot import ThrowawayException
 
 
 class Squirrel(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
+    async def cog_before_invoke(self, ctx):
+        if ctx.invoked_subcommand is not None:
+            squirrel_role = discord.utils.get(ctx.guild.roles, id=329409494478094336)
+            if squirrel_role is None:
+                await ctx.reply('There is no Squirrel Army role on this server.')
+                raise ThrowawayException
 
-    def get_squirrel_role(self, ctx):
-        for role in ctx.guild.roles:
-            if role.id == 329409494478094336:
-                return role
-        return None
+            squirrel_channel = ctx.guild.get_channel(self.config.bot.channel.squirrel)
+            if squirrel_channel is None:
+                await ctx.reply('The Squirrel Army channel cannot be found')
+                raise ThrowawayException
 
-    @group()
+            if not ctx.args:
+                await ctx.reply('You need to provide a user to act on')
+                raise ThrowawayException
+
+            ctx.custom["squirrel_channel"] = squirrel_channel
+            ctx.custom["squirrel_role"] = squirrel_role
+
+    @commands.group(invoke_without_command=True)
     async def squi(self, ctx):
         """Squirrel commands."""
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return False
-        if ctx.invoked_subcommand is None:
-            await bot_channel.send('Invalid squirrel command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
     @squi.command(description='Adds a user to the Squirrel Army.')
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators', 'Elder Squirrels')
-    async def add(self, ctx, username: str):
+    async def add(self, ctx, future_squirrel: discord.Member):
         """Adds a user to the Squirrel Army"""
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return False
-        squirrel_role = self.get_squirrel_role(ctx)
-        if squirrel_role is None:
-            await bot_channel.send('There is no Squirrel Army role on this server.')
-            return False
-        converter = commands.converter.MemberConverter()
-        future_squirrel = await converter.convert(ctx, username)
-        if future_squirrel is None:
-            await bot_channel.send('The user {} cannot be found'.format(username))
-            return False
-        squirrel_channel = self.bot.get_channel(329379656576794625)
-        if squirrel_channel is None:
-            await bot_channel.send('The Squirrel Army channel cannot be found')
-            return False
-        if squirrel_role in future_squirrel.roles:
-            await bot_channel.send('The user {} is already a Squirrel'.format(username))
-            return False
-        await future_squirrel.add_roles(squirrel_role)
-        await squirrel_channel.send(
-            'Welcome to the Squirrel Army {}, happy squirreling =^.^='.format(future_squirrel.mention))
+        if ctx.custom.squirrel_role in future_squirrel.roles:
+            await ctx.reply(f'The user {future_squirrel.name} is already a Squirrel')
+            return
+        await future_squirrel.add_roles(ctx.custom.squirrel_role)
+        await ctx.custom.squirrel_channel.send(f'Welcome to the Squirrel Army {future_squirrel.name}, '
+                                               'happy squirreling =^.^=')
 
     @squi.command(description='Removes a user from the Squirrel Army.')
     @commands.guild_only()
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators', 'Elder Squirrels')
-    async def remove(self, ctx, username: str):
+    async def remove(self, ctx, future_squirrel: discord.Member):
         """Removes a user from the Squirrel Army"""
-        bot_channel = self.bot.get_channel(332644650462478336)
-        if bot_channel is None:
-            await ctx.channel.send('The dedicated bot commands channel cannot be found')
-            return False
-        squirrel_role = self.get_squirrel_role(ctx)
-        if squirrel_role is None:
-            await bot_channel.send('There is no Squirrel Army role on this server.')
-            return False
-        converter = commands.converter.MemberConverter()
-        future_squirrel = await converter.convert(ctx, username)
-        if future_squirrel is None:
-            await bot_channel.send('The user {} cannot be found'.format(username))
-            return False
-        squirrel_channel = self.bot.get_channel(329379656576794625)
-        if squirrel_channel is None:
-            await bot_channel.send('The Squirrel Army channel cannot be found')
-            return False
-        if squirrel_role not in future_squirrel.roles:
-            await bot_channel.send('The user {} is not a Squirrel'.format(username))
-            return False
-        await future_squirrel.remove_roles(squirrel_role)
-        await squirrel_channel.send('The user **{}** is no longer a squirrel.'.format(future_squirrel.name))
+        if ctx.custom.squirrel_role not in future_squirrel.roles:
+            await ctx.reply(f'The user {future_squirrel.name} is not a Squirrel')
+            return
+        await future_squirrel.remove_roles(ctx.custom.squirrel_role)
+        await ctx.custom.squirrel_channel.send(f'The user **{future_squirrel.name}** is no longer a squirrel.')
 
 
 def setup(bot):

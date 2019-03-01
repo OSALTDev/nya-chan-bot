@@ -1,42 +1,60 @@
 import discord
 from discord.ext import commands
-from discord.ext.commands import group
 from cogs.base_cog import BaseCog
 
 
 class Channels(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
-    @group()
-    async def tch(self, ctx):
+    @commands.group(invoke_without_command=True)
+    async def channel(self, ctx):
         """Text Channel edition commands."""
-        if ctx.invoked_subcommand is None:
-            await self.bot_reply(ctx, 'Invalid Text Channel Edition command passed, {}'.format(ctx.author.mention))
+        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
 
-    @tch.command(description='Create a new text channel with Supervisor permission.')
+    @channel.group(description='Create new channels with Supervisor permission.', invoke_without_command=True)
     @commands.has_any_role('Nixie', 'Supervisors')
     @commands.guild_only()
-    async def create(self, ctx, *channel_name):
+    async def create(self, ctx):
+        await ctx.invoke(self.bot.get_command("help"), ctx.command.parent.name, ctx.invoked_with)
+
+    @create.command(description='Create a new text channel with Supervisor permission.')
+    @commands.has_any_role('Nixie', 'Supervisors')
+    @commands.guild_only()
+    async def text(self, ctx, *, channel_name: str):
         """Create a new text channel with Supervisor permission."""
-        guild = ctx.guild
-        channel_name = " ".join(channel_name)
-        for channel in guild.text_channels:
-            if channel.name == channel_name:
-                await self.bot_reply(ctx, 'Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
-                return False
-        supervisor_role = None
-        for role in guild.roles:
-            if role.name == 'Supervisors':
-                supervisor_role = role
-                break
+        if discord.utils.get(ctx.guild.text_channels, name=channel_name) is not None:
+            await ctx.reply('Channel **{}** already exists'.format(channel_name))
+            return
+
+        supervisor_role = discord.utils.get(ctx.guild.roles, name="Supervisors")
         if supervisor_role is None:
-            return False
+            await ctx.reply("Supervisor role is required to create")
+            return
+
         perms = {
-            guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
             supervisor_role: discord.PermissionOverwrite(read_messages=True, manage_roles=True)
         }
-        await guild.create_text_channel(channel_name, overwrites=perms)
+        await ctx.guild.create_text_channel(channel_name, overwrites=perms)
+        await ctx.reply("Created text channel {}".format(channel_name))
+
+    @create.command(description='Create a new voice channel with Supervisor permission.')
+    @commands.has_any_role('Nixie', 'Supervisors')
+    @commands.guild_only()
+    async def voice(self, ctx, *, channel_name: str):
+        """Create a new voice channel with Supervisor permission."""
+        if discord.utils.get(ctx.guild.voice_channels, name=channel_name):
+            await ctx.reply('Channel **{}** already exists, {}'.format(channel_name, ctx.author.mention))
+            return
+
+        supervisor_role = discord.utils.get(ctx.guild.roles, name="Supervisors")
+        if supervisor_role is None:
+            await ctx.reply("Supervisor role is required to create")
+            return
+
+        perms = {
+            supervisor_role: discord.PermissionOverwrite(manage_roles=True)
+        }
+        await ctx.guild.create_voice_channel(channel_name, overwrites=perms)
+        await ctx.reply("Created text channel {}".format(channel_name))
 
 
 def setup(bot):

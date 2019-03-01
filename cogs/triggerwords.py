@@ -1,41 +1,41 @@
 import re
 
 from discord import Message
-from discord.ext.commands import Bot
+from discord.ext import commands
+from types import SimpleNamespace
 
 
-# Add regex here, along with the response the bot should give if it finds a match.
-# We're using {bot} and {user} to refer
-RESPONSES = {
-    r"(:?i'?m|i am) (going|gonna go) to (:?bed|sleep)": "Good night {user}!",
-    r"(:?hi|hello|hey there|sup) {bot}!?": "Hey {user}!",
-}
-
-
-class TriggerWords:
+class TriggerWords(commands.Cog, name="Trigger words"):
     """
     Trigger responses from certain regular expression triggers.
     """
 
-    def __init__(self, bot: Bot):
+    def __init__(self, bot):
         self.bot = bot
+        self.triggers = None
 
+    @commands.Cog.listener()
     async def on_ready(self):
         """
-        Replaces {bot} with the bot mention after
+        Generates the regex and responses once
         the bot has booted. This information is not
         available until runtime.
         """
 
-        keys = list(RESPONSES.keys())
+        # Add regex here, along with the response the bot should give if it finds a match.
+        # We're using {bot} and {user} to refer
+        self.triggers = (
+            SimpleNamespace(
+                regex=re.compile("(:?i'?m|i am) (going|gonna go) to (:?bed|sleep)"),
+                response="Good night {user}!"
+            ),
+            SimpleNamespace(
+                regex=re.compile(f"(:?hi|hello|hey there|sup) {self.bot.user.mention}!?"),
+                response="Hey {user}!"
+            )
+        )
 
-        for key in keys:
-            changed_key = key.replace("{bot}", self.bot.user.mention)
-
-            if key != changed_key:
-                RESPONSES[changed_key] = RESPONSES[key]
-                del RESPONSES[key]
-
+    @commands.Cog.listener()
     async def on_message(self, message: Message):
         """
         This event triggers whenever someone sends a message into any channel.
@@ -43,13 +43,14 @@ class TriggerWords:
         If the content of the message matches one of our triggers, we'll respond
         with the corresponding message.
         """
-
-        content = message.content
+        if not self.triggers:
+            return
 
         response = None
-        for trigger in RESPONSES.keys():
-            if re.search(trigger, content):
-                response = RESPONSES.get(trigger)
+        for trigger in self.triggers:
+            if trigger.regex.search(message.content):
+                response = trigger.response
+                break
 
         if response:
             await message.channel.send(response.format(user=message.author.mention))

@@ -1,35 +1,35 @@
+import discord
 from discord.ext import commands
 from nyalib.config import AppConfig
+from nyalib.CustomContext import CustomContext
+
+
+class ThrowawayException(Exception):
+    pass
 
 
 class NyaBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.config = AppConfig()
-        self.loaded_cogs = []
         super().__init__(*args, command_prefix=self.config.bot.prefix, description=self.config.bot.description,
                          pm_help=True,
                          **kwargs)
 
-    def load_cog(self, cog: str):
-        try:
-            self.load_extension('cogs.' + cog)
-        except (AttributeError, ImportError) as e:
-            print("Failed to load cog: {} due to {}".format(cog, str(e)))
-            return False
-        self.loaded_cogs.append(cog)
+    async def process_commands(self, message):
+        if message.author.bot:
+            return
 
-    def unload_cog(self, cog: str):
-        try:
-            self.unload_extension('cogs.' + cog)
-        except (AttributeError, ImportError) as e:
-            print("Failed to unload cog: {} due to {}".format(cog, str(e)))
-            return False
-        self.loaded_cogs.remove(cog)
+        ctx = await self.get_context(message, cls=CustomContext)
+        await self.invoke(ctx)
 
-    def reload_cog(self, cog: str):
-        try:
-            self.unload_extension('cogs.' + cog)
-            self.load_extension('cogs.' + cog)
-        except (AttributeError, ImportError) as e:
-            print("Failed to unload cog: {} due to {}".format(cog, str(e)))
-            return False
+    async def on_ready(self):
+        print('######################################################')
+        print('#                      Nya Chan                      #')
+        print('######################################################')
+        print('Discord.py version : ' + discord.__version__)
+        print('Bot User : ' + str(self.user))
+        app_infos = await self.application_info()
+        self.owner_id = app_infos.owner.id
+        print('Bot Owner : ' + str(self.owner_id))
+        url = discord.utils.oauth_url(app_infos.id)
+        print('Oauth URL : ' + url)

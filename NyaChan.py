@@ -1,80 +1,108 @@
 #!/usr/bin/env python3
 import discord
 from discord.ext import commands
-from nyalib.NyaBot import NyaBot
+from nyalib.NyaBot import NyaBot, ThrowawayException
+import sys
+import traceback
+import re
+import os
 
 bot = NyaBot()
+arg_regs = (
+    {
+        "match": re.compile("Member \"(.*)\" not found"),
+        "replaced": r"The user **\1** cannot be found"
+    },
+)
 
 
-@bot.event
-async def on_ready():
-    print('######################################################')
-    print('#                      Nya Chan                      #')
-    print('######################################################')
-    print('Discord.py version : ' + discord.__version__)
-    print('Bot User : ' + str(bot.user))
-    app_infos = await bot.application_info()
-    bot.owner_id = app_infos.owner.id
-    print('Bot Owner : ' + str(bot.owner_id))
-    url = discord.utils.oauth_url(app_infos.id)
-    print('Oauth URL : ' + str(url))
-
-
-@bot.event
-async def on_message(message):
-    if message.author.bot:
-        return False
-    await bot.process_commands(message)
+def bad_argument_to_reply_string(err):
+    for item in arg_regs:
+        if item["match"].match(err.args[0]):
+            return item["match"].sub(item["replaced"], err.args[0])
+    return err.args[0]
 
 
 @bot.event
 async def on_command_error(ctx, error):
-    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-        await ctx.author.send(
-            "{}, this command does not exist!```{}```".format(ctx.message.author.mention, ctx.message.content))
-    elif isinstance(error, discord.ext.commands.errors.NotOwner):
-        await ctx.author.send("{}, only my Owner can ask me to do that, nya!```{}```".format(ctx.message.author.mention,
-                                                                                             ctx.message.content))
-    elif isinstance(error, discord.ext.commands.errors.UserInputError):
-        await ctx.author.send(
-            "{}, Input error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
-    elif isinstance(error, discord.ext.commands.errors.NoPrivateMessage):
-        await ctx.author.send(
-            "{}, this command cannot be send in a PM!```{}```".format(ctx.message.author.mention, ctx.message.content))
-    elif isinstance(error, discord.ext.commands.errors.CheckFailure):
-        await ctx.author.send(
-            "You don\'t have the permission to use this command, {}```{}```".format(ctx.message.author.mention,
-                                                                                    ctx.message.content))
-    else:
-        await ctx.author.send(
-            "{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(error).__name__, str(error)))
-    has_mention = False
-    for arg in ctx.args:
-        if '@' in str(arg):
-            has_mention = True
-            break
-    if has_mention is True:
-        return False
-    await ctx.message.delete()
+    if error.__class__ not in (commands.CommandNotFound, ThrowawayException):
+        msg_list = {
+            commands.NotOwner: "Only my Owner can ask me to do that, nya!```{msg.content}```",
+            commands.UserInputError: "{msg.author.mention}, Input error```py\n{errn}: {errs}\n```",
+            commands.NoPrivateMessage: "{msg.author.mention}, this command cannot be send in a PM!```{msg.content}```",
+            commands.CheckFailure: "You don\'t have the permission to use this command, {msg.author.mention}"
+                                   "```\n{msg.content}```",
+            commands.BadArgument: bad_argument_to_reply_string(error)
+        }
+
+        # Get error message by class
+        # If error not handled in dict, use general error message
+        msg = msg_list.get(error.__class__, "{msg.author}, error```py\n{errn}: {errs}\n```")
+        if error.__class__ in (commands.BadArgument, commands.NotOwner, commands.CheckFailure):
+            # Only use the reply method if a certain type of error
+            # If note one of the set types, then DM
+            await ctx.reply(msg.format(msg=ctx.message))
+        else:
+            await ctx.author.send(msg.format(msg=ctx.message, errn=type(error).__name__, errs=str(error)))
+            if os.getenv("DEBUG"):
+                raise error
 
 
 @bot.event
 async def on_command_completion(ctx):
-    has_mention = False
-    for arg in ctx.args:
-        if '@' in str(arg):
-            has_mention = True
-            break
-    if has_mention is True:
-        return False
-    await ctx.message.delete()
+    # Deletes message if no mentions
+    if not ctx.message.mentions:
+        try:
+            await ctx.message.delete()
+        except discord.Forbidden:
+            # Can't execute on DM channel
+            pass
+
+
+@bot.event
+async def on_error(_, msg):
+    if not os.getenv("DEBUG"):
+        return
+
+    cls, exc, tb = sys.exc_info()
+
+    if cls == ThrowawayException:
+        return
+
+    await msg.add_reaction("🚫")
+    err_str = str(cls) + ": " + str(exc.args[1]) + "\n\nTraceback:\n"
+    ttb = []
+
+    sep = "\\" if os.name == "nt" else "/"
+    for ln in traceback.format_tb(tb, 50):
+        ln_m = re.match("  File \"(.*)\", line (\d+), in ([^\s]+)\n(.*)", ln, re.DOTALL)
+
+        p = ln_m.group(1).split(sep)
+        lnn = ln_m.group(2)
+
+        tp = []
+        for i in p:
+            if not tp:
+                if i != "site-packages":
+                    continue
+                i = "<pip_pkg>"
+            tp.append(i)
+
+        ttb.append("  {} : {} ({})\n{} {}".format(
+            sep.join(tp or p), lnn, ln_m.group(3), " " if tp else ">", ln_m.group(4)))
+
+    err_str += "".join(ttb)
+    print(err_str)
 
 
 class MainDriver:
     def __init__(self, bot):
         self.bot = bot
         for cog in self.bot.config.bot.cogs:
-            self.bot.load_cog(cog)
+            try:
+                self.bot.load_extension('cogs.' + cog)
+            except (AttributeError, ImportError) as e:
+                print("Failed to load cog: {} due to {}".format(cog, str(e)))
 
     def run(self):
         token = self.bot.config.bot.token
