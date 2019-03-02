@@ -1,55 +1,48 @@
 from discord.ext import commands
+import discord
 
 from cogs.base_cog import BaseCog
 
 
-class Welcome(BaseCog):
+class Welcome(BaseCog, name="Welcome"):
     """Welcomes new members to the server via private message"""
+    def get_message(self, guild):
+        with self.cursor_context() as cursor:
+            res = cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", guild.id)
+            if not res:
+                cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""",
+                               guild.id)
+                return None
 
-    def __init__(self, bot):
-        super().__init__(bot)
+            row = cursor.fetchone()
 
-    def get_message(self, member):
-        guild = member.guild
-        connection = self.config.db_connection()
-        cursor = connection.cursor()
-        cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", guild.id)
-        rows = cursor.fetchall()
-        if len(rows) == 0:
-            cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""", guild.id)
-            connection.commit()
-            text = ""
-        else:
-            text = rows[0][0]
-        connection.close()
-        return text.format(member, guild)
+        text = row[0]
+        return text
 
-    async def member_join(self, member):
-        user_role = None
-        for role in member.guild.roles:
-            if role.name == "Users":
-                user_role = role
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        user_role = discord.utils.get(member.guild.roles, name="Users")
         if user_role is not None:
             await member.add_roles(user_role, reason="Safeguard against pruning.")
-        text = self.get_message(member)
-        try:
-            await member.send(text)
-        except:
-            pass
+        text = self.get_message(member.guild)
+        if text:
+            try:
+                await member.send(text.format(member, member.guild))
+            except discord.Forbidden:
+                pass
 
     @commands.command(description='Send the welcome message via private message again.')
     @commands.guild_only()
     async def welcome(self, ctx):
         """Resend welcome message"""
-        member = ctx.message.author
-        text = self.get_message(member)
-        try:
-            await member.send(text)
-        except:
-            pass
+        text = self.get_message(ctx.guild)
+        if text:
+            try:
+                await ctx.author.send(text.format(ctx.author, ctx.guild))
+            except discord.Forbidden:
+                pass
 
 
 def setup(bot):
     cog = Welcome(bot)
-    bot.add_listener(cog.member_join, "on_member_join")
     bot.add_cog(cog)

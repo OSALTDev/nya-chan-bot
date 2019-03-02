@@ -7,17 +7,14 @@ if not discord.opus.is_loaded():
 
 
 class Music(BaseCog):
-    def __init__(self, bot):
-        super().__init__(bot)
-
     @commands.command(description='Add youtube video to the queue and start playing')
     @commands.guild_only()
     async def play(self, ctx):
         """Play a youtube video"""
         voice_channel = None
-        if not ctx.author.voice is None:
+        if ctx.author.voice is not None:
             voice_channel = ctx.author.voice.channel
-        if not voice_channel is None:
+        if voice_channel is not None:
             vc = await voice_channel.connect()
             vc.play(discord.FFmpegPCMAudio('data/music/tmp/CSvFpBOe8eY.m4a'))
 
