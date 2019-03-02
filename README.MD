@@ -15,7 +15,12 @@ Install the basic requirements by running:
 pip install -r requirements.txt
 ```
 
-It will install all requirements including the discord.py library commit this bot was developed against
+Once that's complete please run the following to install the discord library as the final requirement. (Note: It's currently in beta.)
+
+```sh
+python3 -m pip install -U "git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]"
+```
+
 
 ## Setup your bot
 
