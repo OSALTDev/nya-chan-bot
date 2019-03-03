@@ -5,7 +5,7 @@ import inspect
 
 
 class Formatter(HelpFormatter):
-    def _add_subcommands_to_page(self, max_width, commands, size=None):
+    async def _add_subcommands_to_page(self, max_width, commands, size=None):
         if not size:
             size = 1
         for name, command in commands:
@@ -23,30 +23,10 @@ class Formatter(HelpFormatter):
                 cmds = [
                     (c.name, c)
                     for c in command.commands
+                    if await c.can_run(self.context)
                 ]
-                self._add_subcommands_to_page(max_width, cmds, size)
+                await self._add_subcommands_to_page(max_width, cmds, size)
                 size -= 1
-
-    async def format_help_for(self, context, command_or_bot):
-        """Formats the help page and handles the actual heavy lifting of how
-        the help command looks like. To change the behaviour, override the
-        :meth:`~.HelpFormatter.format` method.
-
-        Parameters
-        -----------
-        context: :class:`.Context`
-            The context of the invoked help command.
-        command_or_bot: :class:`.Command` or :class:`.Bot`
-            The bot or command that we are getting the help of.
-
-        Returns
-        --------
-        list
-            A paginated output of the help command.
-        """
-        self.context = context
-        self.command = command_or_bot
-        return await self.format()
 
     async def format(self):
         """Handles the actual behaviour involved with formatting.
@@ -98,7 +78,7 @@ class Formatter(HelpFormatter):
             if len(commands) > 0:
                 self._paginator.add_line(category)
 
-            self._add_subcommands_to_page(max_width, commands)
+            await self._add_subcommands_to_page(max_width, commands)
 
         # add the ending note
         self._paginator.add_line()
