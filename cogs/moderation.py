@@ -119,6 +119,8 @@ def setup(bot):
 
 
 class SetMod:
+    __slots__ = ('_name', '_add', '_rem')
+
     def __init__(self, role_name, role_to_add, role_to_remove):
         self._name = role_name
         self._add = role_to_add
