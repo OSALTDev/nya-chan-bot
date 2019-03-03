@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from nyalib.config import AppConfig
 from nyalib.CustomContext import CustomContext
+from nyalib.HelpFormatter import Formatter
 
 
 class ThrowawayException(Exception):
@@ -12,7 +13,7 @@ class NyaBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.config = AppConfig()
         super().__init__(*args, command_prefix=self.config.bot.prefix, description=self.config.bot.description,
-                         pm_help=True,
+                         pm_help=True, formatter=Formatter(),
                          **kwargs)
 
     async def process_commands(self, message):
