@@ -9,6 +9,8 @@ import functools
 class Moderation(BaseCog, name="Moderation"):
     def __init__(self, bot):
         super().__init__(bot)
+        self._set_mod = SetMod("Mod", "mod", "trainee")
+        self._set_trainee = SetMod("Mod Trainee", "trainee", "mod")
         self.roles = {
             "set": {
                 "Mods": SimpleNamespace(name="mod", checked=True),
@@ -74,50 +76,22 @@ class Moderation(BaseCog, name="Moderation"):
     @mod.group(invoke_without_command=True, description='Promotes an user to be a Mod')
     async def set(self, ctx, user: discord.Member):
         """Promotes an user to be a Mod"""
-        if ctx.custom.has_role.mod is True:
-            await ctx.reply(f'{user.name} is a Mod already')
-            return
-
-        if ctx.custom.has_role.trainee is True:
-            await user.add_roles(ctx.custom.roles.mod, reason="Promoted to Mods")
-            await user.remove_roles(ctx.custom.roles.trainee, reason="Promoted to Mods")
-        else:
-            await user.add_roles(ctx.custom.roles.mod, ctx.custom.roles.moderator, reason="Promoted to Mods")
-        await ctx.reply(f'{user.name} is now a Mod')
+        await self._set_mod(ctx, user, True)
 
     @mod.group(invoke_without_command=True, description='Removes an user Mod status')
     async def remove(self, ctx, user: discord.Member):
         """Removes an user Mod status"""
-        if ctx.custom.has_role.mod is False:
-            await ctx.reply(f'{user.name} is a not a Mod')
-            return
-
-        await user.remove_roles(ctx.custom.roles.mod, ctx.custom.roles.moderator, reason="User demoted from Mods")
-        await ctx.reply(f'{user.name} is not a Mod anymore')
+        await self._set_mod(ctx, user, False)
 
     @set.command(name="trainee", description='Promotes an user to be a Mod Trainee')
     async def set_trainee(self, ctx, user: discord.Member):
         """Promotes an user to be a Mod Trainee"""
-        if ctx.custom.has_role.trainee is True:
-            await ctx.reply(f'{user.name} is a Mod Trainee already')
-            return
-
-        if ctx.custom.has_role.mod is True:
-            await user.add_roles(ctx.custom.roles.trainee, reason="Promoted to Mod Trainees")
-            await user.remove_roles(ctx.custom.roles.mod, reason="Promoted to Mod Trainees")
-        else:
-            await user.add_roles(ctx.custom.roles.trainee, ctx.custom.roles.moderator, reason="Promoted to Mod Trainees")
-        await ctx.reply(f'{user.name} is now a Mod Trainee')
+        await self._set_trainee(ctx, user, True)
 
     @remove.command(name="trainee", description='Removes an user Mod Trainee status')
     async def remove_trainee(self, ctx, user: discord.Member):
         """Removes an user Mod Trainee status"""
-        if ctx.custom.has_role.trainee is False:
-            await ctx.reply(f'{user.name} is a not a Mod Trainee')
-            return
-
-        await user.remove_roles(ctx.custom.roles.trainee, ctx.custom.roles.moderator, reason="User demoted from Mod Trainees")
-        await ctx.reply(f'{user.name} is not a Mod Trainee anymore')
+        await self._set_trainee(ctx, user, False)
 
     @mod.group(invoke_without_command=True, description="Setup mod roles")
     async def roles(self, ctx):
@@ -142,3 +116,32 @@ class Moderation(BaseCog, name="Moderation"):
 def setup(bot):
     cog = Moderation(bot)
     bot.add_cog(cog)
+
+
+class SetMod:
+    def __init__(self, role_name, role_to_add, role_to_remove):
+        self._name = role_name
+        self._add = role_to_add
+        self._rem = role_to_remove
+
+    async def __call__(self, ctx, user, action):
+        if action is True:
+            if getattr(ctx.custom.has_role, self._add) is True:
+                await ctx.reply(f'{user.name} is a {self._name} already')
+                return
+
+            if getattr(ctx.custom.has_role, self._rem) is True:
+                await user.add_roles(getattr(ctx.custom.roles, self._add), reason="Promoted to Mods")
+                await user.remove_roles(getattr(ctx.custom.roles, self._rem), reason="Promoted to Mods")
+            else:
+                await user.add_roles(getattr(ctx.custom.roles, self._add), ctx.custom.roles.moderator,
+                                     reason=f"Promoted to {self._name}s")
+            await ctx.reply(f'{user.name} is now a {self._name}')
+        else:
+            if getattr(ctx.custom.has_role, self._add) is False:
+                await ctx.reply(f'{user.name} is a not a {self._name}')
+                return
+
+            await user.remove_roles(getattr(ctx.custom.roles, self._add), ctx.custom.roles.moderator,
+                                    reason=f"User demoted from {self._name}")
+            await ctx.reply(f'{user.name} is not a {self._name} anymore')
