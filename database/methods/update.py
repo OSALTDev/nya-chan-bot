@@ -11,7 +11,7 @@ class Update(BaseQuery):
         self._items = ""
         for key, value in kwargs.items():
             if isinstance(value, DBFunction):
-                self._items += f"`{key}` = {val.val}, "
+                self._items += f"`{key}` = {value.val}, "
                 continue
 
             self._items += f"`{key}` = %s, "
