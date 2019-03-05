@@ -14,11 +14,3 @@ class Methods:
     @classmethod
     def update(cls, table_name, items=None, where=None):
         return query.Update(table_name=table_name, items=items, where=where)
-
-
-if __name__ == "__main__":
-    # tests go here
-    print(Methods.select("hi").where(a="bc").distinct.build)
-    print(Methods.insert("ya yeet").items(hi="there").build)
-    print(Methods.update("ya yeet").where(poof="yoot", na="ye").items(hi="there", fa="ke").build)
-
