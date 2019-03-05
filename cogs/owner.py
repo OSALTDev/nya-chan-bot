@@ -5,6 +5,7 @@ import psutil
 import sys
 from discord.ext import commands
 from cogs.base_cog import BaseCog
+from database import Methods as db_util
 
 
 class Owner(BaseCog):
@@ -161,14 +162,18 @@ class Owner(BaseCog):
     @commands.command()
     async def name(self, ctx):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute("""SELECT DISTINCT id_user FROM event_logs WHERE id_server = %s""", 325197025719091201)
+            cursor.execute(*db_util.select("event_logs").items("id_user")
+                           .where(id_server=325197025719091201).distinct.build)
             rows = cursor.fetchall()
-            for row in rows:
-                user = await self.bot.get_user_info(row[0])
-                if user is None:
-                    continue
 
-                cursor.execute("INSERT INTO users (id, id_user, user_name) VALUES (null, %s, %s)", (user.id, str(user)))
+        if rows:
+            with self.cursor_context(commit=True) as cursor:
+                for row in rows:
+                    user = await self.bot.get_user_info(row[0])
+                    if user is None:
+                        continue
+
+                    cursor.execute(*db_util.insert("users", id_user=user.id, user_name=str(user)))
         await ctx.author.send('Done')
 
 
