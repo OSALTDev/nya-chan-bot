@@ -1,4 +1,6 @@
 class BaseQuery:
+    __slots__ = ('_table_name', '_distinct', '_limit', '_order', '_where', '_items', '_query_params')
+
     def __init__(self, table_name=None, distinct=False, limit=None, order=None, where=None, items=None):
         self._table_name = table_name
         self._distinct = distinct
