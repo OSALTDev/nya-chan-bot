@@ -101,12 +101,12 @@ class Tags(BaseCog, name="Tags"):
     async def add(self, ctx, *, tag: str):
         """Identify yourself with a tag."""
         if ctx.custom.has_role:
-            await ctx.reply('You already have the tag "{}"'.format(ctx.custom.tag_role.name))
+            await ctx.reply('You already have the tag "{}"'.format(tag))
             return
 
         await ctx.author.add_roles(ctx.custom.tag_role)
 
-        msg = 'You now have the tag "{}"'.format(ctx.custom.tag_role.name)
+        msg = 'You now have the tag "{}"'.format(tag)
         if ctx.custom.linked_channel is not None:
             msg += '. You can now see the channel {}'.format(ctx.custom.linked_channel.mention)
 
@@ -117,17 +117,16 @@ class Tags(BaseCog, name="Tags"):
     async def remove(self, ctx, *, tag: str):
         """Removes a tag."""
         if not ctx.custom.has_role:
-            await ctx.reply('You don\'t have the tag "{}"'.format(ctx.custom.tag_role.name))
+            await ctx.reply('You don\'t have the tag "{}"'.format(tag))
             return
 
         await ctx.author.remove_roles(ctx.custom.tag_role)
 
-        msg = 'You no longer have the tag "{tag_name}"'
+        msg = f'You no longer have the tag "{tag}"'
         if ctx.custom.linked_channel is not None:
-            msg += '. The channel {channel_mention} is now hidden'
+            msg += f'. The channel {ctx.custom.linked_channel.mention} is now hidden'
 
-        await ctx.reply(msg.format(
-            tag_name=ctx.custom.tag_role.name, channel_mention=ctx.custom.linked_channel.mention))
+        await ctx.reply(msg)
 
     @tag.command(description='Lists the available tags.')
     @commands.guild_only()
