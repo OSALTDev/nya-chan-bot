@@ -85,6 +85,7 @@ class Cog(BaseCog, name="Owner"):
         if cog_name in self.bot.extensions:
             try:
                 self.bot.unload_extension('cogs.' + cog_name)
+                del sys.modules['cogs.' + cog_name]
             except (AttributeError, ImportError) as e:
                 print("Failed to unload cog: {} due to {}".format(cog_name, str(e)))
                 await ctx.author.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
@@ -99,6 +100,7 @@ class Cog(BaseCog, name="Owner"):
         if cog_name in self.bot.extensions:
             try:
                 self.bot.unload_extension('cogs.' + cog_name)
+                del sys.modules['cogs.' + cog_name]
                 self.bot.load_extension('cogs.' + cog_name)
             except (AttributeError, ImportError) as e:
                 print("Failed to unload cog: {} due to {}".format(cog_name, str(e)))
