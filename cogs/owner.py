@@ -68,7 +68,7 @@ class Cog(BaseCog, name="Owner"):
     async def load(self, ctx, cog_name: str):
         """Loads a cog."""
         # try:
-        if cog_name not in self.bot.extensions:
+        if f"cogs.{cog_name}" not in self.bot.extensions:
             try:
                 self.bot.load_extension('cogs.' + cog_name)
             except (AttributeError, ImportError) as e:
@@ -82,7 +82,7 @@ class Cog(BaseCog, name="Owner"):
     @cogs.command()
     async def unload(self, ctx, cog_name: str):
         """Unloads a cog."""
-        if cog_name in self.bot.extensions:
+        if f"cogs.{cog_name}" in self.bot.extensions:
             try:
                 self.bot.unload_extension('cogs.' + cog_name)
             except (AttributeError, ImportError) as e:
