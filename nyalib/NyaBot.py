@@ -14,9 +14,9 @@ class ThrowawayException(Exception):
 class NyaBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.config = AppConfig()
-        super().__init__(*args, command_prefix=self.config.bot.prefix, description=self.config.bot.description,
-                         pm_help=True, formatter=Formatter(),
-                         **kwargs)
+        kwargs.update(command_prefix=self.config.bot.prefix, description=self.config.bot.description,
+                      pm_help=True, formatter=Formatter())
+        super().__init__(*args, **kwargs)
 
     def load_extension(self, name):
         if name in self.extensions:
