@@ -54,3 +54,19 @@ class Cog(BaseCog, name="Trigger words"):
 
         if response:
             await message.channel.send(response.format(user=message.author.mention))
+
+    @commands.group(invoke_without_command=True)
+    async def trigger(self, ctx):
+        await self.no_invoke_help(ctx)
+
+    @trigger.command()
+    async def add(self, ctx):
+        pass
+
+    @trigger.command()
+    async def remove(self, ctx):
+        pass
+
+    @trigger.command()
+    async def list(self, ctx):
+        pass
