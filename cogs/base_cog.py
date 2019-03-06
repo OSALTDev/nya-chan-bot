@@ -16,3 +16,8 @@ class BaseCog(commands.Cog):
         if commit:
             connection.commit()
         connection.close()
+
+    @classmethod
+    def setup(cls, bot):
+        # default setup method
+        bot.add_cog(cls(bot))
