@@ -110,19 +110,14 @@ class Cog(BaseCog, name="Owner"):
 
     @commands.command()
     @commands.guild_only()
-    async def say(self, ctx, channel_name: str, *msg):
+    async def say(self, ctx, channel: discord.TextChannel, *, msg):
         """Says something as Nya."""
-        channel = discord.utils.get(ctx.guild.channels, name=channel_name)
-        if channel is None:
-            await ctx.author.send("```py\n'{}' channel has not been found\n```".format(channel_name))
-            raise commands.UserInputError(ctx, 'Channel not found')
-
         await channel.send(" ".join(str(x) for x in msg))
 
     @commands.command()
-    async def nowplaying(self, ctx, *, game_name):
+    async def status(self, ctx, *, game_name):
         """Sets the now playing message."""
-        await self.bot.change_presence(game=discord.Game(name=" ".join(str(x) for x in game_name), type=0))
+        await self.bot.change_presence(status=discord.Status.online, activity=discord.Game(name=game_name, type=0))
 
     @commands.command()
     @commands.guild_only()
