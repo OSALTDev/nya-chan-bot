@@ -1,5 +1,6 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands.bot import _is_submodule
 from nyalib.config import AppConfig
 from nyalib.CustomContext import CustomContext
 from nyalib.HelpFormatter import Formatter
@@ -38,6 +39,52 @@ class NyaBot(commands.Bot):
             lib.Cog.setup(self)
 
         self.extensions[name] = lib
+
+    def unload_extension(self, name):
+        lib = self.extensions.get(name)
+        if lib is None:
+            return
+
+        lib_name = lib.__name__
+
+        for cogname, cog in self.cogs.copy().items():
+            if _is_submodule(lib_name, cog.__module__):
+                self.remove_cog(cogname)
+
+        for cmd in self.all_commands.copy().values():
+            if cmd.module is not None and _is_submodule(lib_name, cmd.module):
+                if isinstance(cmd, commands.GroupMixin):
+                    cmd.recursively_remove_all_commands()
+                self.remove_command(cmd.name)
+
+        for event_list in self.extra_events.copy().values():
+            remove = []
+            for index, event in enumerate(event_list):
+                if event.__module__ is not None and _is_submodule(lib_name, event.__module__):
+                    remove.append(index)
+
+            for index in reversed(remove):
+                del event_list[index]
+
+        try:
+            if hasattr(lib, "Cog"):
+                func = getattr(lib.Cog, 'teardown')
+            else:
+                func = getattr(lib, 'teardown')
+        except AttributeError:
+            pass
+        else:
+            try:
+                func(self)
+            except Exception:
+                pass
+        finally:
+            del lib
+            del self.extensions[name]
+            del sys.modules[name]
+            for module in list(sys.modules.keys()):
+                if _is_submodule(lib_name, module):
+                    del sys.modules[module]
 
     async def process_commands(self, message):
         if message.author.bot:
