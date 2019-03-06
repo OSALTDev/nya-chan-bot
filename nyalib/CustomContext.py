@@ -62,7 +62,7 @@ class CustomContext(commands.Context):
         # TODO: Disable commands outside of bot-commands
         if self.guild and self.channel.id != self.bot.config.bot.channel.bot_commands:
             if content:
-                content = "{1}, {0.mention}".format(self.author, content)
+                content = "{0.mention}: {1}".format(self.author, content)
             else:
                 content = "{0.mention}".format(self.author)
 

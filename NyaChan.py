@@ -30,7 +30,7 @@ async def on_command_error(ctx, error):
             commands.NotOwner: "Only my Owner can ask me to do that, nya!```{msg.content}```",
             commands.UserInputError: "{msg.author.mention}, Input error```py\n{errn}: {errs}\n```",
             commands.NoPrivateMessage: "{msg.author.mention}, this command cannot be send in a PM!```{msg.content}```",
-            commands.CheckFailure: "You don\'t have the permission to use this command, {msg.author.mention}"
+            commands.CheckFailure: "You don\'t have the permission to use this command"
                                    "```\n{msg.content}```",
             commands.BadArgument: bad_argument_to_reply_string(error)
         }
