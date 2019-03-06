@@ -62,7 +62,7 @@ class Cog(BaseCog, name="Owner"):
             await ctx.author.send("```No modules loaded```")
             return
 
-        await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.loaded_cogs)))
+        await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.extensions.keys())))
 
     @cogs.command()
     async def load(self, ctx, cog_name: str):
