@@ -4,6 +4,8 @@ import yaml
 
 from nyalib.bot_config import BotConfig
 
+# TODO: Move config into a cog instead of a core file
+
 
 class Singleton(type):
     _instances = {}
