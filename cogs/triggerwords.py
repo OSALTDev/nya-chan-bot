@@ -3,15 +3,15 @@ import re
 from discord import Message
 from discord.ext import commands
 from types import SimpleNamespace
+from .base_cog import BaseCog
 
 
-class TriggerWords(commands.Cog, name="Trigger words"):
+class Cog(BaseCog, name="Trigger words"):
     """
     Trigger responses from certain regular expression triggers.
     """
-
     def __init__(self, bot):
-        self.bot = bot
+        super().__init__(bot)
         self.triggers = None
 
     @commands.Cog.listener()
@@ -54,7 +54,3 @@ class TriggerWords(commands.Cog, name="Trigger words"):
 
         if response:
             await message.channel.send(response.format(user=message.author.mention))
-
-
-def setup(bot):
-    bot.add_cog(TriggerWords(bot))

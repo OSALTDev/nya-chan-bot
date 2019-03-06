@@ -8,7 +8,7 @@ from cogs.base_cog import BaseCog
 from database import Methods as db_util
 
 
-class Owner(BaseCog):
+class Cog(BaseCog, name="Owner"):
     @commands.group(invoke_without_command=True)
     async def git(self, ctx):
         """Git commands."""
@@ -175,8 +175,3 @@ class Owner(BaseCog):
 
                     cursor.execute(*db_util.insert("users", id_user=user.id, user_name=str(user)))
         await ctx.author.send('Done')
-
-
-def setup(bot):
-    cog = Owner(bot)
-    bot.add_cog(cog)

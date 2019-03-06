@@ -5,7 +5,7 @@ import aiohttp
 from cogs.base_cog import BaseCog
 
 
-class Nsfw(BaseCog):
+class Cog(BaseCog, name="NSFW"):
     """Gives functions for the pervs out there ;-)"""
     async def fetch_image(self, ctx, channel, randomize=False, tags=[]):
         search = "https://konachan.com/post.json?limit=1&tags="
@@ -38,8 +38,3 @@ class Nsfw(BaseCog):
             except Exception as e:
                 await ctx.send(
                     "{}, error```py\n{}: {}\n```".format(ctx.message.author.mention, type(e).__name__, str(e)))
-
-
-def setup(bot):
-    cog = Nsfw(bot)
-    bot.add_cog(cog)

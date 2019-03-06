@@ -5,7 +5,7 @@ from cogs.base_cog import BaseCog
 from database import Methods as db_util
 
 
-class Ama(BaseCog, name="Ask me anything"):
+class Cog(BaseCog, name="Ask me anything"):
     @commands.group(invoke_without_command=True)
     async def qna(self, ctx):
         """Ask me Anything commands."""
@@ -128,8 +128,3 @@ class Ama(BaseCog, name="Ask me anything"):
                 await msg.delete()
 
         await ctx.reply('{} message(s) transferred to {}.'.format(len(saved), destination.name))
-
-
-def setup(bot):
-    cog = Ama(bot)
-    bot.add_cog(cog)

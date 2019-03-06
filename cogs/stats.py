@@ -4,7 +4,7 @@ from database import Methods as db_util
 from database import DBFunction
 
 
-class Stats(BaseCog):
+class Cog(BaseCog, name="Stats"):
     """Keep track of the amount of messages everyone send"""
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -55,8 +55,3 @@ class Stats(BaseCog):
             cursor.execute(*db_util.insert("event_logs")
                            .items(id_server=guild.id, id_user=user.id,
                                   date_utc=DBFunction("NOW()"), event_type="banned").build)
-
-
-def setup(bot):
-    cog = Stats(bot)
-    bot.add_cog(cog)

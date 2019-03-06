@@ -4,7 +4,7 @@ import discord
 import time
 
 
-class Customs(BaseCog):
+class Cog(BaseCog, name="Customs"):
     """Welcomes new members to the server via private message"""
     @commands.command(description='Sends a custom message.')
     @commands.guild_only()
@@ -101,8 +101,3 @@ class Customs(BaseCog):
                 "**{}** / **{}** Members were added to the role **Users** in {} seconds.\n"
                 "Bots skipped : **{}**\nMembers who already had the role : **{}**"
             ).format(nb_user, len(ctx.guild.members), round(seconds, 3), nb_bot, nb_has_role))
-
-
-def setup(bot):
-    cog = Customs(bot)
-    bot.add_cog(cog)

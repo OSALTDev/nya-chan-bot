@@ -5,7 +5,7 @@ from cogs.base_cog import BaseCog
 from database import Methods as db_util
 
 
-class Welcome(BaseCog, name="Welcome"):
+class Cog(BaseCog, name="Welcome"):
     """Welcomes new members to the server via private message"""
     def get_message(self, guild):
         with self.cursor_context() as cursor:
@@ -41,8 +41,3 @@ class Welcome(BaseCog, name="Welcome"):
                 await ctx.author.send(text.format(ctx.author, ctx.guild))
             except discord.Forbidden:
                 pass
-
-
-def setup(bot):
-    cog = Welcome(bot)
-    bot.add_cog(cog)

@@ -3,6 +3,8 @@ from discord.ext import commands
 from nyalib.config import AppConfig
 from nyalib.CustomContext import CustomContext
 from nyalib.HelpFormatter import Formatter
+import importlib
+import sys
 
 
 class ThrowawayException(Exception):
@@ -15,6 +17,27 @@ class NyaBot(commands.Bot):
         super().__init__(*args, command_prefix=self.config.bot.prefix, description=self.config.bot.description,
                          pm_help=True, formatter=Formatter(),
                          **kwargs)
+
+    def load_extension(self, name):
+        if name in self.extensions:
+            return
+
+        lib = importlib.import_module(name)
+        if not hasattr(lib, 'Cog'):
+            if not hasattr(lib, 'setup'):
+                del lib
+                del sys.modules[name]
+                raise discord.ClientException('extension ' + name + ' has neither a Cog class nor a setup function')
+
+            lib.setup(self)
+        elif not hasattr(lib.Cog, 'setup'):
+            del lib
+            del sys.modules[name]
+            raise discord.ClientException('extension ' + name + '\'s Cog class does not have a setup function')
+        else:
+            lib.Cog.setup(self)
+
+        self.extensions[name] = lib
 
     async def process_commands(self, message):
         if message.author.bot:

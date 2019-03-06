@@ -3,7 +3,7 @@ from discord.ext import commands
 from cogs.base_cog import BaseCog
 
 
-class Channels(BaseCog):
+class Cog(BaseCog, name="Channel"):
     @commands.group(invoke_without_command=True)
     async def channel(self, ctx):
         """Text Channel edition commands."""
@@ -55,8 +55,3 @@ class Channels(BaseCog):
         }
         await ctx.guild.create_voice_channel(channel_name, overwrites=perms)
         await ctx.reply("Created text channel {}".format(channel_name))
-
-
-def setup(bot):
-    cog = Channels(bot)
-    bot.add_cog(cog)

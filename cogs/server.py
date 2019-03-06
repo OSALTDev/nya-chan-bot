@@ -3,7 +3,7 @@ import distro, subprocess
 from cogs.base_cog import BaseCog
 
 
-class Server(BaseCog):
+class Cog(BaseCog, name="Server"):
     @commands.command(description='Pat Nya Chan.')
     @commands.has_any_role('Nixie', 'Supervisors', 'Moderators')
     @commands.guild_only()
@@ -30,8 +30,3 @@ class Server(BaseCog):
             "Active Connections (v4):\n\n{}".format(active_connections_v4)
         )
         await ctx.channel.send("\n\n".join(msg))
-
-
-def setup(bot):
-    cog = Server(bot)
-    bot.add_cog(cog)

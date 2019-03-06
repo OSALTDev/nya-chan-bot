@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import functools
 
 
-class Moderation(BaseCog, name="Moderation"):
+class Cog(BaseCog, name="Moderation"):
     def __init__(self, bot):
         super().__init__(bot)
         self._set_mod = SetMod("Mod", "mod", "trainee")
@@ -111,11 +111,6 @@ class Moderation(BaseCog, name="Moderation"):
     async def moderator_role(self, ctx, primary_role: discord.Role,
                              secondary_roles: commands.Greedy[discord.Role] = None):
         pass
-
-
-def setup(bot):
-    cog = Moderation(bot)
-    bot.add_cog(cog)
 
 
 class SetMod:

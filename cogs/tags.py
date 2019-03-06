@@ -5,7 +5,7 @@ from nyalib.NyaBot import ThrowawayException
 from database import Methods as db_util
 
 
-class Tags(BaseCog, name="Tags"):
+class Cog(BaseCog, name="Tags"):
     def __init__(self, bot):
         super().__init__(bot)
         self.on_msg_dict = {
@@ -156,8 +156,3 @@ class Tags(BaseCog, name="Tags"):
             embed.add_field(name="None defined", value="No roles have been defined for self-assignment")
 
         await ctx.reply(embed=embed)
-
-
-def setup(bot):
-    cog = Tags(bot)
-    bot.add_cog(cog)
