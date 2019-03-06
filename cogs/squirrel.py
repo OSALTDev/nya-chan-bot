@@ -27,7 +27,7 @@ class Cog(BaseCog, name="Squirrel"):
     @commands.group(invoke_without_command=True)
     async def squi(self, ctx):
         """Squirrel commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @squi.command(description='Adds a user to the Squirrel Army.')
     @commands.guild_only()

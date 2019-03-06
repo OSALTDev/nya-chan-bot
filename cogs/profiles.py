@@ -12,12 +12,12 @@ class Cog(BaseCog, name="Profiles"):
     async def p(self, ctx):
         """Profile commands."""
         # Couldnt this just be removed ?
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @commands.group(invoke_without_command=True)
     async def tz(self, ctx):
         """Timezone commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @tz.command(description='Set timezone.')
     @commands.guild_only()

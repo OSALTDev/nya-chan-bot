@@ -7,13 +7,13 @@ class Cog(BaseCog, name="Channel"):
     @commands.group(invoke_without_command=True)
     async def channel(self, ctx):
         """Text Channel edition commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @channel.group(description='Create new channels with Supervisor permission.', invoke_without_command=True)
     @commands.has_any_role('Nixie', 'Supervisors')
     @commands.guild_only()
     async def create(self, ctx):
-        await ctx.invoke(self.bot.get_command("help"), ctx.command.parent.name, ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @create.command(description='Create a new text channel with Supervisor permission.')
     @commands.has_any_role('Nixie', 'Supervisors')

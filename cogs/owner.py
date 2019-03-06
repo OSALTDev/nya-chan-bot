@@ -12,7 +12,7 @@ class Cog(BaseCog, name="Owner"):
     @commands.group(invoke_without_command=True)
     async def git(self, ctx):
         """Git commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     async def cog_check(self, ctx):
         if not await ctx.bot.is_owner(ctx.author):
@@ -53,7 +53,7 @@ class Cog(BaseCog, name="Owner"):
     @commands.group(invoke_without_command=True)
     async def cogs(self, ctx):
         """Cogs related commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @cogs.command()
     async def list(self, ctx):

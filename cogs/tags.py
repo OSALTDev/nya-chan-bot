@@ -94,7 +94,7 @@ class Cog(BaseCog, name="Tags"):
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx):
         """Tag commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @tag.command(description='Identify yourself with a tag. Let other people know about you.')
     @commands.guild_only()

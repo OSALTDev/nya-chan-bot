@@ -9,7 +9,7 @@ class Cog(BaseCog, name="Ask me anything"):
     @commands.group(invoke_without_command=True)
     async def qna(self, ctx):
         """Ask me Anything commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @qna.command()
     @commands.guild_only()
