@@ -1,11 +1,10 @@
-from cogs.base_cog import BaseCog
+from .base_cog import BaseCog
 from discord.ext import commands
 from database import Methods as db_util
 from database import DBFunction
 
 
-class Cog(BaseCog, name="Stats"):
-    """Keep track of the amount of messages everyone send"""
+class Cog(BaseCog, name="DBEvent"):
     @commands.Cog.listener()
     async def on_message(self, message):
         if not message.content.startswith(self.bot.command_prefix) and not message.author.bot:
