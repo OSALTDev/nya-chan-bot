@@ -11,9 +11,12 @@ class BaseQuery:
 
         self._query_params = ()
 
+    def run(self, cursor):
+        return cursor.execute(*self.build)
+
     @property
     def build(self):
-        return None
+        return None, None
 
     def __str__(self):
         return self.build[0]
