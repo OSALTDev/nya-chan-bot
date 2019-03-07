@@ -13,44 +13,51 @@ class Cog(BaseCog, name="DBEvent"):
             channel = message.channel
             if guild is not None:
                 with self.cursor_context() as cursor:
-                    cursor.execute(*db_util.select("statistics_global").items("id", "msg_count")
-                                   .where(id_server=guild.id, id_user=author.id, id_channel=channel.id).build)
+                    db_util.select("statistics_global").items("id", "msg_count").where(
+                        id_server=guild.id, id_user=author.id, id_channel=channel.id
+                    ).run(cursor)
                     row = cursor.fetchone()
 
                 with self.cursor_context(commit=True) as cursor:
                     if not row:
-                        cursor.execute(*db_util.insert("statistics_global")
-                                       .items(id_server=guild.id, id_user=author.id,
-                                              id_channel=channel.id, msg_count=1).build)
+                        db_util.insert("statistics_global").items(
+                            id_server=guild.id, id_user=author.id,
+                            id_channel=channel.id, msg_count=1
+                        ).run(cursor)
                     else:
                         row_id = row[0]
-                        cursor.execute(*db_util.update("statistics_global").items(msg_count=DBFunction("msg_count+1"))
-                                       .where(id=row_id).build)
+                        db_util.update("statistics_global").items(
+                            msg_count=DBFunction("msg_count+1")
+                        ).where(id=row_id).run(cursor)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute(*db_util.insert("event_logs")
-                           .items(id_server=member.guild.id, id_user=member.id,
-                                  date_utc=DBFunction("NOW()"), event_type="joined").build)
+            db_util.insert("event_logs").items(
+                id_server=member.guild.id, id_user=member.id,
+                date_utc=DBFunction("NOW()"), event_type="joined"
+            ).run(cursor)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute(*db_util.insert("event_logs")
-                           .items(id_server=member.guild.id, id_user=member.id,
-                                  date_utc=DBFunction("NOW()"), event_type="left").build)
+            db_util.insert("event_logs").items(
+                id_server=member.guild.id, id_user=member.id,
+                date_utc=DBFunction("NOW()"), event_type="left"
+            ).run(cursor)
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute(*db_util.insert("event_logs")
-                           .items(id_server=guild.id, id_user=user.id,
-                                  date_utc=DBFunction("NOW()"), event_type="banned").build)
+            db_util.insert("event_logs").items(
+                id_server=guild.id, id_user=user.id,
+                date_utc=DBFunction("NOW()"), event_type="banned"
+            ).run(cursor)
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, user):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute(*db_util.insert("event_logs")
-                           .items(id_server=guild.id, id_user=user.id,
-                                  date_utc=DBFunction("NOW()"), event_type="banned").build)
+            db_util.insert("event_logs").items(
+                id_server=guild.id, id_user=user.id,
+                date_utc=DBFunction("NOW()"), event_type="left"
+            ).run(cursor)
