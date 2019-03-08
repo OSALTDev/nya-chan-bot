@@ -20,8 +20,8 @@ class Select(BaseQuery):
         self._order = limit
         return self
 
-    def where(self, **kwargs):
-        self._where = kwargs
+    def where(self, *args, **kwargs):
+        self._where = args, kwargs
         return self
 
     @property

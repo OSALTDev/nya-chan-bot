@@ -25,9 +25,20 @@ class BaseQuery:
         where_query = " WHERE "
         where_clause = []
         param_tuple = ()
-        for key, val in self._where.items():
-            where_clause.append(f"`{key}` = %s")
-            param_tuple += (val,)
+
+        where_dict = self._where[1]
+        if self._where[0] and isinstance(self._where[0][0], dict):
+            where_dict.update(self._where[0][0])
+        for key, val in where_dict.items():
+            if isinstance(key, tuple):
+                if not isinstance(val, tuple):
+                    raise ValueError("Value must be a tuple for composite key where clause")
+
+                where_clause.append(f"({', '.join(key)}) = ({', '.join(('%s',) * len(val))})")
+                param_tuple += val
+            else:
+                where_clause.append(f"`{key}` = %s")
+                param_tuple += (val,)
         where_query += ' AND '.join(where_clause)
 
         return where_query, param_tuple

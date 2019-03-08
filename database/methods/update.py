@@ -11,8 +11,8 @@ class Update(BaseQuery):
         self._items = kwargs.items()
         return self
 
-    def where(self, **kwargs):
-        self._where = kwargs
+    def where(self, *args, **kwargs):
+        self._where = args, kwargs
         return self
 
     def _build_items(self):

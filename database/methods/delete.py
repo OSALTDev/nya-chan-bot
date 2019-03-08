@@ -6,8 +6,8 @@ class Delete(BaseQuery):
     def __init__(self, table_name, where=None):
         super().__init__(table_name=table_name, where=where)
 
-    def where(self, **kwargs):
-        self._where = kwargs
+    def where(self, *args, **kwargs):
+        self._where = args, kwargs
         return self
 
     @property
