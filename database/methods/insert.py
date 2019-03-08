@@ -34,4 +34,8 @@ class Insert(BaseQuery):
         items, values, query_params = self._build_items()
         query = query.format(table=self._table_name, items=items, values=values)
 
+        if self._appended:
+            query += self._appended[0]
+            query_params += self._appended[1]
+
         return query, query_params

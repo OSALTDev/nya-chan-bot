@@ -1,18 +1,23 @@
 class BaseQuery:
-    __slots__ = ('_table_name', '_distinct', '_limit', '_order', '_where', '_items', '_query_params')
+    __slots__ = ('_table_name', '_distinct', '_limit', '_order', '_where', '_items', '_query_params', '_appended')
 
-    def __init__(self, table_name=None, distinct=False, limit=None, order=None, where=None, items=None):
+    def __init__(self, table_name=None, distinct=False, appended_sql=None, limit=None, order=None, where=None,
+                 items=None):
         self._table_name = table_name
         self._distinct = distinct
         self._limit = limit
         self._order = order
         self._where = where
         self._items = items
-
+        self._appended = appended_sql
         self._query_params = ()
 
     def run(self, cursor):
         return cursor.execute(*self.build)
+
+    def append_sql(self, action, params=None):
+        self._appended = action, params if isinstance(params, tuple) else ()
+        return self
 
     @property
     def build(self):
