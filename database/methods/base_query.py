@@ -21,12 +21,13 @@ class BaseQuery:
     def __str__(self):
         return self.build[0]
 
-    def _append_where(self, query):
-        query += " WHERE "
+    def _build_where(self):
+        where_query = " WHERE "
         where_clause = []
+        param_tuple = ()
         for key, val in self._where.items():
             where_clause.append(f"`{key}` = %s")
-            self._query_params += (val,)
-        query += ' AND '.join(where_clause)
+            param_tuple += (val,)
+        where_query += ' AND '.join(where_clause)
 
-        return query
+        return where_query, param_tuple

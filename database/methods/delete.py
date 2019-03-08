@@ -12,11 +12,12 @@ class Delete(BaseQuery):
 
     @property
     def build(self):
-        if not self._where:
-            return False
+        query = Constants.Templates.DELETE.format(table=self._table_name)
+        query_params = ()
 
-        query = Constants.Templates.DELETE
-        query = query.format(table=self._table_name)
-        query = self._append_where(query)
+        if self.where:
+            where_query, where_query_params = self._build_where()
+            query += where_query
+            query_params = where_query_params
 
-        return query, self._query_params
+        return query, query_params
