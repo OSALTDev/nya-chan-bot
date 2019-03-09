@@ -10,6 +10,9 @@ class Insert(BaseQuery):
         self._items = kwargs.items()
         return self
 
+    def or_update(self, **kwargs):
+        self._duplicate_key_update_action = kwargs.items()
+
     def _build_items(self):
         item_tuple = ()
         value_tuple = ()
@@ -27,6 +30,18 @@ class Insert(BaseQuery):
 
         return ", ".join(item_tuple), ", ".join(value_tuple), param_tuple
 
+    def _build_update_items(self):
+        item_tuple = ()
+        param_tuple = ()
+        for key, value in self._items:
+            if isinstance(value, DBFunction):
+                item_tuple += (f"`{key}` = {value.val}",)
+                continue
+
+            item_tuple += (f"`{key}` = %s",)
+            param_tuple += (value,)
+        return ", ".join(item_tuple), param_tuple
+
     @property
     def build(self):
         query = Constants.Templates.INSERT
@@ -34,8 +49,9 @@ class Insert(BaseQuery):
         items, values, query_params = self._build_items()
         query = query.format(table=self._table_name, items=items, values=values)
 
-        if self._appended:
-            query += self._appended[0]
-            query_params += self._appended[1]
+        if self._duplicate_key_update_action:
+            dup_query, dup_params = self._build_update_items()
+            query += dup_query
+            query_params += dup_params
 
         return query, query_params
