@@ -67,7 +67,7 @@ class BotConfig(object):
 
     @property
     def subcommands_in_help(self):
-        return self.bot.get('subcommands_in_help').lower()[0] == "y"
+        return self.bot.get('subcommands_in_help', 'n').lower()[0] == "y"
 
     @property
     def channel(self):

@@ -1,13 +1,16 @@
 bot:
+    token: Discord_token
     name: bot_name
     description: bot_description
     prefix: command_prefix
+    subcommands_in_help: n
+
     startup_cogs:
         - cog1
         - cog2
         - cog...
         - cogN
-    token: Discord_token
+        
     custom_channels:
         bot_commands: channel_id
         ama_destination: channel_id
