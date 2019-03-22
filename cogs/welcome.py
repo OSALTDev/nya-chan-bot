@@ -2,16 +2,16 @@ from discord.ext import commands
 import discord
 
 from cogs.base_cog import BaseCog
+from database import Methods as db_util
 
 
 class Welcome(BaseCog, name="Welcome"):
     """Welcomes new members to the server via private message"""
     def get_message(self, guild):
         with self.cursor_context() as cursor:
-            res = cursor.execute("""SELECT message FROM welcomes WHERE id_server = %s""", guild.id)
+            res = cursor.execute(*db_util.select("welcomes", items="message").where(id_server=guild.id).build)
             if not res:
-                cursor.execute("""INSERT INTO welcomes (id, id_server, message) VALUES (null, %s, "")""",
-                               guild.id)
+                cursor.execute(*db_util.insert("welcomes").items(id_server=guild.id, message="").build)
                 return None
 
             row = cursor.fetchone()

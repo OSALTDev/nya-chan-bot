@@ -3,6 +3,7 @@ from discord.ext import commands
 from cogs.base_cog import BaseCog
 import datetime
 import pytz
+from database import Methods as db_util
 
 
 class Profiles(BaseCog):
@@ -29,16 +30,14 @@ class Profiles(BaseCog):
             return
 
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute("""SELECT `id` FROM `profiles` WHERE `id_user` = %s""", ctx.author.id)
+            cursor.execute(*db_util.select("profiles").items("id").limit(1).where(id_user=ctx.author.id).build)
             row = cursor.fetchone()
+
+        with self.cursor_context(commit=True) as cursor:
             if not row:
-                cursor.execute(
-                    "INSERT INTO profiles (id, id_user, timezone) VALUES (null, %s, %s)",
-                    (ctx.author.id, tz_name))
+                cursor.execute(*db_util.insert("profiles").items(id_user=ctx.author.id, timezone=tz_name).build)
             else:
-                cursor.execute(
-                    "UPDATE profiles SET timezone = %s WHERE id = %s",
-                    (tz_name, row[0]))
+                cursor.execute(*db_util.update("profiles").items(timezone=tz_name).where(id=row[0]).build)
 
         utc = pytz.utc
         time_now = datetime.datetime.utcnow()
@@ -84,7 +83,7 @@ class Profiles(BaseCog):
         time_now_utc = utc.localize(time_now)
 
         with self.cursor_context() as cursor:
-            cursor.execute("""SELECT `timezone` FROM `profiles` WHERE `id_user` = %s""", user.id)
+            cursor.execute(*db_util.select("profiles").items("timezone").where(id_user=user.id).build)
             row = cursor.fetchone()
 
         if not row:

@@ -1,5 +1,7 @@
 from cogs.base_cog import BaseCog
 from discord.ext import commands
+from database import Methods as db_util
+from database import DBFunction
 
 
 class Stats(BaseCog):
@@ -10,57 +12,49 @@ class Stats(BaseCog):
             guild = message.guild
             author = message.author
             channel = message.channel
-            if channel is not None:
+            if guild is not None:
+                with self.cursor_context() as cursor:
+                    cursor.execute(*db_util.select("statistics_global").items("id", "msg_count")
+                                   .where(id_server=guild.id, id_user=author.id, id_channel=channel.id).build)
+                    row = cursor.fetchone()
+
                 with self.cursor_context(commit=True) as cursor:
-                    cursor.execute(
-                        """SELECT id FROM statistics_global 
-                        WHERE id_server = %s AND id_user = %s AND id_channel = %s""",
-                        (guild.id, author.id, channel.id))
-                    rows = cursor.fetchall()
-                    if len(rows) == 0:
-                        cursor.execute(
-                            """INSERT INTO statistics_global (id, id_server, id_user, id_channel, msg_count) 
-                            VALUES (null, %s, %s, %s, 1)""",
-                            (guild.id, author.id, channel.id)
-                        )
+                    if not row:
+                        cursor.execute(*db_util.insert("statistics_global")
+                                       .items(id_server=guild.id, id_user=author.id,
+                                              id_channel=channel.id, msg_count=1).build)
                     else:
-                        row_id = rows[0][0]
-                        cursor.execute(
-                            """UPDATE statistics_global SET msg_count = msg_count + 1 
-                            WHERE id = %s""", (row_id)
-                        )
+                        row_id = row[0]
+                        cursor.execute(*db_util.update("statistics_global").items(msg_count=DBFunction("msg_count+1"))
+                                       .where(id=row_id).build)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute(
-                """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) 
-                VALUES (null, %s, %s, NOW(), "joined")""",
-                (member.guild.id, member.id))
+            cursor.execute(*db_util.insert("event_logs")
+                           .items(id_server=member.guild.id, id_user=member.id,
+                                  date_utc=DBFunction("NOW()"), event_type="joined").build)
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute(
-                """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) 
-                VALUES (null, %s, %s, NOW(), "left")""",
-                (member.guild.id, member.id))
+            cursor.execute(*db_util.insert("event_logs")
+                           .items(id_server=member.guild.id, id_user=member.id,
+                                  date_utc=DBFunction("NOW()"), event_type="left").build)
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, user):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute(
-                """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) 
-                VALUES (null, %s, %s, NOW(), "banned")""",
-                (guild.id, user.id))
+            cursor.execute(*db_util.insert("event_logs")
+                           .items(id_server=guild.id, id_user=user.id,
+                                  date_utc=DBFunction("NOW()"), event_type="banned").build)
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, user):
         with self.cursor_context(commit=True) as cursor:
-            cursor.execute(
-                """INSERT INTO event_logs (id, id_server, id_user, date_utc, event_type) 
-                VALUES (null, %s, %s, NOW(), "unbanned")""",
-                (guild.id, user.id))
+            cursor.execute(*db_util.insert("event_logs")
+                           .items(id_server=guild.id, id_user=user.id,
+                                  date_utc=DBFunction("NOW()"), event_type="banned").build)
 
 
 def setup(bot):
