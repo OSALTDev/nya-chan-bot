@@ -66,6 +66,10 @@ class BotConfig(object):
         return self.bot.get('token')
 
     @property
+    def subcommands_in_help(self):
+        return self.bot.get('subcommands_in_help').lower()[0] == "y"
+
+    @property
     def channel(self):
         return ReadOnlyDictAttributeAccess(self.bot.get('custom_channels'))
 

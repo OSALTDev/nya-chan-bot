@@ -2,6 +2,7 @@ from discord.ext import commands
 from cogs.base_cog import BaseCog
 import discord
 from nyalib.NyaBot import ThrowawayException
+from database import Methods as db_util
 
 
 class Tags(BaseCog, name="Tags"):
@@ -34,8 +35,8 @@ class Tags(BaseCog, name="Tags"):
 
         # Check if tag exists in database
         with self.cursor_context() as cursor:
-            cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""",
-                           (message.guild.id, specified_tag))
+            cursor.execute(*db_util.select("tags").items("name", "channel").limit(1)
+                           .where(id_server=message.guild.id, name=specified_tag).build)
             row = cursor.fetchone()
 
         if not row:
@@ -64,8 +65,8 @@ class Tags(BaseCog, name="Tags"):
 
             # Check if tag exists in database
             with self.cursor_context() as cursor:
-                cursor.execute("""SELECT name, channel FROM tags WHERE id_server = %s AND name=%s LIMIT 1""",
-                               (ctx.guild.id, tag))
+                cursor.execute(*db_util.select("tags").items("name", "channel").limit(1)
+                               .where(id_server=ctx.guild.id, name=tag).build)
                 row = cursor.fetchone()
 
             if not row:
@@ -133,8 +134,8 @@ class Tags(BaseCog, name="Tags"):
     async def list(self, ctx):
         """Lists the available tags"""
         with self.cursor_context() as cursor:
-            cursor.execute("""SELECT name, description, channel FROM tags WHERE id_server = %s ORDER BY name ASC""",
-                           ctx.guild.id)
+            cursor.execute(*db_util.select("tags").items("name", "description", "channel")
+                           .order(">name").where(id_server=ctx.guild.id).build)
             rows = cursor.fetchall()
 
         embed = discord.Embed(title="List of the available tags", type="rich",

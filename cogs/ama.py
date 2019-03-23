@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from cogs.base_cog import BaseCog
+from database import Methods as db_util
 
 
 class Ama(BaseCog, name="Ask me anything"):
@@ -77,8 +78,8 @@ class Ama(BaseCog, name="Ask me anything"):
         saved = []
         with self.cursor_context() as cursor:
             # Get the last stream ID
-            res = cursor.execute("""SELECT id FROM streams WHERE id_server = %s ORDER BY `date` DESC LIMIT 1""",
-                                 (ctx.guild.id))
+            res = cursor.execute(*db_util.select("streams", "id").limit(1)
+                                 .where(id_server=ctx.guild.id).order(date="desc").build)
             if not res:
                 await ctx.reply('No streams have been found !')
                 return
@@ -117,14 +118,10 @@ class Ama(BaseCog, name="Ask me anything"):
                 q_timestamp = '' if timestamp is None else timestamp
 
                 with self.cursor_context(commit=True) as cursor:
-                    cursor.execute(
-                        "INSERT INTO questions (id, id_server, id_stream, author, datetime, question, timestamp)"
-                        "VALUES (null, %s, %s, %s, %s, %s, %s)",
-                        (
-                            ctx.guild.id, stream_id, q_author,
-                            q_date.strftime('%Y-%m-%d %H:%M:%S'), q_content, q_timestamp
-                        )
-                    )
+                    cursor.execute(*db_util.insert("questions")
+                                   .items(id_server=ctx.guild.id, id_stream=stream_id, author=q_author,
+                                          datetime=q_date.strftime('%Y-%m-%d %H:%M:%S'), question=q_content,
+                                          timestamp=q_timestamp))
 
         if saved:
             for msg in saved:
