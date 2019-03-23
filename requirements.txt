@@ -5,3 +5,4 @@ schedule==0.4.3
 distro==1.0.4
 GitPython==2.1.5
 pytz==2017.2
+jishaku==1.10.0.100

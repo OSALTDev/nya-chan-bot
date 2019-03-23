@@ -25,8 +25,8 @@ class ReadOnlyDictAttributeAccess(dict):
 
 
 class BotConfig(object):
-    def __init__(self, **kargs):
-        self.bot = copy(kargs)
+    def __init__(self, **kwargs):
+        self.bot = copy(kwargs)
 
     @property
     def description(self):
@@ -50,14 +50,24 @@ class BotConfig(object):
         cogs = self.bot.get('startup_cogs')
         if not cogs:
             cogs = [
-                f.replace('.py', '')
+                {"file": f.replace('.py', ''), "in_cogs": True}
                 for f in os.listdir("cogs")
-                if os.path.isfile(os.path.join("cogs", f)) and f.split(".")[-1] == "py"
+                if os.path.isfile(os.path.join("cogs", f)) and
+                f.split(".")[-1] == "py" and
+                f.split(".")[-2] != "base_cog"
             ]
-            cogs.remove("base_cog")
-            cogs.remove("__init__")
+
+            if os.getenv("DEBUG"):
+                cogs.append({"file": "jishaku", "in_cogs": False})
         elif 'owner' not in cogs:
             cogs.append('owner')
+            if os.getenv("DEBUG") and "jishaku" not in cogs:
+                cogs.append("jishaku")
+            cogs = [
+                {"file": f.replace('.py', ''), "in_cogs": os.path.isfile(os.path.join("cogs", f))}
+                for f in cogs
+                if f.split(".")[-1] == "py" and f.split(".")[-2] != "base_cog"
+            ]
 
         return cogs
 
