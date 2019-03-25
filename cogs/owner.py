@@ -3,6 +3,7 @@ import subprocess
 import discord
 import psutil
 import sys
+import traceback
 from discord.ext import commands
 from cogs.base_cog import BaseCog
 from database import Methods as db_util
@@ -68,45 +69,48 @@ class Cog(BaseCog, name="Owner"):
     async def load(self, ctx, cog_name: str):
         """Loads a cog."""
         # try:
-        if f"cogs.{cog_name}" not in self.bot.extensions:
-            try:
-                self.bot.load_extension('cogs.' + cog_name)
-            except (AttributeError, ImportError) as e:
-                print("Failed to load cog: {} due to {}".format(cog_name, str(e)))
-                await ctx.author.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-            else:
-                await ctx.author.send("```{} loaded.```".format(cog_name))
+        try:
+            self.bot.load_extension('cogs.' + cog_name)
+        except commands.ExtensionAlreadyLoaded:
+            await ctx.author.send(f"The cog `{cog_name}` is already loaded.")
+        except commands.ExtensionNotFound:
+            await ctx.author.send("The cog `{cog_name}` was not found.")
+        except commands.NoEntryPointError:
+            await ctx.author.send("The cog `{cog_name}` has no entry point method (setup or Cog.setup).")
+        except commands.ExtensionFailed:
+            await ctx.author.send("The cog `{cog_name}` was not loaded. Please check logs.")
+            print(f"Failed to reload cog: {cog_name}")
+            traceback.print_exc()
         else:
-            await ctx.author.send("```py\n'{}' module is already loaded\n```".format(cog_name))
+            await ctx.author.send("```{} loaded.```".format(cog_name))
 
     @cogs.command()
     async def unload(self, ctx, cog_name: str):
         """Unloads a cog."""
-        if f"cogs.{cog_name}" in self.bot.extensions:
-            try:
-                self.bot.unload_extension('cogs.' + cog_name)
-            except (AttributeError, ImportError) as e:
-                print("Failed to unload cog: {} due to {}".format(cog_name, str(e)))
-                await ctx.author.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-            else:
-                await ctx.author.send("```{} unloaded.```".format(cog_name))
+        try:
+            self.bot.unload_extension('cogs.' + cog_name)
+        except commands.ExtensionNotLoaded:
+            await ctx.author.send(f"The cog `{cog_name}` is not loaded.")
         else:
-            await ctx.author.send("```py\n'{}' module is not loaded\n```".format(cog_name))
+            await ctx.author.send(f"The cog {cog_name} has been unloaded")
 
     @cogs.command()
     async def reload(self, ctx, cog_name: str):
         """Reloads a cog."""
-        if cog_name in self.bot.extensions:
-            try:
-                self.bot.unload_extension('cogs.' + cog_name)
-                self.bot.load_extension('cogs.' + cog_name)
-            except (AttributeError, ImportError) as e:
-                print("Failed to unload cog: {} due to {}".format(cog_name, str(e)))
-                await ctx.author.send("```py\n{}: {}\n```".format(type(e).__name__, str(e)))
-            else:
-                await ctx.author.send("```{} reloaded.```".format(cog_name))
+        try:
+            self.bot.reload_extension('cogs.' + cog_name)
+        except commands.ExtensionNotLoaded:
+            await ctx.author.send(f"The cog `{cog_name}` is not loaded.")
+        except commands.ExtensionNotFound:
+            await ctx.author.send("The cog `{cog_name}` was not found.")
+        except commands.NoEntryPointError:
+            await ctx.author.send("The cog `{cog_name}` has no entry point method (setup or Cog.setup).")
+        except commands.ExtensionFailed:
+            await ctx.author.send("The cog `{cog_name}` was not loaded. Please check logs.")
+            print(f"Failed to reload cog: {cog_name}")
+            traceback.print_exc()
         else:
-            await ctx.author.send("```py\n'{}' module is not loaded\n```".format(cog_name))
+            await ctx.author.send(f"The cog {cog_name} has been reloaded")
 
     @commands.command()
     @commands.guild_only()
