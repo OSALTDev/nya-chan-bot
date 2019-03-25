@@ -33,6 +33,40 @@ class CustomContextCustomItems:
             item.value = item_value
 
 
+class CustomContextReply:
+    # Returned by a property, this class allows replies to different destinations
+    # - If command issued in DM, reply in DM
+    # - If command issued in bot-command, reply in bot-command
+    # - If command issued elsewhere, reply in DM, if that fails, reply in bot-command,
+    #   if not found reply in same channel
+    # TODO: Disable commands outside of bot-commands
+
+    def __init__(self, context):
+        self._context = context
+        self._dm = False
+
+    async def __call__(self, content=None, **kwargs):
+        ctx = self._context
+        if ctx.guild and ctx.channel.id != ctx.bot.config.bot.channel.bot_commands:
+            if content:
+                content = f"{ctx.author.mention}: {content}"
+            else:
+                content = f"{ctx.author.mention}"
+
+        try:
+            if self._dm is True:
+                return await ctx.author.send(content, **kwargs)
+            else:
+                return await ctx.destination.send(content, **kwargs)
+        except discord.Forbidden:
+            return await ctx.channel.send(content, **kwargs)
+
+    @property
+    def dm(self):
+        self._dm = True
+        return self
+
+
 class CustomContext(commands.Context):
     def __init__(self, **attrs):
         super().__init__(**attrs)
@@ -53,23 +87,7 @@ class CustomContext(commands.Context):
             self._custom_items = CustomContextCustomItems()
         return self._custom_items
 
-    async def reply(self, content=None, dm=False, **kwargs):
-        # Set a method in the current context allowing replies to different destinations
-        # - If command issued in DM, reply in DM
-        # - If command issued in bot-command, reply in bot-command
-        # - If command issued elsewhere, reply in DM, if that fails, reply in bot-command,
-        #   if not found reply in same channel
-        # TODO: Disable commands outside of bot-commands
-        if self.guild and self.channel.id != self.bot.config.bot.channel.bot_commands:
-            if content:
-                content = f"{self.author.mention}: {content}"
-            else:
-                content = f"{self.author.mention}"
-
-        try:
-            if dm is True:
-                return await self.author.send(content, **kwargs)
-            else:
-                return await self.destination.send(content, **kwargs)
-        except discord.Forbidden:
-            return await self.channel.send(content, **kwargs)
+    @property
+    def reply(self):
+        ctx = CustomContextReply(self)
+        return ctx
