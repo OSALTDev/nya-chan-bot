@@ -55,9 +55,12 @@ class CustomContextReply:
 
         try:
             if self._dm is True:
-                return await ctx.author.send(content, **kwargs)
-            else:
-                return await ctx.destination.send(content, **kwargs)
+                try:
+                    return await ctx.author.send(content, **kwargs)
+                except discord.Forbidden:
+                    return await ctx.destination.send(content, **kwargs)
+
+            return await ctx.destination.send(content, **kwargs)
         except discord.Forbidden:
             return await ctx.channel.send(content, **kwargs)
 
