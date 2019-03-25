@@ -59,11 +59,11 @@ async def on_command_completion(ctx):
 
 
 @bot.event
-async def on_error(name, context, _):
+async def on_error(*args):
     if not os.getenv("DEBUG"):
         return
 
-    raise _
+    raise next(t for t in args if isinstance(t, Exception))
 
 
 class MainDriver:
