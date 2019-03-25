@@ -30,9 +30,9 @@ class Cog(BaseCog, name="Owner"):
                                                shell=True)
             process = subprocess.check_output("git checkout origin/{}".format(branch), stderr=subprocess.STDOUT,
                                               shell=True)
-            await ctx.author.send("```Git pull from '{}' success```".format(branch))
+            await ctx.reply.dm("```Git pull from '{}' success```".format(branch))
         except Exception as e:
-            await ctx.author.send("```py\nError while git pulling\n```")
+            await ctx.reply.dm("```py\nError while git pulling\n```")
             raise commands.UserInputError(ctx)
 
     @git.command()
@@ -45,10 +45,10 @@ class Cog(BaseCog, name="Owner"):
             remotes = repo.remotes[0].refs
 
             for item in remotes:
-                await ctx.author.send(item.remote_head)
+                await ctx.reply.dm(item.remote_head)
 
         except Exception as e:
-            await ctx.author.send("```py\nError listing git branches\n```")
+            await ctx.reply.dm("```py\nError listing git branches\n```")
             raise commands.UserInputError(ctx)
 
     @commands.group(invoke_without_command=True)
@@ -60,10 +60,10 @@ class Cog(BaseCog, name="Owner"):
     async def list(self, ctx):
         """Lists loaded cogs."""
         if not self.bot.extensions:
-            await ctx.author.send("```No modules loaded```")
+            await ctx.reply.dm("```No modules loaded```")
             return
 
-        await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.extensions.keys())))
+        await ctx.reply.dm("```Loaded modules : {}```".format(", ".join(self.bot.extensions.keys())))
 
     @cogs.command()
     async def load(self, ctx, cog_name: str):
@@ -130,7 +130,7 @@ class Cog(BaseCog, name="Owner"):
             '{} - {}'.format(role.name, role.id)
             for role in ctx.guild.roles
         ]
-        await ctx.author.send('{}'.format("\n".join(role_list)))
+        await ctx.reply.dm('{}'.format("\n".join(role_list)))
 
     @commands.command()
     @commands.guild_only()
@@ -139,7 +139,7 @@ class Cog(BaseCog, name="Owner"):
             '{} - {}'.format(chan.name, chan.id)
             for chan in ctx.guild.channels
         ]
-        await ctx.author.send('{}'.format("\n".join(chan_list)))
+        await ctx.reply.dm('{}'.format("\n".join(chan_list)))
 
     @commands.command()
     async def shutdown(self, ctx):
@@ -173,4 +173,4 @@ class Cog(BaseCog, name="Owner"):
                         continue
 
                     cursor.execute(*db_util.insert("users", id_user=user.id, user_name=str(user)))
-        await ctx.author.send('Done')
+        await ctx.reply.dm('Done')
