@@ -53,7 +53,7 @@ class CustomContext(commands.Context):
             self._custom_items = CustomContextCustomItems()
         return self._custom_items
 
-    async def reply(self, content=None, **kwargs):
+    async def reply(self, content=None, dm=False, **kwargs):
         # Set a method in the current context allowing replies to different destinations
         # - If command issued in DM, reply in DM
         # - If command issued in bot-command, reply in bot-command
@@ -62,11 +62,14 @@ class CustomContext(commands.Context):
         # TODO: Disable commands outside of bot-commands
         if self.guild and self.channel.id != self.bot.config.bot.channel.bot_commands:
             if content:
-                content = "{0.mention}: {1}".format(self.author, content)
+                content = f"{self.author.mention}: {content}"
             else:
-                content = "{0.mention}".format(self.author)
+                content = f"{self.author.mention}"
 
         try:
-            return await self.destination.send(content, **kwargs)
+            if dm is True:
+                return await self.author.send(content, **kwargs)
+            else:
+                return await self.destination.send(content, **kwargs)
         except discord.Forbidden:
             return await self.channel.send(content, **kwargs)

@@ -13,7 +13,7 @@ class Cog(BaseCog, name="Owner"):
     @commands.group(invoke_without_command=True)
     async def git(self, ctx):
         """Git commands."""
-        await self.no_invoke_help(ctx)
+        await ctx.send_help("git")
 
     async def cog_check(self, ctx):
         if not await ctx.bot.is_owner(ctx.author):
@@ -54,7 +54,7 @@ class Cog(BaseCog, name="Owner"):
     @commands.group(invoke_without_command=True)
     async def cogs(self, ctx):
         """Cogs related commands."""
-        await self.no_invoke_help(ctx)
+        await ctx.send_help("cogs")
 
     @cogs.command()
     async def list(self, ctx):
@@ -72,17 +72,17 @@ class Cog(BaseCog, name="Owner"):
         try:
             self.bot.load_extension('cogs.' + cog_name)
         except commands.ExtensionAlreadyLoaded:
-            await ctx.author.send(f"The cog `{cog_name}` is already loaded.")
+            await ctx.reply(f"The cog `{cog_name}` is already loaded.", dm=True)
         except commands.ExtensionNotFound:
-            await ctx.author.send("The cog `{cog_name}` was not found.")
+            await ctx.reply(f"The cog `{cog_name}` was not found.", dm=True)
         except commands.NoEntryPointError:
-            await ctx.author.send("The cog `{cog_name}` has no entry point method (setup or Cog.setup).")
+            await ctx.reply(f"The cog `{cog_name}` has no entry point method (setup or Cog.setup).", dm=True)
         except commands.ExtensionFailed:
-            await ctx.author.send("The cog `{cog_name}` was not loaded. Please check logs.")
+            await ctx.reply(f"The cog `{cog_name}` was not loaded. Please check logs.", dm=True)
             print(f"Failed to reload cog: {cog_name}")
             traceback.print_exc()
         else:
-            await ctx.author.send("```{} loaded.```".format(cog_name))
+            await ctx.reply(f"The cog `{cog_name}` has been loaded", dm=True)
 
     @cogs.command()
     async def unload(self, ctx, cog_name: str):
@@ -90,9 +90,9 @@ class Cog(BaseCog, name="Owner"):
         try:
             self.bot.unload_extension('cogs.' + cog_name)
         except commands.ExtensionNotLoaded:
-            await ctx.author.send(f"The cog `{cog_name}` is not loaded.")
+            await ctx.reply(f"The cog `{cog_name}` is not loaded.", dm=True)
         else:
-            await ctx.author.send(f"The cog {cog_name} has been unloaded")
+            await ctx.reply(f"The cog `{cog_name}` has been unloaded", dm=True)
 
     @cogs.command()
     async def reload(self, ctx, cog_name: str):
@@ -100,17 +100,17 @@ class Cog(BaseCog, name="Owner"):
         try:
             self.bot.reload_extension('cogs.' + cog_name)
         except commands.ExtensionNotLoaded:
-            await ctx.author.send(f"The cog `{cog_name}` is not loaded.")
+            await ctx.reply(f"The cog `{cog_name}` is not loaded.", dm=True)
         except commands.ExtensionNotFound:
-            await ctx.author.send("The cog `{cog_name}` was not found.")
+            await ctx.reply(f"The cog `{cog_name}` was not found.", dm=True)
         except commands.NoEntryPointError:
-            await ctx.author.send("The cog `{cog_name}` has no entry point method (setup or Cog.setup).")
+            await ctx.reply(f"The cog `{cog_name}` has no entry point method (setup or Cog.setup).", dm=True)
         except commands.ExtensionFailed:
-            await ctx.author.send("The cog `{cog_name}` was not loaded. Please check logs.")
+            await ctx.reply(f"The cog `{cog_name}` was not loaded. Please check logs.", dm=True)
             print(f"Failed to reload cog: {cog_name}")
             traceback.print_exc()
         else:
-            await ctx.author.send(f"The cog {cog_name} has been reloaded")
+            await ctx.reply(f"The cog `{cog_name}` has been reloaded", dm=True)
 
     @commands.command()
     @commands.guild_only()
