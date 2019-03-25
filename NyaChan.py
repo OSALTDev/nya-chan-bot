@@ -38,10 +38,7 @@ async def on_command_error(ctx, error):
         msg = msg_list.get(error.__class__, "{msg.author}, error```py\n{errn}: {errs}\n```")
         msg = msg.format(msg=ctx.message, err=error, errn=type(error).__name__, errs=str(error))
         if error.__class__ not in (commands.UserInputError, commands.NoPrivateMessage):
-            try:
-                await ctx.author.send(msg)
-            except discord.Forbidden:
-                await ctx.reply(msg)
+            await ctx.reply.dm(msg)
             if os.getenv("DEBUG"):
                 raise error
         else:
