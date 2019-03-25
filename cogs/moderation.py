@@ -71,7 +71,7 @@ class Cog(BaseCog, name="Moderation"):
     @commands.group(invoke_without_command=True)
     async def mod(self, ctx):
         """Mod commands."""
-        await self.no_invoke_help(ctx)
+        await ctx.send_help("mod")
 
     @mod.group(invoke_without_command=True, description='Promotes an user to be a Mod')
     async def set(self, ctx, user: discord.Member):

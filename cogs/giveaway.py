@@ -30,7 +30,7 @@ class Cog(BaseCog, name="Giveaway"):
     @commands.group(invoke_without_command=True)
     async def ga(self, ctx):
         """Giveaway commands."""
-        await self.no_invoke_help(ctx)
+        await ctx.send_help("ga")
 
     @ga.command(description='Starts a giveaway.')
     @commands.guild_only()

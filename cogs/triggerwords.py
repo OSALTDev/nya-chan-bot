@@ -57,7 +57,7 @@ class Cog(BaseCog, name="Trigger words"):
 
     @commands.group(invoke_without_command=True)
     async def trigger(self, ctx):
-        await self.no_invoke_help(ctx)
+        await ctx.send_help("trigger")
 
     @trigger.command()
     async def add(self, ctx):
