@@ -52,7 +52,7 @@ class Insert(BaseQuery):
 
         if self._duplicate_key_update_action:
             dup_query, dup_params = self._build_update_items()
-            query += dup_query
+            query += " ON DUPLICATE KEY UPDATE " + dup_query
             query_params += dup_params
 
         return query, query_params
