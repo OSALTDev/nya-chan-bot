@@ -12,6 +12,7 @@ class Insert(BaseQuery):
 
     def or_update(self, **kwargs):
         self._duplicate_key_update_action = kwargs.items()
+        return self
 
     def _build_items(self):
         item_tuple = ()
