@@ -2,8 +2,6 @@
 import discord
 from discord.ext import commands
 from nyalib.NyaBot import NyaBot, ThrowawayException
-import sys
-import traceback
 import re
 import os
 
@@ -30,7 +28,7 @@ async def on_command_error(ctx, error):
             commands.NotOwner: "Only my Owner can ask me to do that, nya!```{msg.content}```",
             commands.UserInputError: "{msg.author.mention}, Input error```py\n{errn}: {errs}\n```",
             commands.NoPrivateMessage: "{msg.author.mention}, this command cannot be send in a PM!```{msg.content}```",
-            commands.CheckFailure: "You don\'t have the permission to use this command, {msg.author.mention}"
+            commands.CheckFailure: "You don\'t have the permission to use this command"
                                    "```\n{msg.content}```",
             commands.BadArgument: bad_argument_to_reply_string(error)
         }
@@ -38,14 +36,18 @@ async def on_command_error(ctx, error):
         # Get error message by class
         # If error not handled in dict, use general error message
         msg = msg_list.get(error.__class__, "{msg.author}, error```py\n{errn}: {errs}\n```")
-        if error.__class__ in (commands.BadArgument, commands.NotOwner, commands.CheckFailure):
-            # Only use the reply method if a certain type of error
-            # If note one of the set types, then DM
-            await ctx.reply(msg.format(msg=ctx.message))
-        else:
-            await ctx.author.send(msg.format(msg=ctx.message, errn=type(error).__name__, errs=str(error)))
+        msg = msg.format(msg=ctx.message, err=error, errn=type(error).__name__, errs=str(error))
+        if error.__class__ not in (commands.UserInputError, commands.NoPrivateMessage):
+            try:
+                await ctx.author.send(msg)
+            except discord.Forbidden:
+                await ctx.reply(msg)
             if os.getenv("DEBUG"):
                 raise error
+        else:
+            # Only use the reply method if a certain type of error
+            # If note one of the set types, then DM
+            await ctx.reply(msg)
 
 
 @bot.event
@@ -60,39 +62,11 @@ async def on_command_completion(ctx):
 
 
 @bot.event
-async def on_error(_, msg):
+async def on_error(name, context, _):
     if not os.getenv("DEBUG"):
         return
 
-    cls, exc, tb = sys.exc_info()
-
-    if cls == ThrowawayException:
-        return
-
-    await msg.add_reaction("🚫")
-    err_str = str(cls) + ": " + str(exc.args[1]) + "\n\nTraceback:\n"
-    ttb = []
-
-    sep = "\\" if os.name == "nt" else "/"
-    for ln in traceback.format_tb(tb, 50):
-        ln_m = re.match("  File \"(.*)\", line (\d+), in ([^\s]+)\n(.*)", ln, re.DOTALL)
-
-        p = ln_m.group(1).split(sep)
-        lnn = ln_m.group(2)
-
-        tp = []
-        for i in p:
-            if not tp:
-                if i != "site-packages":
-                    continue
-                i = "<pip_pkg>"
-            tp.append(i)
-
-        ttb.append("  {} : {} ({})\n{} {}".format(
-            sep.join(tp or p), lnn, ln_m.group(3), " " if tp else ">", ln_m.group(4)))
-
-    err_str += "".join(ttb)
-    print(err_str)
+    raise _
 
 
 class MainDriver:
@@ -100,9 +74,9 @@ class MainDriver:
         self.bot = bot
         for cog in self.bot.config.bot.cogs:
             try:
-                self.bot.load_extension('cogs.' + cog)
-            except (AttributeError, ImportError) as e:
-                print("Failed to load cog: {} due to {}".format(cog, str(e)))
+                self.bot.load_extension(('cogs.' if cog["in_cogs"] else "") + cog["file"])
+            except (commands.ExtensionFailed, commands.ExtensionError, commands.ExtensionNotFound) as e:
+                print(f"Failed to load cog: {cog['file']} due to {e}")
 
     def run(self):
         token = self.bot.config.bot.token

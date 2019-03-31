@@ -5,7 +5,7 @@ from nyalib.NyaBot import ThrowawayException
 from database import Methods as db_util
 
 
-class Tags(BaseCog, name="Tags"):
+class Cog(BaseCog, name="Tags"):
     def __init__(self, bot):
         super().__init__(bot)
         self.on_msg_dict = {
@@ -94,19 +94,19 @@ class Tags(BaseCog, name="Tags"):
     @commands.group(invoke_without_command=True)
     async def tag(self, ctx):
         """Tag commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @tag.command(description='Identify yourself with a tag. Let other people know about you.')
     @commands.guild_only()
     async def add(self, ctx, *, tag: str):
         """Identify yourself with a tag."""
         if ctx.custom.has_role:
-            await ctx.reply('You already have the tag "{}"'.format(ctx.custom.tag_role.name))
+            await ctx.reply('You already have the tag "{}"'.format(tag))
             return
 
         await ctx.author.add_roles(ctx.custom.tag_role)
 
-        msg = 'You now have the tag "{}"'.format(ctx.custom.tag_role.name)
+        msg = 'You now have the tag "{}"'.format(tag)
         if ctx.custom.linked_channel is not None:
             msg += '. You can now see the channel {}'.format(ctx.custom.linked_channel.mention)
 
@@ -117,17 +117,16 @@ class Tags(BaseCog, name="Tags"):
     async def remove(self, ctx, *, tag: str):
         """Removes a tag."""
         if not ctx.custom.has_role:
-            await ctx.reply('You don\'t have the tag "{}"'.format(ctx.custom.tag_role.name))
+            await ctx.reply('You don\'t have the tag "{}"'.format(tag))
             return
 
         await ctx.author.remove_roles(ctx.custom.tag_role)
 
-        msg = 'You no longer have the tag "{tag_name}"'
+        msg = f'You no longer have the tag "{tag}"'
         if ctx.custom.linked_channel is not None:
-            msg += '. The channel {channel_mention} is now hidden'
+            msg += f'. The channel {ctx.custom.linked_channel.mention} is now hidden'
 
-        await ctx.reply(msg.format(
-            tag_name=ctx.custom.tag_role.name, channel_mention=ctx.custom.linked_channel.mention))
+        await ctx.reply(msg)
 
     @tag.command(description='Lists the available tags.')
     @commands.guild_only()
@@ -157,8 +156,3 @@ class Tags(BaseCog, name="Tags"):
             embed.add_field(name="None defined", value="No roles have been defined for self-assignment")
 
         await ctx.reply(embed=embed)
-
-
-def setup(bot):
-    cog = Tags(bot)
-    bot.add_cog(cog)

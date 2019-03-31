@@ -8,11 +8,11 @@ from cogs.base_cog import BaseCog
 from database import Methods as db_util
 
 
-class Owner(BaseCog):
+class Cog(BaseCog, name="Owner"):
     @commands.group(invoke_without_command=True)
     async def git(self, ctx):
         """Git commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     async def cog_check(self, ctx):
         if not await ctx.bot.is_owner(ctx.author):
@@ -53,7 +53,7 @@ class Owner(BaseCog):
     @commands.group(invoke_without_command=True)
     async def cogs(self, ctx):
         """Cogs related commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @cogs.command()
     async def list(self, ctx):
@@ -62,13 +62,13 @@ class Owner(BaseCog):
             await ctx.author.send("```No modules loaded```")
             return
 
-        await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.loaded_cogs)))
+        await ctx.author.send("```Loaded modules : {}```".format(", ".join(self.bot.extensions.keys())))
 
     @cogs.command()
     async def load(self, ctx, cog_name: str):
         """Loads a cog."""
         # try:
-        if cog_name not in self.bot.extensions:
+        if f"cogs.{cog_name}" not in self.bot.extensions:
             try:
                 self.bot.load_extension('cogs.' + cog_name)
             except (AttributeError, ImportError) as e:
@@ -82,7 +82,7 @@ class Owner(BaseCog):
     @cogs.command()
     async def unload(self, ctx, cog_name: str):
         """Unloads a cog."""
-        if cog_name in self.bot.extensions:
+        if f"cogs.{cog_name}" in self.bot.extensions:
             try:
                 self.bot.unload_extension('cogs.' + cog_name)
             except (AttributeError, ImportError) as e:
@@ -110,19 +110,14 @@ class Owner(BaseCog):
 
     @commands.command()
     @commands.guild_only()
-    async def say(self, ctx, channel_name: str, *msg):
+    async def say(self, ctx, channel: discord.TextChannel, *, msg):
         """Says something as Nya."""
-        channel = discord.utils.get(ctx.guild.channels, name=channel_name)
-        if channel is None:
-            await ctx.author.send("```py\n'{}' channel has not been found\n```".format(channel_name))
-            raise commands.UserInputError(ctx, 'Channel not found')
-
         await channel.send(" ".join(str(x) for x in msg))
 
     @commands.command()
-    async def nowplaying(self, ctx, *, game_name):
+    async def status(self, ctx, *, game_name):
         """Sets the now playing message."""
-        await self.bot.change_presence(game=discord.Game(name=" ".join(str(x) for x in game_name), type=0))
+        await self.bot.change_presence(status=discord.Status.online, activity=discord.Game(name=game_name, type=0))
 
     @commands.command()
     @commands.guild_only()
@@ -175,8 +170,3 @@ class Owner(BaseCog):
 
                     cursor.execute(*db_util.insert("users", id_user=user.id, user_name=str(user)))
         await ctx.author.send('Done')
-
-
-def setup(bot):
-    cog = Owner(bot)
-    bot.add_cog(cog)

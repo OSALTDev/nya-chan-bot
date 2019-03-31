@@ -6,7 +6,7 @@ from types import SimpleNamespace
 import functools
 
 
-class Moderation(BaseCog, name="Moderation"):
+class Cog(BaseCog, name="Moderation"):
     def __init__(self, bot):
         super().__init__(bot)
         self._set_mod = SetMod("Mod", "mod", "trainee")
@@ -71,7 +71,7 @@ class Moderation(BaseCog, name="Moderation"):
     @commands.group(invoke_without_command=True)
     async def mod(self, ctx):
         """Mod commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @mod.group(invoke_without_command=True, description='Promotes an user to be a Mod')
     async def set(self, ctx, user: discord.Member):
@@ -111,11 +111,6 @@ class Moderation(BaseCog, name="Moderation"):
     async def moderator_role(self, ctx, primary_role: discord.Role,
                              secondary_roles: commands.Greedy[discord.Role] = None):
         pass
-
-
-def setup(bot):
-    cog = Moderation(bot)
-    bot.add_cog(cog)
 
 
 class SetMod:

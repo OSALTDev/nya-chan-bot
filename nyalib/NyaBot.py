@@ -1,8 +1,10 @@
 import discord
 from discord.ext import commands
+from discord.ext.commands.bot import _is_submodule
 from nyalib.config import AppConfig
 from nyalib.CustomContext import CustomContext
-from nyalib.HelpFormatter import Formatter
+from nyalib.HelpCommand import Command
+import sys
 
 
 class ThrowawayException(Exception):
@@ -12,9 +14,54 @@ class ThrowawayException(Exception):
 class NyaBot(commands.Bot):
     def __init__(self, *args, **kwargs):
         self.config = AppConfig()
-        super().__init__(*args, command_prefix=self.config.bot.prefix, description=self.config.bot.description,
-                         pm_help=True, formatter=Formatter(),
-                         **kwargs)
+        kwargs.update(command_prefix=self.config.bot.prefix, description=self.config.bot.description,
+                      help_command=Command(dm_help=True))
+        super().__init__(*args, **kwargs)
+
+    def _load_from_module_spec(self, lib, key):
+        try:
+            if not hasattr(lib, 'Cog'):
+                if not hasattr(lib, 'setup'):
+                    raise discord.ClientException
+
+                setup = lib.setup
+            elif not hasattr(lib.Cog, 'setup'):
+                raise discord.ClientException
+            else:
+                setup = lib.Cog.setup
+        except discord.ClientException:
+            del sys.modules[key]
+            raise commands.NoEntryPointError(key)
+
+        try:
+            setup(self)
+        except Exception as e:
+            self._remove_module_references(lib.__name__)
+            self._call_module_finalizers(lib, key)
+            raise commands.ExtensionFailed(key, e) from e
+        else:
+            self._extensions[key] = lib
+
+    def _call_module_finalizers(self, lib, key):
+        try:
+            if hasattr(lib, "Cog"):
+                func = getattr(lib.Cog, 'teardown')
+            else:
+                func = getattr(lib, 'teardown')
+        except AttributeError:
+            pass
+        else:
+            try:
+                func(self)
+            except Exception:
+                pass
+        finally:
+            self._extensions.pop(key, None)
+            sys.modules.pop(key, None)
+            name = lib.__name__
+            for module in list(sys.modules.keys()):
+                if _is_submodule(name, module):
+                    del sys.modules[module]
 
     async def process_commands(self, message):
         if message.author.bot:

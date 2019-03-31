@@ -3,7 +3,7 @@ import datetime
 from cogs.base_cog import BaseCog
 
 
-class Misc(BaseCog):
+class Cog(BaseCog, name="Misc"):
     @commands.command(description='Pat Nya Chan.')
     @commands.guild_only()
     async def pat(self, ctx, location: str = 'head'):
@@ -38,8 +38,3 @@ class Misc(BaseCog):
     async def servercount(self, ctx):
         """Says how many people are on this Discord"""
         await ctx.reply('There are **{}** members on this Discord'.format(len(ctx.guild.members)))
-
-
-def setup(bot):
-    cog = Misc(bot)
-    bot.add_cog(cog)

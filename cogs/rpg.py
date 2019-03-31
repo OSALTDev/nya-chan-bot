@@ -3,7 +3,7 @@ from discord.ext import commands
 from cogs.base_cog import BaseCog
 
 
-class RPG(BaseCog):
+class Cog(BaseCog, name="RPG"):
     @commands.command(description='Roll some dice ! (Example : 2d6)')
     @commands.guild_only()
     async def roll(self, ctx, dice: str):

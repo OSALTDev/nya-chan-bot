@@ -5,7 +5,7 @@ import random
 from cogs.base_cog import BaseCog
 
 
-class Giveaway(BaseCog):
+class Cog(BaseCog, name="Giveaway"):
     def __init__(self, bot):
         super().__init__(bot)
         self.giveaways = {}
@@ -30,7 +30,7 @@ class Giveaway(BaseCog):
     @commands.group(invoke_without_command=True)
     async def ga(self, ctx):
         """Giveaway commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @ga.command(description='Starts a giveaway.')
     @commands.guild_only()
@@ -145,8 +145,3 @@ class Giveaway(BaseCog):
                 'There is no winners for the giveaway "{}" yet, {}.'.format(giveaway_name, ctx.author.mention))
             return
         await ctx.reply('List of winner :\n{}'.format("\n".join(str(x) for x in winners)))
-
-
-def setup(bot):
-    cog = Giveaway(bot)
-    bot.add_cog(cog)

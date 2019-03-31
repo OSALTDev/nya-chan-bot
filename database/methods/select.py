@@ -7,7 +7,7 @@ class Select(BaseQuery):
         super().__init__(distinct=distinct, table_name=table_name, limit=limit, order=order, where=where, items=items)
 
     def items(self, *args):
-        self._items = "`, `".join(args)
+        self._items = args
         return self
 
     def limit(self, limit):
@@ -17,14 +17,11 @@ class Select(BaseQuery):
         return self
 
     def order(self, limit):
-        token = limit[0]
-        if token not in "<=>":
-            return self
-        self._order = (limit[1:], Constants.token_to_order.get(token, ""))
+        self._order = limit
         return self
 
-    def where(self, **kwargs):
-        self._where = kwargs
+    def where(self, *args, **kwargs):
+        self._where = args, kwargs
         return self
 
     @property
@@ -35,13 +32,22 @@ class Select(BaseQuery):
     @property
     def build(self):
         query = Constants.Templates.SELECT
+        param_tuple = ()
 
         distinct = "DISTINCT " if self._distinct else ""
-        query = query.format(distinct=distinct, table=self._table_name, item=self._items)
+        items = "`, `".join(self._items)
+        query = query.format(distinct=distinct, table=self._table_name, item=items)
+
         if self._where:
-            query = self._append_where(query)
+            where_query, where_param_tuple = self._build_where()
+            query += where_query
+            param_tuple += where_param_tuple
 
         if self._order:
+            token = self._order[0]
+            if token not in "<=>":
+                return self
+            self._order = (self._order[1:], Constants.token_to_order.get(token, ""))
             query += f" ORDER BY {self._order[0]} {self._order[1]}"
 
-        return query, self._query_params
+        return query, param_tuple

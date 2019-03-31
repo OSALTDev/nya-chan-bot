@@ -4,7 +4,7 @@ from cogs.base_cog import BaseCog
 from nyalib.NyaBot import ThrowawayException
 
 
-class Squirrel(BaseCog):
+class Cog(BaseCog, name="Squirrel"):
     async def cog_before_invoke(self, ctx):
         if ctx.invoked_subcommand is not None:
             squirrel_role = discord.utils.get(ctx.guild.roles, id=329409494478094336)
@@ -27,7 +27,7 @@ class Squirrel(BaseCog):
     @commands.group(invoke_without_command=True)
     async def squi(self, ctx):
         """Squirrel commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @squi.command(description='Adds a user to the Squirrel Army.')
     @commands.guild_only()
@@ -51,8 +51,3 @@ class Squirrel(BaseCog):
             return
         await future_squirrel.remove_roles(ctx.custom.squirrel_role)
         await ctx.custom.squirrel_channel.send(f'The user **{future_squirrel.name}** is no longer a squirrel.')
-
-
-def setup(bot):
-    cog = Squirrel(bot)
-    bot.add_cog(cog)

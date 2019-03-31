@@ -14,3 +14,7 @@ class Methods:
     @staticmethod
     def update(table_name, items=None, where=None):
         return query.Update(table_name=table_name, items=items, where=where)
+
+    @staticmethod
+    def delete(table_name, where=None):
+        return query.Delete(table_name=table_name, where=where)

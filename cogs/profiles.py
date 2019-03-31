@@ -6,18 +6,18 @@ import pytz
 from database import Methods as db_util
 
 
-class Profiles(BaseCog):
+class Cog(BaseCog, name="Profiles"):
     """Let users have a more detailed profile. (including timezone !)"""
     @commands.group(invoke_without_command=True)
     async def p(self, ctx):
         """Profile commands."""
         # Couldnt this just be removed ?
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @commands.group(invoke_without_command=True)
     async def tz(self, ctx):
         """Timezone commands."""
-        await ctx.invoke(self.bot.get_command("help"), ctx.invoked_with)
+        await self.no_invoke_help(ctx)
 
     @tz.command(description='Set timezone.')
     @commands.guild_only()
@@ -96,7 +96,3 @@ class Profiles(BaseCog):
         time_now_formatted = time_now_localized.strftime('%Y-%m-%d %H:%M:%S')
         await ctx.reply(f'**{user.name}**\'s local time is **{time_now_formatted}**')
 
-
-def setup(bot):
-    cog = Profiles(bot)
-    bot.add_cog(cog)

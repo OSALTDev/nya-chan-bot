@@ -3,7 +3,7 @@ from discord.ext import commands
 from cogs.base_cog import BaseCog
 
 
-class Games(BaseCog):
+class Cog(BaseCog, name="Games"):
     @commands.command(description='Identify yourself as looking for a game (toggle command).')
     @commands.guild_only()
     async def lfg(self, ctx):
@@ -20,8 +20,3 @@ class Games(BaseCog):
         else:
             await ctx.author.remove_roles(lfg_role)
             await ctx.channel.send('You are not tagged as looking for a game anymore, {}'.format(ctx.author.mention))
-
-
-def setup(bot):
-    cog = Games(bot)
-    bot.add_cog(cog)
