@@ -59,8 +59,9 @@ class BotConfig(object):
 
             if os.getenv("DEBUG"):
                 cogs.append({"file": "jishaku", "in_cogs": False})
-        elif 'owner' not in cogs:
-            cogs.append('owner')
+        else:
+            if 'owner' not in cogs:
+                cogs.append('owner')
             if os.getenv("DEBUG") and "jishaku" not in cogs:
                 cogs.append("jishaku")
             cogs = [
