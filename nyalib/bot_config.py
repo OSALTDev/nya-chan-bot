@@ -49,6 +49,7 @@ class BotConfig(object):
         # Ensures owner is always available.
         cogs = self.bot.get('startup_cogs')
         if not cogs:
+            # Fill cog variable with all cogs in `cogs/`
             cogs = [
                 {"file": f.replace('.py', ''), "in_cogs": True}
                 for f in os.listdir("cogs")
@@ -59,18 +60,23 @@ class BotConfig(object):
 
             if os.getenv("DEBUG"):
                 cogs.append({"file": "jishaku", "in_cogs": False})
-        else:
-            if 'owner' not in cogs:
-                cogs.append('owner')
-            if os.getenv("DEBUG") and "jishaku" not in cogs:
-                cogs.append("jishaku")
-            cogs = [
-                {"file": f.replace('.py', ''), "in_cogs": os.path.isfile(os.path.join("cogs", f))}
-                for f in cogs
-                if f.split(".")[-1] == "py" and f.split(".")[-2] != "base_cog"
-            ]
 
-        return cogs
+            return cogs
+
+        if 'owner' not in cogs and os.path.isfile(os.path.join("cogs", "owner")):
+            # Append owner cog
+            cogs.append('owner')
+
+        if os.getenv("DEBUG") and "jishaku" not in cogs:
+            # Append testing cog
+            cogs.append("jishaku")
+
+        return [
+            {"file": f.replace('.py', ''), "in_cogs": os.path.isfile(os.path.join("cogs", f"{f}.py"))}
+            for f in cogs
+            if "base_cog" not in f
+        ]
+
 
     @property
     def token(self):
