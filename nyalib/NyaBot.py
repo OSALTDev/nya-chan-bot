@@ -13,6 +13,7 @@ class ThrowawayException(Exception):
 
 class NyaBot(commands.Bot):
     def __init__(self, *args, **kwargs):
+        # TODO: Change self.config to use a cog
         self.config = AppConfig()
         kwargs.update(command_prefix=self.config.bot.prefix, description=self.config.bot.description,
                       help_command=Command(dm_help=True))
