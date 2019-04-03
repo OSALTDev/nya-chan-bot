@@ -13,6 +13,7 @@ class ThrowawayException(Exception):
 
 class NyaBot(commands.Bot):
     def __init__(self, *args, **kwargs):
+        # TODO: Change self.config to use a cog
         self.config = AppConfig()
         kwargs.update(command_prefix=self.config.bot.prefix, description=self.config.bot.description,
                       help_command=Command(dm_help=True))
@@ -40,7 +41,7 @@ class NyaBot(commands.Bot):
             self._call_module_finalizers(lib, key)
             raise commands.ExtensionFailed(key, e) from e
         else:
-            self.__extensions[key] = lib
+            self._BotBase__extensions[key] = lib
 
     def _call_module_finalizers(self, lib, key):
         try:
@@ -56,7 +57,7 @@ class NyaBot(commands.Bot):
             except Exception:
                 pass
         finally:
-            self.__extensions.pop(key, None)
+            self._BotBase__extensions.pop(key, None)
             sys.modules.pop(key, None)
             name = lib.__name__
             for module in list(sys.modules.keys()):
