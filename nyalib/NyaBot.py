@@ -40,7 +40,7 @@ class NyaBot(commands.Bot):
             self._call_module_finalizers(lib, key)
             raise commands.ExtensionFailed(key, e) from e
         else:
-            self._extensions[key] = lib
+            self.__extensions[key] = lib
 
     def _call_module_finalizers(self, lib, key):
         try:
@@ -56,7 +56,7 @@ class NyaBot(commands.Bot):
             except Exception:
                 pass
         finally:
-            self._extensions.pop(key, None)
+            self.__extensions.pop(key, None)
             sys.modules.pop(key, None)
             name = lib.__name__
             for module in list(sys.modules.keys()):
