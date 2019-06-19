@@ -199,6 +199,8 @@ class Bot(metaclass=YAMLGetter):
     prefix: str
     cogs: list
 
+    debug: bool
+
 
 class Database(metaclass=YAMLGetter):
     section = "database"
