@@ -14,11 +14,14 @@ if BotConfig.debug:
 __all__ = ("BotBase", "BotConfig")
 
 
+# Nya-Chan base class, inherits
 class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
+        # Add or update bot token in kwargs
         kwargs.update(command_prefix=BotConfig.token)
         super().__init__(*args, **kwargs)
 
+    # Setting our custom context
     async def process_commands(self, message):
         if message.author.bot:
             return
@@ -26,6 +29,7 @@ class BotBase(commands.Bot):
         ctx = await self.get_context(message, cls=CommandContext)
         await self.invoke(ctx)
 
+    # Print some basic information on boot
     async def on_ready(self):
         print('######################################################')
         print('#                      Nya Chan                      #')
@@ -39,4 +43,4 @@ class BotBase(commands.Bot):
         print(f'Bot Owner : {app_info.owner.id}')
 
         url = discord.utils.oauth_url(app_info.id)
-        print(f'Oauth URL : {url}')
+        print(f'OAuth URL : {url}')
