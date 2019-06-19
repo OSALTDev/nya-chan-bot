@@ -22,6 +22,8 @@ from pathlib import Path
 
 import yaml
 
+__all__ = ("Bot", "Database")
+
 log = logging.getLogger(__name__)
 
 

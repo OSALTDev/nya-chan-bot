@@ -10,6 +10,8 @@ handler = logging.FileHandler(filename='debug.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
+__all__ = ("BotBase",)
+
 
 class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
