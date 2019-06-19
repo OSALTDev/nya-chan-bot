@@ -6,3 +6,10 @@ bot:
   prefix: "!n."
   cogs: 0
 
+database:
+  host: "127.0.0.1"
+  port: 3306
+  db_name: "bot_db"
+
+  user_name: "bot"
+  password: "password"
