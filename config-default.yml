@@ -1,10 +1,20 @@
+config:
+  required_keys:
+    - "bot.name"
+    - "bot.token"
+    - "bot.prefix"
+    - "database.host"
+    - "database.db_name"
+    - "database.user_name"
+    - "database.password"
+
 bot:
   name: "Nya-chan"
   description: "A Geeky bot"
   token: !ENV "TOKEN"
 
   prefix: "!n."
-  cogs: 0
+  cogs: []
 
   debug: !ENV "DEBUG"
 
