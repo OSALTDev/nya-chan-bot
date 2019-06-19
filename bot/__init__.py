@@ -7,7 +7,7 @@ from .config import Bot as BotConfig
 if BotConfig.debug:
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(filename='debug.log', encoding='utf-8', mode='w')
+    handler = logging.FileHandler(filename='discord.debug.log', encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)
 
@@ -20,6 +20,20 @@ class BotBase(commands.Bot):
         # Add or update bot token in kwargs
         kwargs.update(command_prefix=BotConfig.token)
         super().__init__(*args, **kwargs)
+
+        # Nya-Chan logger
+        self.logger = logging.getLogger('nya')
+
+        # Different file and logging level for debugging
+        if BotConfig.debug:
+            self.logger.setLevel(logging.DEBUG)
+            handler = logging.FileHandler(filename='nya.debug.log', encoding='utf-8', mode='w')
+        else:
+            self.logger.setLevel(logging.INFO)
+            handler = logging.FileHandler(filename='nya.debug.log', encoding='utf-8', mode='w')
+
+        handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+        self.logger.addHandler(handler)
 
     # Setting our custom context
     async def process_commands(self, message):

@@ -16,14 +16,8 @@ def _load_and_print_if_error(name):
         print(f"Failed to load cog: {name}")
 
         if bot.BotConfig.debug:
-            logger = logging.getLogger('nya')
-            logger.setLevel(logging.DEBUG)
-            handler = logging.FileHandler(filename='nya-debug.log', encoding='utf-8', mode='w')
-            handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-            logger.addHandler(handler)
-
-            logger.error(traceback.format_exc())
-            logger.error(e)
+            BotInstance.logger.error(traceback.format_exc())
+            BotInstance.logger.error(e)
 
 
 cogs = bot.BotConfig.cogs
