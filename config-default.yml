@@ -1,0 +1,8 @@
+bot:
+  name: "Nya-chan"
+  description: "A Geeky bot"
+  token: !ENV "TOKEN"
+
+  prefix: "!n."
+  cogs: 0
+
