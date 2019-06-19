@@ -1,4 +1,5 @@
 PyMySQL==0.9.3
+aiomysql==0.0.20
 PyYAML==3.12
 pytz==2017.2
 jishaku==1.10.0.100
