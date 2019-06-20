@@ -14,8 +14,7 @@ bot:
   token: !ENV "TOKEN"
 
   prefix: "!n."
-  cogs:
-    - core
+  cogs: []
 
   debug: !ENV "DEBUG"
 
