@@ -39,13 +39,13 @@ class setup(Base, name="Core"):
     # Log commands being executed
     @commands.Cog.listener()
     async def on_command(self, ctx: commands.Context):
-        if Config.debug or Logging.Command.execute:
+        if Logging.Command.execute:
             self.command_log.info(f"User {ctx.author} executing command {ctx.invoked_with}")
 
     # Log command errors
     @commands.Cog.listener()
     async def on_command_error(self, _, error):
-        if Config.debug or Logging.Command.error:
+        if Logging.Command.error:
             # Get exception info, in a list
             formatted_exception = traceback.format_exception(type(error), error, None)
             self.command_log.error(
@@ -55,10 +55,10 @@ class setup(Base, name="Core"):
     # Log command completions
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
-        if Config.debug or Logging.Command.complete:
+        if Logging.Command.complete:
             self.command_log.info(f"Command complete")
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if Config.debug or Logging.chat:
+        if Logging.chat:
             self.chat_log.info(message.content)
