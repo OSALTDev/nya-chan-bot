@@ -8,6 +8,12 @@ config:
     - "database.user_name"
     - "database.password"
 
+  logs:
+    commands:
+      execute: yes
+      error: yes
+      complete: yes
+
 bot:
   name: "Nya-chan"
   description: "A Geeky bot"

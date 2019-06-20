@@ -139,13 +139,10 @@ class YAMLGetter(type):
     Implements a custom metaclass used for accessing
     configuration data by simply accessing class attributes.
     Supports getting configuration from up to two levels
-    of nested configuration through `section` and `subsection`.
+    of nested configuration through `section`.
 
     `section` specifies the YAML configuration section (or "key")
     in which the configuration lives, and must be set.
-
-    `subsection` is an optional attribute specifying the section
-    within the section from which configuration should be loaded.
 
     Example Usage:
 
@@ -158,7 +155,6 @@ class YAMLGetter(type):
         # config.py
         class Prefixes(metaclass=YAMLGetter):
             section = "bot"
-            subsection = "prefixes"
 
         # Usage in Python code
         from config import Prefixes
@@ -168,19 +164,19 @@ class YAMLGetter(type):
             return Prefixes.guild
     """
 
-    subsection = None
-
     def __getattr__(cls, name):
         name = name.lower()
 
         try:
-            if cls.subsection is not None:
-                return _CONFIG_YAML[cls.section][cls.subsection][name]
-            return _CONFIG_YAML[cls.section][name]
+            section_split = cls.section.split('.')
+            section = _CONFIG_YAML[section_split.pop(0)]
+            if section_split:
+                for key in section_split:
+                    section = section[key]
+            return section[name]
         except KeyError:
             dotted_path = '.'.join(
-                (cls.section, cls.subsection, name)
-                if cls.subsection is not None else (cls.section, name)
+                (cls.section, name)
             )
             log.critical(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.")
             raise
@@ -211,3 +207,12 @@ class Database(metaclass=YAMLGetter):
 
     user_name: str
     password: str
+
+
+class Logging:
+    class Command(metaclass=YAMLGetter):
+        section = "config.logs.commands"
+
+        execute: bool
+        error: bool
+        complete: bool
