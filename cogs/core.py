@@ -35,16 +35,10 @@ class setup(Base, name="Core"):
     async def on_command_error(self, _, error):
         if BotConfig.debug:
             self.command_log.debug(f"Above command gave error")
-            self.command_log.error(traceback.format_exc())
-            self.command_log.error(error)
+            formatted_exception = traceback.format_exception(type(error), error, None)
+            self.command_log.error('\n' + "".join(formatted_exception).strip())
 
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
         if BotConfig.debug:
             self.command_log.debug(f"Command complete")
-
-    @commands.command()
-    async def test(self, ctx, hi: int = 5):
-        print(hi)
-        print("hi")
-
