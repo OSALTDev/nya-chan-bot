@@ -2,16 +2,16 @@ import discord
 import logging
 from discord.ext import commands
 from .context import CommandContext
-from .config import Bot as BotConfig
+from .config import Bot as BotConfig, Config
 
-if BotConfig.debug:
+if Config.debug:
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
     handler = logging.FileHandler(filename='logs/discord.debug.log', encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
     logger.addHandler(handler)
 
-__all__ = ("BotBase", "BotConfig")
+__all__ = ("BotBase", "BotConfig", "Config")
 
 
 # Nya-Chan base class, inherits
@@ -25,7 +25,7 @@ class BotBase(commands.Bot):
         self.logger = logging.getLogger('nya')
 
         # Different file and logging level for debugging
-        if BotConfig.debug:
+        if Config.debug:
             self.logger.setLevel(logging.DEBUG)
             handler = logging.FileHandler(filename='logs/nya.debug.log', encoding='utf-8', mode='w')
         else:

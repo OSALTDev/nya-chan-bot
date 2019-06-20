@@ -22,7 +22,7 @@ from pathlib import Path
 
 import yaml
 
-__all__ = ("Bot", "Config", "Database")
+__all__ = ("Bot", "Config", "Logging", "Database")
 
 log = logging.getLogger(__name__)
 

@@ -8,6 +8,8 @@ config:
     - "database.user_name"
     - "database.password"
 
+  debug: !ENV "DEBUG"
+
   logs:
     commands:
       execute: yes
@@ -21,8 +23,6 @@ bot:
 
   prefix: "!n."
   cogs: []
-
-  debug: !ENV "DEBUG"
 
 database:
   host: "127.0.0.1"

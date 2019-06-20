@@ -15,7 +15,7 @@ def _load_and_print_if_error(name):
     except commands.ExtensionError as e:
         print(f"Failed to load cog: {name}")
 
-        if bot.BotConfig.debug:
+        if bot.Config.debug:
             BotInstance.logger.error(traceback.format_exc())
             BotInstance.logger.error(e)
 
@@ -35,7 +35,7 @@ for cog in cogs:
 _load_and_print_if_error("cogs.core")
 
 # Debug cog
-if bot.BotConfig.debug:
+if bot.Config.debug:
     _load_and_print_if_error("jishaku")
 
 BotInstance.run(bot.BotConfig.token)
