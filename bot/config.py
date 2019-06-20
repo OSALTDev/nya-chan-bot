@@ -1,18 +1,16 @@
 """
     Please check out the original file over at Python Discord's repo:
     https://github.com/python-discord/bot/blob/master/bot/constants.py
-"""
 
-"""
-Loads bot configuration from YAML files.
-By default, this simply loads the default
-configuration located at `config-default.yml`.
-If a file called `config.yml` is found in the
-project directory, the default configuration
-is recursively updated with any settings from
-the custom configuration. Any settings left
-out in the custom user configuration will stay
-their default values from `config-default.yml`.
+    Loads bot configuration from YAML files.
+    By default, this simply loads the default
+    configuration located at `config-default.yml`.
+    If a file called `config.yml` is found in the
+    project directory, the default configuration
+    is recursively updated with any settings from
+    the custom configuration. Any settings left
+    out in the custom user configuration will stay
+    their default values from `config-default.yml`.
 """
 
 import logging
