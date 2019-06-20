@@ -33,6 +33,9 @@ for cog in cogs:
 
 # Required cogs
 _load_and_print_if_error("cogs.core")
-_load_and_print_if_error("jishaku")
+
+# Debug cog
+if bot.BotConfig.debug:
+    _load_and_print_if_error("jishaku")
 
 BotInstance.run(bot.BotConfig.token)
