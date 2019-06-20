@@ -25,12 +25,8 @@ class BotBase(commands.Bot):
         self.logger = logging.getLogger('nya')
 
         # Different file and logging level for debugging
-        if Config.debug:
-            self.logger.setLevel(logging.DEBUG)
-            handler = logging.FileHandler(filename='logs/nya.debug.log', encoding='utf-8', mode='w')
-        else:
-            self.logger.setLevel(logging.INFO)
-            handler = logging.FileHandler(filename='logs/nya.debug.log', encoding='utf-8', mode='w')
+        self.logger.setLevel(logging.DEBUG if Config.debug else logging.INFO)
+        handler = logging.FileHandler(filename='logs/nya.log', encoding='utf-8', mode='w')
 
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.logger.addHandler(handler)

@@ -27,7 +27,7 @@ class setup(Base, name="Core"):
     def _create_logger_for(logger_name):
         logger = logging.getLogger(f'nya.{logger_name}')
 
-        logger.setLevel(logging.INFO)
+        logger.setLevel(logging.DEBUG if Config.debug else logging.INFO)
         handler = logging.FileHandler(filename=f'logs/nya.{logger_name}.log', encoding='utf-8', mode='w')
 
         # time:LEVEL:logname: message
