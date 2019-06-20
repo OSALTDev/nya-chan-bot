@@ -6,7 +6,7 @@ import logging
 import traceback
 
 from bot.cog_base import Base, commands
-from bot.config import Bot as BotConfig
+from bot.config import Bot as BotConfig, Logging
 
 
 class setup(Base, name="Core"):
@@ -28,17 +28,17 @@ class setup(Base, name="Core"):
 
     @commands.Cog.listener()
     async def on_command(self, ctx: commands.Context):
-        if BotConfig.debug:
+        if BotConfig.debug and Logging.Command.execute:
             self.command_log.info(f"User {ctx.author} executing command {ctx.invoked_with}")
 
     @commands.Cog.listener()
     async def on_command_error(self, _, error):
-        if BotConfig.debug:
+        if BotConfig.debug and Logging.Command.error:
             self.command_log.debug(f"Above command gave error")
             formatted_exception = traceback.format_exception(type(error), error, None)
             self.command_log.error('\n' + "".join(formatted_exception).strip())
 
     @commands.Cog.listener()
     async def on_command_completion(self, ctx):
-        if BotConfig.debug:
-            self.command_log.debug(f"Command complete")
+        if BotConfig.debug and Logging.Command.complete:
+            self.command_log.info(f"Command complete")
