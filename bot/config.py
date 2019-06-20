@@ -22,7 +22,7 @@ from pathlib import Path
 
 import yaml
 
-__all__ = ("Bot", "Database")
+__all__ = ("Bot", "Config", "Database")
 
 log = logging.getLogger(__name__)
 
@@ -185,6 +185,12 @@ class YAMLGetter(type):
         return cls.__getattr__(name)
 
 
+class Config(metaclass=YAMLGetter):
+    section = "config"
+
+    debug: bool
+
+
 class Bot(metaclass=YAMLGetter):
     section = "bot"
 
@@ -195,7 +201,6 @@ class Bot(metaclass=YAMLGetter):
     prefix: str
     cogs: list
 
-    debug: bool
 
 
 class Database(metaclass=YAMLGetter):
