@@ -1,18 +1,20 @@
 import bot
 import os
 import traceback
-import logging
 from discord.ext import commands
 
 BotInstance = bot.BotBase()
 
 
+# Helper function to load extensions
 def _load_and_print_if_error(name):
     try:
         BotInstance.load_extension(name)
     except commands.ExtensionAlreadyLoaded:
+        # Ignore error if already loaded
         pass
     except commands.ExtensionError as e:
+        # Display error message and log error
         print(f"Failed to load cog: {name}")
 
         if bot.Config.debug:
@@ -20,6 +22,7 @@ def _load_and_print_if_error(name):
             BotInstance.logger.error(e)
 
 
+# Populate cogs if cogs dont exist
 cogs = bot.BotConfig.cogs
 if not cogs:
     cogs = [
@@ -28,6 +31,7 @@ if not cogs:
         and f.split(".")[-1] == "py"
     ]
 
+# Load all cogs
 for cog in cogs:
     _load_and_print_if_error(f"cogs.{cog}")
 
@@ -38,4 +42,5 @@ _load_and_print_if_error("cogs.core")
 if bot.Config.debug:
     _load_and_print_if_error("jishaku")
 
+# Begin!
 BotInstance.run(bot.BotConfig.token)

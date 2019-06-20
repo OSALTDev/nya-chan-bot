@@ -4,6 +4,7 @@ from discord.ext import commands
 from .context import CommandContext
 from .config import Bot as BotConfig, Config
 
+# Discord debug logging
 if Config.debug:
     logger = logging.getLogger('discord')
     logger.setLevel(logging.DEBUG)
