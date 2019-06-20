@@ -5,8 +5,8 @@ config:
     - "bot.prefix"
     - "database.host"
     - "database.db_name"
-    - "database.user_name"
-    - "database.password"
+    - "database.user.name"
+    - "database.user.password"
 
   debug: !ENV "DEBUG"
 
@@ -31,5 +31,6 @@ database:
   port: 3306
   db_name: "bot_db"
 
-  user_name: "bot"
-  password: "password"
+  user:
+    name: "bot"
+    password: "password"

@@ -150,6 +150,15 @@ class YAMLGetter(type):
             return Prefixes.guild
     """
 
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls, *args, *kwargs)
+
+        for item in instance.__dict__.values():
+            if type(item) == YAMLGetter:
+                item.section = f"{instance.section}.{item.section}"
+
+        return instance
+
     def __getattr__(cls, name):
         name = name.lower()
 
@@ -191,10 +200,13 @@ class Database(metaclass=YAMLGetter):
 
     host: str
     port: int
-    db_name: str
+    database: str
 
-    user_name: str
-    password: str
+    class User(metaclass=YAMLGetter):
+        section = "user"
+
+        name: str
+        password: str
 
 
 class Logging(metaclass=YAMLGetter):
@@ -203,7 +215,7 @@ class Logging(metaclass=YAMLGetter):
     chat: bool
 
     class Command(metaclass=YAMLGetter):
-        section = "config.logs.commands"
+        section = "commands"
 
         execute: bool
         error: bool
