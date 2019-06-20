@@ -62,3 +62,12 @@ class setup(Base, name="Core"):
     async def on_message(self, message):
         if Logging.chat:
             self.chat_log.info(message.content)
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if Logging.chat:
+            self.chat_log.info(
+                f"Message by user {after.author} edited\n"
+                f"Before:\n{before.content}\n"
+                f"After:\n{after.content}"
+            )
