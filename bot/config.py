@@ -61,19 +61,7 @@ def _env_var_constructor(loader, node):
     return os.getenv(key, default)
 
 
-def _join_var_constructor(loader, node):
-    """
-    Implements a custom YAML tag for concatenating other tags in
-    the document to strings. This allows for a much more DRY configuration
-    file.
-    """
-
-    fields = loader.construct_sequence(node)
-    return "".join(str(x) for x in fields)
-
-
 yaml.SafeLoader.add_constructor("!ENV", _env_var_constructor)
-yaml.SafeLoader.add_constructor("!JOIN", _join_var_constructor)
 
 
 with open("config-default.yml", encoding="UTF-8") as f:
