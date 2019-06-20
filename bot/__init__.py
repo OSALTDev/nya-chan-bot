@@ -18,7 +18,7 @@ __all__ = ("BotBase", "BotConfig")
 class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
         # Add or update bot token in kwargs
-        kwargs.update(command_prefix=BotConfig.token)
+        kwargs.update(command_prefix=BotConfig.prefix)
         super().__init__(*args, **kwargs)
 
         # Nya-Chan logger
