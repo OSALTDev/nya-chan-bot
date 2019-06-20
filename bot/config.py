@@ -197,7 +197,11 @@ class Database(metaclass=YAMLGetter):
     password: str
 
 
-class Logging:
+class Logging(metaclass=YAMLGetter):
+    section = "config.logs"
+
+    chat: bool
+
     class Command(metaclass=YAMLGetter):
         section = "config.logs.commands"
 

@@ -11,6 +11,8 @@ config:
   debug: !ENV "DEBUG"
 
   logs:
+    chat: yes
+
     commands:
       execute: yes
       error: yes

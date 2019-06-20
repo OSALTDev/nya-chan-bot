@@ -20,6 +20,7 @@ class setup(Base, name="Core"):
 
         # Create event loggers
         self.command_log = self._create_logger_for("commands")
+        self.chat_log = self._create_logger_for("chat")
 
     # Helper function to create logger instances
     @staticmethod
@@ -56,3 +57,8 @@ class setup(Base, name="Core"):
     async def on_command_completion(self, ctx):
         if Config.debug or Logging.Command.complete:
             self.command_log.info(f"Command complete")
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if Config.debug or Logging.chat:
+            self.chat_log.info(message.content)
