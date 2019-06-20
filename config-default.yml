@@ -4,7 +4,7 @@ config:
     - "bot.token"
     - "bot.prefix"
     - "database.host"
-    - "database.db_name"
+    - "database.database"
     - "database.user.name"
     - "database.user.password"
 
@@ -29,7 +29,7 @@ bot:
 database:
   host: "127.0.0.1"
   port: 3306
-  db_name: "bot_db"
+  database: "bot_db"
 
   user:
     name: "bot"
