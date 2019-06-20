@@ -161,9 +161,7 @@ class YAMLGetter(type):
                     section = section[key]
             return section[name]
         except KeyError:
-            dotted_path = '.'.join(
-                (cls.section, name)
-            )
+            dotted_path = f"{cls.section}.{name}"
             log.critical(f"Tried accessing configuration variable at `{dotted_path}`, but it could not be found.")
             raise
 
@@ -186,7 +184,6 @@ class Bot(metaclass=YAMLGetter):
 
     prefix: str
     cogs: list
-
 
 
 class Database(metaclass=YAMLGetter):
