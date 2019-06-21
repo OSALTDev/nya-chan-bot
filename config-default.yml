@@ -1,3 +1,4 @@
+# Bot config
 config:
   required_keys:
     - "bot.name"
@@ -10,6 +11,7 @@ config:
 
   debug: !ENV "DEBUG"
 
+  # What to log
   logs:
     chat: yes
 
@@ -18,19 +20,42 @@ config:
       error: yes
       complete: yes
 
+  # Chat triggers
+  # List of dicts
+  triggers:
+    - wordlist: [] # List of RE matches
+      action: "DM" # Action to take
+      response: "Response" # What message to send
+
+# Internal bot config
 bot:
+  # Bot name
   name: "Nya-chan"
+
+  # Bot description
   description: "A Geeky bot"
+
+  # Bot token
   token: !ENV "TOKEN"
 
+  # Bot prefix
   prefix: "!n."
+
+  # Bot cogs to load on start
   cogs: []
 
+# Database config (mysql)
 database:
+  # Host address
   host: "127.0.0.1"
-  port: 3306
-  db_name: "bot_db"
 
+  # Host port
+  port: 3306
+
+  # Database name
+  database: "bot_db"
+
+  # Database user information
   user:
     name: "bot"
     password: "password"
