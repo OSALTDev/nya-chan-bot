@@ -5,7 +5,7 @@ config:
     - "bot.token"
     - "bot.prefix"
     - "database.host"
-    - "database.db_name"
+    - "database.database"
     - "database.user.name"
     - "database.user.password"
 
