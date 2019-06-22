@@ -182,6 +182,7 @@ class Config(metaclass=YAMLGetter):
     section = "config"
 
     debug: bool
+    triggers: list
 
 
 class Bot(metaclass=YAMLGetter):
