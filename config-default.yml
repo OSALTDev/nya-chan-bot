@@ -51,7 +51,7 @@ database:
   host: "127.0.0.1"
 
   # Host port
-  port: 3306
+  port: 8529
 
   # Database name
   database: "bot_db"
