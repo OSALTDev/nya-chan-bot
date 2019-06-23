@@ -1,5 +1,6 @@
 import discord
 import logging
+import database
 from discord.ext import commands
 from .context import CommandContext
 from .config import Bot as BotConfig, Config
@@ -31,6 +32,8 @@ class BotBase(commands.Bot):
 
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.logger.addHandler(handler)
+
+        self.database = database.Arango()
 
     # Setting our custom context
     async def process_commands(self, message):
