@@ -1,9 +1,9 @@
 import discord
 import logging
-import aiomysql
+import database
 from discord.ext import commands
 from .context import CommandContext
-from .config import Bot as BotConfig, Config, Database
+from .config import Bot as BotConfig, Config
 
 # Discord debug logging
 if Config.debug:
@@ -33,6 +33,8 @@ class BotBase(commands.Bot):
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.logger.addHandler(handler)
 
+        self.database = database.Arango()
+
     # Setting our custom context
     async def process_commands(self, message):
         if message.author.bot:
@@ -43,16 +45,6 @@ class BotBase(commands.Bot):
 
     # Print some basic information on boot
     async def on_ready(self):
-        try:
-            self.database = await aiomysql.create_pool(
-                host=Database.host, port=Database.port,
-                user=Database.User.name, password=Database.User.password,
-                db=Database.database, loop=self.loop
-            )
-        except:
-            self.logger.error("Unable to connect to MySQL Database")
-            await self.logout()
-
         print('######################################################')
         print('#                      Nya Chan                      #')
         print('######################################################')

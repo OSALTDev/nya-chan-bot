@@ -23,7 +23,8 @@ config:
   # Chat triggers
   # List of dicts
   triggers:
-    - wordlist: [] # List of RE matches
+    - title: "trigger_name" # Alphanumeric (with _ allowed) name for this trigger
+      wordlist: [] # List of RE matches
       action: "DM" # Action to take
       response: "Response" # What message to send
 
@@ -44,7 +45,7 @@ bot:
   # Bot cogs to load on start
   cogs: []
 
-# Database config (mysql)
+# Database config (ArangoDB)
 database:
   # Host address
   host: "127.0.0.1"
