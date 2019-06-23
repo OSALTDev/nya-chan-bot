@@ -1,5 +1,5 @@
 from bot.config import Database as DBConfig
-from pyArango.connection import Connection
+from pyArango.connection import Connection, CreationError
 
 
 class Collection:
@@ -32,7 +32,14 @@ class Arango:
             username=DBConfig.User.name, password=DBConfig.User.password
         )
 
-        self.database = conn.createDatabase(name=DBConfig.database)
+        try:
+            self.database = conn.createDatabase(name=DBConfig.database)
+        except CreationError:
+            self.database = conn[DBConfig.database]
 
     def collection(self, name):
-        return Collection(self.database.createCollection(name=name))
+
+        try:
+            return Collection(self.database.createCollection(name=name))
+        except CreationError:
+            return Collection(self.database[name])
