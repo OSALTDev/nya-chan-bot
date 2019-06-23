@@ -45,7 +45,7 @@ bot:
   # Bot cogs to load on start
   cogs: []
 
-# Database config (mysql)
+# Database config (ArangoDB)
 database:
   # Host address
   host: "127.0.0.1"
