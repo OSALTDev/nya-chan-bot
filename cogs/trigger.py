@@ -125,8 +125,14 @@ class setup(Base, name="Trigger"):
             finally:
                 user_word = await self.bot.wait_for("message", check=wait_for_message_check)
 
-        self.db.enter({
+        await ctx.send("What would you like the response to be?")
+        action_response = await self.bot.wait_for("message", check=wait_for_message_check, timeout=75)
 
+        self.db.enter({
+            "name": trigger_name,
+            "action": _reaction_list[reaction][1],
+            "words": word_list,
+            "response": action_response
         })
 
         await ctx.send("Your reaction has been inserted")
