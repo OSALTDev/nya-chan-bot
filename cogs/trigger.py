@@ -8,8 +8,10 @@ from bot.cog_base import Base
 from discord.ext import commands
 
 # Import re compile and ignore case, and import simple namespace
-from re import compile as re_compile, IGNORECASE as RE_IGNORE_CASE
+from re import compile as re_compile, IGNORECASE as RE_IGNORE_CASE, error as RE_ERROR
 from types import SimpleNamespace
+
+from asyncio import TimeoutError as AIO_TIMEOUT_ERROR
 
 
 class setup(Base, name="Trigger"):
@@ -67,36 +69,67 @@ class setup(Base, name="Trigger"):
             if trigger.action == "dm":
                 await message.author.send(trigger.response)
 
+    async def cog_command_error(self, ctx, error):
+        if isinstance(error.original, AIO_TIMEOUT_ERROR):
+            await ctx.send("Command timed out, please try again")
+
     @commands.command()
-    async def add_trigger(self, ctx: commands.Context, trigger_name, *, trigger_word):
+    async def add_trigger(self, ctx: commands.Context, trigger_name):
         """
             Add a word trigger to the bot
 
             Syntax:
-                {prefix}add_trigger <trigger_name> <trigger_word>
-
-            You can also use newlines to split words:
                 {prefix}add_trigger <trigger_name>
-                word1
-                word2
-
-            You can use python-style regex in your trigger words
         """
+        _reaction_list = {
+            ":mod_message:592400024328077313": ("Message the moderators", "modmsg"),
+            ":dm_user:592400024520884246": ("DM the user", "dm"),
+            ":kick_user:592400025548750858": ("Kick user", "kick"),
+            ":ban_user:592400024605032474": ("Ban user", "ban")
+        }
+
+        user_react_to = await ctx.author.send(
+            "React with the action of your trigger:\n" +
+            "\n".join(f"<{reaction}> - {reaction_desc[0]}" for reaction, reaction_desc in _reaction_list.items())
+        )
+
+        for reaction in _reaction_list.keys():
+            await user_react_to.add_reaction(reaction)
+
+        def wait_for_reaction_check(m, u):
+            return u.id == ctx.author.id and m.message.id == user_react_to.id
+
+        reaction, _ = await self.bot.wait_for("reaction_add", check=wait_for_reaction_check, timeout=30)
+
+        await user_react_to.delete()
+        await ctx.author.send(
+            "Please enter the words you want to trigger on\n"
+            "Each word must be sent as a new message\n"
+            "Once you have completed the entries, please enter '!!' as a message\n\n"
+            "Python regular expressions are allowed to be used as well"
+        )
+
+        def wait_for_message_check(m):
+            return m.author.id == ctx.author.id and not m.guild
+
+        word_list = []
+        user_word = await self.bot.wait_for("message", check=wait_for_message_check, timeout=30)
+
+        while user_word.content != "!!":
+            try:
+                re_compile(user_word.content)
+            except RE_ERROR:
+                continue
+            else:
+                word_list.append(user_word.content)
+            finally:
+                user_word = await self.bot.wait_for("message", check=wait_for_message_check)
+
         self.db.enter({
-            "words": trigger_word.split("\n")
-        }, key=f"{ctx.guild.id}:{trigger_name}")
 
-    @commands.command()
-    async def set_trigger_action(self, ctx, trigger_name, trigger_action):
-        doc = self.db.entry(f"{ctx.guild.id}:{trigger_name}")
-        doc["action"] = trigger_action
-        doc.patch()
+        })
 
-    @commands.command()
-    async def set_trigger_response(self, ctx, trigger_name, *, response):
-        doc = self.db.entry(f"{ctx.guild.id}:{trigger_name}")
-        doc["response"] = response
-        doc.patch()
+        await ctx.send("Your reaction has been inserted")
 
     @commands.command()
     async def remove_trigger(self, ctx, trigger_name):
