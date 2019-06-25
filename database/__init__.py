@@ -1,5 +1,10 @@
 from bot.config import Database as DBConfig
-from pyArango.connection import Connection, CreationError
+from requests.exceptions import ConnectionError
+
+try:
+    from pyArango.connection import Connection, CreationError
+except ModuleNotFoundError as e:
+    raise Exception("Nya-Chan requires pyArango to be installed") from e
 
 
 class Collection:

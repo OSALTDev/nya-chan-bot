@@ -1,7 +1,14 @@
-import discord
+try:
+    import discord
+    from discord.ext import commands
+
+    if discord.__version__ != "1.2.2":
+        raise Exception("You need to have Discord.py 1.2.2 installed")
+except ModuleNotFoundError as e:
+    raise Exception("Please make sure to install from the requirements.txt file")
+
 import logging
 import database
-from discord.ext import commands
 from .context import CommandContext
 from .config import Bot as BotConfig, Config
 
@@ -33,7 +40,11 @@ class BotBase(commands.Bot):
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.logger.addHandler(handler)
 
-        self.database = database.Arango()
+        try:
+            self.database = database.Arango()
+        except database.ConnectionError as e:
+            raise Exception(f"A connection to your database at {database.DBConfig.host}:{database.DBConfig.port} "
+                            "could not be established") from e
 
     # Setting our custom context
     async def process_commands(self, message):
