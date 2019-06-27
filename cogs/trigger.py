@@ -73,6 +73,35 @@ class setup(Base, name="Trigger"):
         if isinstance(error.original, AIO_TIMEOUT_ERROR):
             await ctx.send("Command timed out, please try again")
 
+    async def add_dm_trigger(self, ctx):
+        await ctx.author.send(
+            "Please enter the words you want to trigger on\n"
+            "Each word must be sent as a new message\n"
+            "Once you have completed the entries, please enter '!!' as a message\n\n"
+            "Python regular expressions are allowed to be used as well"
+        )
+
+        def wait_for_message_check(m):
+            return m.author.id == ctx.author.id and not m.guild
+
+        word_list = []
+        user_word = await self.bot.wait_for("message", check=wait_for_message_check, timeout=30)
+
+        while user_word.content != "!!":
+            try:
+                re_compile(user_word.content)
+            except RE_ERROR:
+                continue
+            else:
+                word_list.append(user_word.content)
+            finally:
+                user_word = await self.bot.wait_for("message", check=wait_for_message_check)
+
+        await ctx.send("What would you like the response to be?")
+        action_response = await self.bot.wait_for("message", check=wait_for_message_check, timeout=75)
+
+        return {"words": word_list, "response": action_response}
+
     @commands.command()
     async def add_trigger(self, ctx: commands.Context, trigger_name):
         """
@@ -101,39 +130,18 @@ class setup(Base, name="Trigger"):
 
         reaction, _ = await self.bot.wait_for("reaction_add", check=wait_for_reaction_check, timeout=30)
 
-        await user_react_to.delete()
-        await ctx.author.send(
-            "Please enter the words you want to trigger on\n"
-            "Each word must be sent as a new message\n"
-            "Once you have completed the entries, please enter '!!' as a message\n\n"
-            "Python regular expressions are allowed to be used as well"
-        )
-
-        def wait_for_message_check(m):
-            return m.author.id == ctx.author.id and not m.guild
-
-        word_list = []
-        user_word = await self.bot.wait_for("message", check=wait_for_message_check, timeout=30)
-
-        while user_word.content != "!!":
-            try:
-                re_compile(user_word.content)
-            except RE_ERROR:
-                continue
-            else:
-                word_list.append(user_word.content)
-            finally:
-                user_word = await self.bot.wait_for("message", check=wait_for_message_check)
-
-        await ctx.send("What would you like the response to be?")
-        action_response = await self.bot.wait_for("message", check=wait_for_message_check, timeout=75)
-
-        self.db.enter({
+        entry = {
             "name": trigger_name,
-            "action": _reaction_list[reaction][1],
-            "words": word_list,
-            "response": action_response
-        })
+            "action": _reaction_list[str(reaction)[1:-1]][1]
+        }
+
+        await user_react_to.delete()
+
+        if entry["action"] == "dm":
+            self.db.enter({
+                **entry,
+                **(await self.add_dm_trigger(ctx))
+            })
 
         await ctx.send("Your reaction has been inserted")
 
