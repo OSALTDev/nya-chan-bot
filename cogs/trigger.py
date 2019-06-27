@@ -152,6 +152,7 @@ class setup(Base, name="Trigger"):
 
         words = "|".join(word_list)
         entry = {
+            "guild": ctx.guild.id,
             "name": trigger_name,
             "action": _reaction_list[str(reaction)[1:-1]][1],
             "words": word_list,
