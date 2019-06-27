@@ -3,13 +3,11 @@ This cog handles chat triggers and responses
 """
 
 # Load config, base cog and commands
-from bot.config import Config
 from bot.cog_base import Base
 from discord.ext import commands
 
 # Import re compile and ignore case, and import simple namespace
 from re import compile as re_compile, IGNORECASE as RE_IGNORE_CASE, error as RE_ERROR
-from types import SimpleNamespace
 
 from asyncio import TimeoutError as AIO_TIMEOUT_ERROR
 
@@ -23,22 +21,26 @@ class setup(Base, name="Trigger"):
         self.triggers = {}
         trigger_list = []
 
-        for trigger in Config.triggers:
-            # Dict => SimpleNamespace
-            trigger = SimpleNamespace(**trigger)
-
-            # Store title and joined word list
-            title = trigger.title
-            words = "|".join(trigger.wordlist)
-
-            # Add trigger to word list
-            trigger_list.append(f"(?P<{title}>{words})")
+        guild_re = {}
+        for trigger in self.db.entries:
+            guild_id = int(trigger['guild'])
 
             # Add trigger to trigger list, keyed title
-            self.triggers[title] = trigger
+            try:
+                self.triggers[guild_id][trigger['name']] = trigger
+            except KeyError:
+                self.triggers[guild_id] = {}
+                self.triggers[guild_id][trigger['name']] = trigger
 
-        # Compile batch RE
-        self.re = re_compile("|".join(trigger_list), RE_IGNORE_CASE)
+            if trigger['guild'] not in guild_re:
+                guild_re[guild_id] = []
+
+            guild_re[guild_id].append(trigger['re'])
+
+        # Guild-specific regex
+        self.guild_re = {}
+        for guild_id, proc_re in guild_re.items():
+            self.guild_re[guild_id] = re_compile("|".join(proc_re), RE_IGNORE_CASE)
 
     @Base.listener()
     async def on_message(self, message):
@@ -46,8 +48,14 @@ class setup(Base, name="Trigger"):
         if message.author.bot or not message.guild:
             return
 
+        try:
+            triggers = self.triggers[message.guild.id]
+            re = self.guild_re[message.guild.id]
+        except KeyError:
+            return
+
         # Search through entire doc, matches stored in trigger_match
-        trigger_match = self.re.finditer(message.content)
+        trigger_match = re.finditer(message.content)
 
         # Don't continue if no match
         if not trigger_match:
@@ -65,9 +73,9 @@ class setup(Base, name="Trigger"):
 
         for name in uniques:
             # Store trigger and do action
-            trigger = self.triggers[name]
-            if trigger.action == "dm":
-                await message.author.send(trigger.response)
+            trigger = triggers[name]
+            if trigger["action"] == "dm":
+                await message.author.send(trigger["response"])
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error.original, AIO_TIMEOUT_ERROR):
@@ -152,11 +160,11 @@ class setup(Base, name="Trigger"):
 
         words = "|".join(word_list)
         entry = {
-            "guild": ctx.guild.id,
+            "guild": str(ctx.guild.id),
             "name": trigger_name,
             "action": _reaction_list[str(reaction)[1:-1]][1],
             "words": word_list,
-            "re": f"(?P<{trigger_name}>{words}"
+            "re": f"(?P<{trigger_name}>{words})"
         }
 
         await user_react_to.delete()
