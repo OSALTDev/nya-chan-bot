@@ -27,11 +27,11 @@ class Collection:
 
     def entry(self, key):
         try:
-            attempt = self._collection[key]
+            item = self._collection[key]
         except DocumentNotFoundError:
             return False
 
-        return True
+        return item
 
     @property
     def entries(self):

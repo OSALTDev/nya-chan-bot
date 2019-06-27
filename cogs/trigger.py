@@ -203,4 +203,8 @@ class setup(Base, name="Trigger"):
                 {prefix}remove_trigger <trigger_name>
         """
         doc = self.db.entry(f"{ctx.guild.id}_{trigger_name}")
-        doc.delete()
+        if doc:
+            doc.delete()
+            await ctx.send(f"Trigger {trigger_name} successfully deleted")
+        else:
+            await ctx.send(f"Trigger {trigger_name} does not exist")
