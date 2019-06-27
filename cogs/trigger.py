@@ -42,8 +42,8 @@ class setup(Base, name="Trigger"):
 
     @Base.listener()
     async def on_message(self, message):
-        # Don't trigger if bot
-        if message.author.bot:
+        # Don't trigger if bot, or if not in a guild
+        if message.author.bot or not message.guild:
             return
 
         # Search through entire doc, matches stored in trigger_match
