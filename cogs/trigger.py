@@ -100,7 +100,20 @@ class setup(Base, name="Trigger"):
         await ctx.author.send("What would you like the response to be?")
         action_response = await self.bot.wait_for("message", check=wait_for_message_check, timeout=75)
 
-        return {"words": word_list, "response": action_response}
+        return {"words": word_list, "response": action_response.content}
+
+    async def add_kick_trigger(self, ctx):
+        await ctx.author.send("Please type a reason so I can DM the user, or type '!!' for no message")
+
+        def wait_for_message(m):
+            return m.author.id == ctx.author.id and not m.guild
+
+        msg = await self.bot.wait_for("message", check=wait_for_message)
+
+        if msg.content == "!!":
+            return {}
+
+        return {"message": msg.content}
 
     @commands.command()
     @commands.guild_only()
@@ -145,6 +158,12 @@ class setup(Base, name="Trigger"):
             self.db.enter({
                 **entry,
                 **(await self.add_dm_trigger(ctx))
+            }, f"{ctx.guild.id}_{trigger_name}")
+        elif entry["action"] in ("kick", "ban"):
+            # Ban and kick request the same information
+            self.db.enter({
+                **entry,
+                **(await self.add_kick_trigger(ctx))
             }, f"{ctx.guild.id}_{trigger_name}")
 
         await ctx.author.send("Your reaction has been inserted")
