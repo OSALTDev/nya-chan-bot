@@ -29,7 +29,7 @@ class Collection:
         try:
             item = self._collection[key]
         except DocumentNotFoundError:
-            return False
+            return None
 
         return item
 
