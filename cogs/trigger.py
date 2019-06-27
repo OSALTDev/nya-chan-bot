@@ -19,7 +19,6 @@ class setup(Base, name="Trigger"):
 
         # Initialize cog trigger dictionary and temporary trigger string list
         self.triggers = {}
-        trigger_list = []
 
         guild_re = {}
         for trigger in self.db.entries:
@@ -76,6 +75,18 @@ class setup(Base, name="Trigger"):
             trigger = triggers[name]
             if trigger["action"] == "dm":
                 await message.author.send(trigger["response"])
+            elif trigger["action"] == "kick":
+                try:
+                    await message.author.send(trigger["message"])
+                    await message.author.kick(reason=f"Triggered kick: {trigger['name']}: {trigger['message']}")
+                except:
+                    await message.author.kick(reason=f"Triggered kick: {trigger['name']}")
+            elif trigger["action"] == "ban":
+                try:
+                    await message.author.send(trigger["message"])
+                    await message.author.ban(reason=f"Triggered ban: {trigger['name']}: {trigger['message']}")
+                except:
+                    await message.author.ban(reason=f"Triggered ban: {trigger['name']}")
 
     async def cog_command_error(self, ctx, error):
         if isinstance(error.original, AIO_TIMEOUT_ERROR):
