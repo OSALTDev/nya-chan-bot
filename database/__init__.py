@@ -3,6 +3,7 @@ from requests.exceptions import ConnectionError
 
 try:
     from pyArango.connection import Connection, CreationError
+    from pyArango.theExceptions import DocumentNotFoundError
 except ModuleNotFoundError as e:
     raise Exception("Nya-Chan requires pyArango to be installed") from e
 
@@ -13,7 +14,9 @@ class Collection:
 
     def enter(self, item, key=None):
         doc = self._collection.createDocument(item)
-        doc._key = key
+        doc.setPrivates({
+            "_key": key
+        })
         doc.save()
 
     def update(self, key, updates):
@@ -23,7 +26,12 @@ class Collection:
         doc.save()
 
     def entry(self, key):
-        return self._collection[key]
+        try:
+            attempt = self._collection[key]
+        except DocumentNotFoundError:
+            return False
+
+        return True
 
     @property
     def entries(self):

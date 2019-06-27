@@ -97,12 +97,13 @@ class setup(Base, name="Trigger"):
             finally:
                 user_word = await self.bot.wait_for("message", check=wait_for_message_check)
 
-        await ctx.send("What would you like the response to be?")
+        await ctx.author.send("What would you like the response to be?")
         action_response = await self.bot.wait_for("message", check=wait_for_message_check, timeout=75)
 
         return {"words": word_list, "response": action_response}
 
     @commands.command()
+    @commands.guild_only()
     async def add_trigger(self, ctx: commands.Context, trigger_name):
         """
             Add a word trigger to the bot
@@ -110,6 +111,9 @@ class setup(Base, name="Trigger"):
             Syntax:
                 {prefix}add_trigger <trigger_name>
         """
+        if self.db.entry(f"{ctx.guild.id}_{trigger_name}"):
+            return await ctx.send("This trigger already exists for your guild")
+
         _reaction_list = {
             ":mod_message:592400024328077313": ("Message the moderators", "modmsg"),
             ":dm_user:592400024520884246": ("DM the user", "dm"),
@@ -141,9 +145,9 @@ class setup(Base, name="Trigger"):
             self.db.enter({
                 **entry,
                 **(await self.add_dm_trigger(ctx))
-            })
+            }, f"{ctx.guild.id}_{trigger_name}")
 
-        await ctx.send("Your reaction has been inserted")
+        await ctx.author.send("Your reaction has been inserted")
 
     @commands.command()
     async def remove_trigger(self, ctx, trigger_name):
