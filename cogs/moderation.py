@@ -3,9 +3,6 @@ import discord
 
 
 class setup(Base, name="Moderation"):
-    async def warn(self, member: discord.Member, reason):
-        pass
-
     async def kick(self, member: discord.Member, reason):
         pass
 
