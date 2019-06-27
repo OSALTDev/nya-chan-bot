@@ -142,7 +142,7 @@ class setup(Base, name="Trigger"):
             await user_react_to.add_reaction(reaction)
 
         def wait_for_reaction_check(m, u):
-            return u.id == ctx.author.id and m.message.id == user_react_to.id
+            return u.id == ctx.author.id and m.message.id == user_react_to.id and str(m)[1:-1] in _reaction_list
 
         reaction, _ = await self.bot.wait_for("reaction_add", check=wait_for_reaction_check, timeout=30)
 
