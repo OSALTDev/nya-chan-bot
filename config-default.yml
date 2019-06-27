@@ -20,14 +20,6 @@ config:
       error: yes
       complete: yes
 
-  # Chat triggers
-  # List of dicts
-  triggers:
-    - title: "trigger_name" # Alphanumeric (with _ allowed) name for this trigger
-      wordlist: [] # List of RE matches
-      action: "DM" # Action to take
-      response: "Response" # What message to send
-
 # Internal bot config
 bot:
   # Bot name
