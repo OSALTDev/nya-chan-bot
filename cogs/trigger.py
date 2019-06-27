@@ -176,5 +176,5 @@ class setup(Base, name="Trigger"):
             Syntax:
                 {prefix}remove_trigger <trigger_name>
         """
-        doc = self.db.entry(f"{ctx.guild.id}:{trigger_name}")
+        doc = self.db.entry(f"{ctx.guild.id}_{trigger_name}")
         doc.delete()
