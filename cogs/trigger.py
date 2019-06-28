@@ -13,9 +13,8 @@ from asyncio import TimeoutError as AIO_TIMEOUT_ERROR
 
 
 class setup(Base, name="Trigger"):
-    def __init__(self, bot):
-        super().__init__(bot)
-        self.db = bot.database.collection("TriggerWords")
+    def __init__(self):
+        self.db = self.bot.database.collection("TriggerWords")
 
         # Initialize cog trigger dictionary and temporary trigger string list
         self.triggers = {}
@@ -94,18 +93,18 @@ class setup(Base, name="Trigger"):
 
     async def add_dm_trigger(self, ctx):
         def wait_for_message_check(m):
-            return m.author.id == ctx.author.id and not m.guild
+            return m.author.id == ctx.author.id and m.channel.type.private
 
         await ctx.author.send("What would you like the response to be?")
         action_response = await self.bot.wait_for("message", check=wait_for_message_check, timeout=75)
 
         return {"response": action_response.content}
 
-    async def add_kick_trigger(self, ctx):
+    async def add_kick_ban_trigger(self, ctx):
         await ctx.author.send("Please type a reason so I can DM the user, or type '!!' for no message")
 
         def wait_for_message(m):
-            return m.author.id == ctx.author.id and not m.guild
+            return m.author.id == ctx.author.id and m.channel.type.private
 
         msg = await self.bot.wait_for("message", check=wait_for_message)
 
@@ -154,7 +153,7 @@ class setup(Base, name="Trigger"):
         )
 
         def wait_for_message_check(m):
-            return m.author.id == ctx.author.id and not m.guild
+            return m.author.id == ctx.author.id and m.channel.type.private
 
         word_list = []
         user_word = await self.bot.wait_for("message", check=wait_for_message_check, timeout=30)
@@ -189,7 +188,7 @@ class setup(Base, name="Trigger"):
             # Ban and kick request the same information
             self.db.enter({
                 **entry,
-                **(await self.add_kick_trigger(ctx))
+                **(await self.add_kick_ban_trigger(ctx))
             }, f"{ctx.guild.id}_{trigger_name}")
 
         await ctx.author.send("Your reaction has been inserted")

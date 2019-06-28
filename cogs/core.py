@@ -15,9 +15,7 @@ from bot.config import Config, Logging
 
 
 class setup(Base, name="Core"):
-    def __init__(self, bot):
-        super().__init__(bot)
-
+    def __init__(self):
         # Create event loggers
         self.command_log = self._create_logger_for("commands")
         self.chat_log = self._create_logger_for("chat")
