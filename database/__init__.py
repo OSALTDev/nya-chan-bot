@@ -21,7 +21,7 @@ class Collection:
 
     def update(self, key, updates):
         doc = self._collection[key]
-        for item, value in updates.keys():
+        for item, value in updates.items():
             doc[item] = value
         doc.save()
 

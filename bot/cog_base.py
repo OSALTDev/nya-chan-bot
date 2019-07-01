@@ -6,7 +6,8 @@ class BaseMeta(commands.CogMeta):
     def __new__(mcs, *args, **kwargs):
         name, bases, attrs = args
         new_cls = super().__new__(mcs, name, bases, attrs, **kwargs)
-        new_cls.bot = None
+        # noinspection PyTypeChecker
+        new_cls.bot: BotBase = None
         return new_cls
 
     def __init__(cls, *args, **kwargs):
