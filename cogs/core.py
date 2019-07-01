@@ -10,7 +10,7 @@ import logging
 import traceback
 
 # Import cog base and re-use commands; import our config too
-from bot.cog_base import Base, commands
+from bot.cog_base import Base
 from bot.config import Config, Logging
 
 
@@ -35,13 +35,13 @@ class setup(Base, name="Core"):
         return logger
 
     # Log commands being executed
-    @commands.Cog.listener()
-    async def on_command(self, ctx: commands.Context):
+    @Base.listener()
+    async def on_command(self, ctx):
         if Logging.Command.execute:
             self.command_log.info(f"User {ctx.author} executing command {ctx.invoked_with}")
 
     # Log command errors
-    @commands.Cog.listener()
+    @Base.listener()
     async def on_command_error(self, _, error):
         if Logging.Command.error:
             # Get exception info, in a list
@@ -51,21 +51,29 @@ class setup(Base, name="Core"):
             )
 
     # Log command completions
-    @commands.Cog.listener()
+    @Base.listener()
     async def on_command_completion(self, ctx):
         if Logging.Command.complete:
             self.command_log.info(f"Command complete")
 
-    @commands.Cog.listener()
+    @Base.listener()
     async def on_message(self, message):
         if Logging.chat:
             self.chat_log.info(f"{message.guild} @ #{message.channel} : @{message.author} : {message.content}")
 
-    @commands.Cog.listener()
+    @Base.listener()
     async def on_message_edit(self, before, after):
         if Logging.chat:
             self.chat_log.info(
                 f"Message {before.guild} @ #{before.channel} : @{before.author} edited\n"
                 f"Before:\n{before.content}\n"
                 f"After:\n{after.content}"
+            )
+
+    @Base.listener()
+    async def on_message_delete(self, message):
+        if Logging.chat:
+            self.chat_log.info(
+                f"Message {message.guild} @ #{message.channel} : @{message.author} deleted\n"
+                f"Content:\n{message.content}"
             )
