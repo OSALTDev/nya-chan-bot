@@ -2,8 +2,8 @@ try:
     import discord
     from discord.ext import commands
 
-    if discord.__version__ != "1.2.2":
-        raise Exception("You need to have Discord.py 1.2.2 installed")
+    if discord.__version__ != "1.2.3":
+        raise Exception("You need to have Discord.py 1.2.3 installed")
 except ModuleNotFoundError as e:
     raise Exception("Please make sure to install from the requirements.txt file")
 
