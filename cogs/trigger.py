@@ -205,6 +205,19 @@ class setup(Base, name="Trigger"):
         await ctx.author.send("Your reaction has been inserted")
 
     @commands.command()
+    async def list_triggers(self, ctx):
+        trigger_names = []
+        for trigger in self.db.entries:
+            if int(trigger["guild"]) == ctx.guild.id:
+                trigger_names.append(trigger["name"])
+
+        if not trigger_names:
+            await ctx.send("You have no triggers for this guild")
+            return
+
+        await ctx.send("Your triggers for this guild are:\n" + ', '.join(trigger_names))
+
+    @commands.command()
     async def remove_trigger(self, ctx, trigger_name):
         """
             Remove a word trigger from the bot
