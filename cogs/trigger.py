@@ -9,12 +9,14 @@ from discord.ext import commands
 # Import re compile and ignore case, and import simple namespace
 from re import compile as re_compile, IGNORECASE as RE_IGNORE_CASE, error as RE_ERROR
 
+from datetime import datetime, timedelta
 from asyncio import TimeoutError as AIO_TIMEOUT_ERROR
 
 
 class setup(Base, name="Trigger"):
     def __init__(self):
         self.db = self.bot.database.collection("TriggerWords")
+        self.triggered = self.bot.database.collection("TriggerCount")
 
         # Initialize cog trigger dictionary and temporary trigger string list
         self.triggers = {}
@@ -46,6 +48,13 @@ class setup(Base, name="Trigger"):
         if message.author.bot or not message.guild:
             return
 
+        current_date = datetime.now()
+        entry_key = str(message.guild.id) + "_" + str(message.author.id)
+        entry = self.triggered.entry(entry_key)
+        is_allowed = (entry["until"] - current_date.timestamp() <= 0) if entry else True
+        if not is_allowed:
+            return
+
         try:
             triggers = self.triggers[message.guild.id]
             re = self.guild_re[message.guild.id]
@@ -68,6 +77,8 @@ class setup(Base, name="Trigger"):
             for name in groups.keys():
                 if groups[name] and name not in uniques:
                     uniques.append(name)
+
+        self.triggered.enter({"until": (current_date + timedelta(weeks=2)).timestamp()}, entry_key)
 
         for name in uniques:
             # Store trigger and do action
