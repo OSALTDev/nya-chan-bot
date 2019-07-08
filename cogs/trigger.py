@@ -112,7 +112,7 @@ class setup(Base, name="Trigger"):
         return {"response": action_response.content}
 
     async def add_kick_ban_trigger(self, ctx):
-        await ctx.author.send("Please type a reason so I can DM the user, or type '!!' for no message")
+        await ctx.author.send("Please type a reason that I can DM the user, or type '!!' for no message")
 
         def wait_for_message(m):
             return m.author.id == ctx.author.id and m.channel.type.private
@@ -206,6 +206,12 @@ class setup(Base, name="Trigger"):
 
     @commands.command()
     async def list_triggers(self, ctx):
+        """
+            List your guild's triggers
+
+            Syntax:
+                {prefix}list_triggers
+        """
         trigger_names = []
         for trigger in self.db.entries:
             if int(trigger["guild"]) == ctx.guild.id:
