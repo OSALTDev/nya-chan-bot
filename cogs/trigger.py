@@ -137,7 +137,7 @@ class setup(Base, name="Trigger"):
             return await ctx.send("This trigger already exists for your guild")
 
         _reaction_list = {
-            ":mod_message:592400024328077313": ("Message the moderators", "modmsg"),
+            # ":mod_message:592400024328077313": ("Message the moderators", "modmsg"),
             ":dm_user:592400024520884246": ("DM the user", "dm"),
             ":kick_user:592400025548750858": ("Kick user", "kick"),
             ":ban_user:592400024605032474": ("Ban user", "ban")
