@@ -9,6 +9,7 @@ except ModuleNotFoundError as e:
 
 import logging
 import database
+from .help import NyaHelp
 from .context import CommandContext
 from .config import Bot as BotConfig, Config
 
@@ -27,7 +28,7 @@ __all__ = ("BotBase", "BotConfig", "Config")
 class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
         # Add or update bot token in kwargs
-        kwargs.update(command_prefix=BotConfig.prefix)
+        kwargs.update(command_prefix=BotConfig.prefix, help_command=NyaHelp())
         super().__init__(*args, **kwargs)
 
         # Nya-Chan logger
