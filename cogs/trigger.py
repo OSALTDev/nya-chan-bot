@@ -5,6 +5,7 @@ This cog handles chat triggers and responses
 # Load config, base cog and commands
 from bot.cog_base import Base
 from discord.ext import commands
+from discord import ChannelType as DiscordChannelType, Forbidden as DiscordForbidden
 
 # Import re compile and ignore case, and import simple namespace
 from re import compile as re_compile, IGNORECASE as RE_IGNORE_CASE, error as RE_ERROR
@@ -84,7 +85,10 @@ class setup(Base, name="Trigger"):
             # Store trigger and do action
             trigger = triggers[name]
             if trigger["action"] == "dm":
-                await message.author.send(trigger["response"])
+                try:
+                    await message.author.send(trigger["response"].format(user=message.author))
+                except DiscordForbidden:
+                    await message.channel.send(trigger["response"].format(user=message.author))
             elif trigger["action"] == "kick":
                 try:
                     await message.author.send(trigger["message"])
@@ -99,12 +103,14 @@ class setup(Base, name="Trigger"):
                     await message.author.ban(reason=f"Triggered ban: {trigger['name']}")
 
     async def cog_command_error(self, ctx, error):
-        if isinstance(error.original, AIO_TIMEOUT_ERROR):
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("You need to specify a trigger name")
+        elif isinstance(error.original, AIO_TIMEOUT_ERROR):
             await ctx.send("Command timed out, please try again")
 
     async def add_dm_trigger(self, ctx):
         def wait_for_message_check(m):
-            return m.author.id == ctx.author.id and m.channel.type.private
+            return m.author.id == ctx.author.id and m.channel.type is DiscordChannelType.private
 
         await ctx.author.send("What would you like the response to be?")
         action_response = await self.bot.wait_for("message", check=wait_for_message_check, timeout=75)
@@ -115,9 +121,9 @@ class setup(Base, name="Trigger"):
         await ctx.author.send("Please type a reason that I can DM the user, or type '!!' for no message")
 
         def wait_for_message(m):
-            return m.author.id == ctx.author.id and m.channel.type.private
+            return m.author.id == ctx.author.id and m.channel.type is DiscordChannelType.private
 
-        msg = await self.bot.wait_for("message", check=wait_for_message)
+        msg = await self.bot.wait_for("message", check=wait_for_message, timeout=75)
 
         if msg.content == "!!":
             return {}
@@ -164,7 +170,7 @@ class setup(Base, name="Trigger"):
         )
 
         def wait_for_message_check(m):
-            return m.author.id == ctx.author.id and m.channel.type.private
+            return m.author.id == ctx.author.id and m.channel.type is DiscordChannelType.private
 
         word_list = []
         user_word = await self.bot.wait_for("message", check=wait_for_message_check, timeout=30)
@@ -177,7 +183,7 @@ class setup(Base, name="Trigger"):
             else:
                 word_list.append(user_word.content)
             finally:
-                user_word = await self.bot.wait_for("message", check=wait_for_message_check)
+                user_word = await self.bot.wait_for("message", check=wait_for_message_check, timeout=30)
 
         words = "|".join(word_list)
         entry = {
