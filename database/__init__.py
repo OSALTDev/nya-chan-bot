@@ -1,9 +1,11 @@
 from bot.config import Database as DBConfig
 from requests.exceptions import ConnectionError
+from typing import Union
 
 try:
     from pyArango.connection import Connection, CreationError
     from pyArango.theExceptions import DocumentNotFoundError
+    from pyArango.collection import Collection as pyArangoCollection
 except ModuleNotFoundError as e:
     raise Exception("Nya-Chan requires pyArango to be installed") from e
 
@@ -12,20 +14,20 @@ class Collection:
     def __init__(self, col):
         self._collection = col
 
-    def enter(self, item, key=None):
+    def enter(self, item, key=None) -> None:
         doc = self._collection.createDocument(item)
         doc.setPrivates({
             "_key": key
         })
         doc.save()
 
-    def update(self, key, updates):
+    def update(self, key, updates) -> None:
         doc = self._collection[key]
         for item, value in updates.items():
             doc[item] = value
         doc.save()
 
-    def entry(self, key):
+    def entry(self, key) -> Union[pyArangoCollection, None]:
         try:
             item = self._collection[key]
         except DocumentNotFoundError:
@@ -33,7 +35,7 @@ class Collection:
 
         return item
 
-    def find(self, **kwattrs):
+    def find(self, **kwattrs) -> Union[pyArangoCollection, None]:
         for item in self.entries:
             try:
                 is_valid = [item[key] == value for key, value in kwattrs.items()]
