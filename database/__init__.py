@@ -33,6 +33,16 @@ class Collection:
 
         return item
 
+    def find(self, **kwattrs):
+        for item in self.entries:
+            try:
+                is_valid = [item[key] == value for key, value in kwattrs.items()]
+                if all(is_valid):
+                    return item
+            except:
+                continue
+        return None
+
     @property
     def entries(self):
         return self._collection.fetchAll()
