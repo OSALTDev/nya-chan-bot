@@ -214,6 +214,7 @@ class Logging(metaclass=YAMLGetter):
     section = "config.logs"
 
     chat: bool
+    guild_entry: bool
 
     class Command(metaclass=YAMLGetter):
         section = "commands"

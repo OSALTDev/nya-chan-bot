@@ -77,3 +77,13 @@ class setup(Base, name="Core"):
                 f"Message {message.guild} @ #{message.channel} : @{message.author} deleted\n"
                 f"Content:\n{message.content}"
             )
+
+    @Base.listener()
+    async def on_guild_join(self, guild):
+        if Logging.guild_entry:
+            self.bot.logger.info(f"Joined new guild: {guild}")
+
+    @Base.listener()
+    async def on_guild_leave(self, guild):
+        if Logging.guild_entry:
+            self.bot.logger.info(f"Left guild: {guild}")
