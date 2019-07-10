@@ -23,30 +23,15 @@ class setup(Base, name="Permissions"):
     @configure.command("set_moderators")
     async def configure_set_moderator_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(id=str(ctx.guild.id))
-        if entry:
-            entry["role_ids"] = [str(role.id) for role in roles]
-            entry.save()
-        else:
-            self.db.enter(
-                dict(
-                    guild_id=str(ctx.guild.id),
-                    role_ids=[str(role.id) for role in roles]
-                )
-            )
+        entry["role_ids"] = [str(role.id) for role in roles]
+        entry["configured"] = True
+        entry.save()
 
     @configure.command("prefix")
     async def configure_prefix(self, ctx, *, prefix):
         entry = self.db.find(id=str(ctx.guild.id))
-        if entry:
-            entry["prefix"] = prefix
-            entry.save()
-        else:
-            self.db.enter(
-                dict(
-                    guild_id=str(ctx.guild.id),
-                    prefix=prefix
-                )
-            )
+        entry["prefix"] = prefix
+        entry.save()
 
     @Base.listener()
     async def on_ready(self):
@@ -57,4 +42,21 @@ class setup(Base, name="Permissions"):
                 self.db.find(id=str(guild_id)).delete()
             else:
                 self.unconfigured.append(guild_id)
+                self.db.enter(
+                    dict(
+                        guild_id=str(guild_id)
+                    )
+                )
+
+    @Base.listener()
+    async def on_guild_join(self, guild):
+        self.db.enter(
+            dict(
+                guild_id=str(guild.id)
+            )
+        )
+
+    @Base.listener()
+    async def on_guild_remove(self, guild):
+        self.db.find(id=str(guild.id)).delete()
 
