@@ -28,7 +28,14 @@ __all__ = ("BotBase", "BotConfig", "Config")
 class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
         # Add or update bot token in kwargs
-        kwargs.update(command_prefix=BotConfig.prefix, help_command=NyaHelp())
+        def get_prefix(bot, message):
+            guild = bot.get_cog("Core").db.find(id=str(message.guild.id))
+            try:
+                return guild["prefix"]
+            except (IndexError, TypeError):
+                return BotConfig.prefix
+
+        kwargs.update(command_prefix=get_prefix, help_command=NyaHelp())
         super().__init__(*args, **kwargs)
 
         # Nya-Chan logger
@@ -54,6 +61,9 @@ class BotBase(commands.Bot):
 
         permissions_cog = self.get_cog("Permissions")
         ctx = await self.get_context(message, cls=CommandContext)
+
+        if not ctx.command:
+            return
 
         if await permissions_cog.execution_allowed(ctx):
             await self.invoke(ctx)
