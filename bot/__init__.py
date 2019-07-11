@@ -65,7 +65,7 @@ class BotBase(commands.Bot):
         if not ctx.command:
             return
 
-        if await permissions_cog.execution_allowed(ctx):
+        if permissions_cog.execution_allowed(ctx):
             await self.invoke(ctx)
 
     # Print some basic information on boot

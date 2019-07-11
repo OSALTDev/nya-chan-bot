@@ -1,5 +1,7 @@
 from bot.cog_base import Base, commands
-from discord import Role as DiscordRole
+from bot.checks import is_admin, is_owner, CHECK_FAIL
+from bot.command import NyaCommand
+from discord import Role as DiscordRole, utils as DiscordUtils
 
 
 class setup(Base, name="Permissions"):
@@ -7,32 +9,68 @@ class setup(Base, name="Permissions"):
         self.db = self.bot.database.collection("ServersJoined")
         self.unconfigured = []
 
-    async def execution_allowed(self, ctx):
-        if isinstance(ctx.command.cog, setup) or ctx.command.name == "help":
+    def execution_allowed(self, ctx):
+        def bw_checker():
+            if not isinstance(ctx.command, NyaCommand) or not ctx.command.bitwise_checks:
+                return True
+
+            for f in ctx.command.bitwise_checks:
+                if f(ctx) & CHECK_FAIL:
+                    return False
+
+            return True
+
+        if (isinstance(ctx.command.cog, setup) and bw_checker()) or ctx.command.name == "help":
             return True
 
         if ctx.guild.id in self.unconfigured:
             return False
 
+        if not bw_checker():
+            return False
+
         return True
+
+    def check_has_permission(self, ctx, of):
+        guild = self.db.find(guild_id=str(ctx.guild.id))
+        if not guild:
+            return False
+
+        if f'{of}_role_ids' not in guild.getStore():
+            return False
+
+        for role_id in guild[f"{of}_role_ids"]:
+            if DiscordUtils.get(ctx.author.roles, id=int(role_id)):
+                return True
+        return False
+
+    def check_is_admin(self, ctx):
+        return self.check_has_permission(ctx, "admin")
+
+    def check_is_moderator(self, ctx):
+        return self.check_has_permission(ctx, "mod")
 
     @commands.group("config", invoke_without_command=True)
     async def configure(self, ctx):
-        pass
+        await ctx.send_help(ctx.invoked_with)
 
-    @configure.command("set_moderators")
+    @configure.command("set_moderators", cls=NyaCommand)
+    @is_admin()
     async def configure_set_moderator_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(guild_id=str(ctx.guild.id))
         entry["mod_role_ids"] = [str(role.id) for role in roles]
         entry["configured"] = True
         entry.save()
+        await ctx.message.add_reaction('👍')
 
-    @configure.command("set_admins")
+    @configure.command("set_admins", cls=NyaCommand)
+    @is_owner()
     async def configure_set_admin_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(guild_id=str(ctx.guild.id))
         entry["admin_role_ids"] = [str(role.id) for role in roles]
         entry["configured"] = True
         entry.save()
+        await ctx.message.add_reaction('👍')
 
     @Base.listener()
     async def on_ready(self):
