@@ -25,7 +25,7 @@ def is_owner():
 def is_admin():
     def pred(ctx):
         perm_cog = ctx.bot.get_cog("Permissions")
-        if perm_cog.check_is_admin(ctx):
+        if perm_cog.check_is_admin(ctx) or perm_cog.check_is_moderator(ctx):
             return CHECK_PASS
         return CHECK_FAIL
 
