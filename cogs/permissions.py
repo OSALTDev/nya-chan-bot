@@ -1,6 +1,6 @@
 from bot.cog_base import Base, commands
 from bot.checks import is_admin, is_owner, CHECK_FAIL
-from bot.command import NyaCommand, NyaGroup
+from bot import command as NyaCommands
 from discord import Role as DiscordRole, utils as DiscordUtils
 
 
@@ -47,12 +47,12 @@ class setup(Base, name="Permissions"):
     def check_is_moderator(self, ctx):
         return self.check_has_permission(ctx, "mod")
 
-    @commands.group("config", cls=NyaGroup, invoke_without_command=True)
+    @NyaCommands.group("config", invoke_without_command=True)
     @is_admin()
     async def configure(self, ctx):
         await ctx.send_help(ctx.invoked_with)
 
-    @configure.command("set_moderators", cls=NyaCommand)
+    @NyaCommands.command("set_moderators")
     @is_admin()
     async def configure_set_moderator_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(guild_id=str(ctx.guild.id))
@@ -61,7 +61,7 @@ class setup(Base, name="Permissions"):
         entry.save()
         await ctx.message.add_reaction('👍')
 
-    @configure.command("set_admins", cls=NyaCommand)
+    @NyaCommands.command("set_admins")
     @is_owner()
     async def configure_set_admin_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(guild_id=str(ctx.guild.id))

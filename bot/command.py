@@ -29,3 +29,13 @@ class NyaGroup(commands.Group):
         except AttributeError:
             self.bitwise_checks = []
 
+
+def command(*args, **kwargs):
+    kwargs.update(cls=NyaCommand)
+    return commands.command(*args, **kwargs)
+
+
+def group(*args, **kwargs):
+    kwargs.update(cls=NyaCommand)
+    return commands.group(*args, **kwargs)
+
