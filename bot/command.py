@@ -15,4 +15,5 @@ class NyaCommand(commands.Command):
             bitwise_checks.reverse()
             self.bitwise_checks = bitwise_checks
         except AttributeError:
-            pass
+            self.bitwise_checks = []
+
