@@ -17,3 +17,15 @@ class NyaCommand(commands.Command):
         except AttributeError:
             self.bitwise_checks = []
 
+
+class NyaGroup(commands.Group):
+    def __init__(self, func, **kwargs):
+        super().__init__(func, **kwargs)
+
+        try:
+            bitwise_checks = func.__commands_bitwise_checks__
+            bitwise_checks.reverse()
+            self.bitwise_checks = bitwise_checks
+        except AttributeError:
+            self.bitwise_checks = []
+

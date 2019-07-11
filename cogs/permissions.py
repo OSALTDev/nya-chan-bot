@@ -1,6 +1,6 @@
 from bot.cog_base import Base, commands
 from bot.checks import is_admin, is_owner, CHECK_FAIL
-from bot.command import NyaCommand
+from bot.command import NyaCommand, NyaGroup
 from discord import Role as DiscordRole, utils as DiscordUtils
 
 
@@ -11,9 +11,6 @@ class setup(Base, name="Permissions"):
 
     def execution_allowed(self, ctx):
         def bw_checker():
-            if not isinstance(ctx.command, NyaCommand) or not ctx.command.bitwise_checks:
-                return True
-
             for f in ctx.command.bitwise_checks:
                 if f(ctx) & CHECK_FAIL:
                     return False
@@ -50,7 +47,8 @@ class setup(Base, name="Permissions"):
     def check_is_moderator(self, ctx):
         return self.check_has_permission(ctx, "mod")
 
-    @commands.group("config", invoke_without_command=True)
+    @commands.group("config", cls=NyaGroup, invoke_without_command=True)
+    @is_admin()
     async def configure(self, ctx):
         await ctx.send_help(ctx.invoked_with)
 
