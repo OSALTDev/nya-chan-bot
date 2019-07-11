@@ -23,7 +23,14 @@ class setup(Base, name="Permissions"):
     @configure.command("set_moderators")
     async def configure_set_moderator_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(id=str(ctx.guild.id))
-        entry["role_ids"] = [str(role.id) for role in roles]
+        entry["mod_role_ids"] = [str(role.id) for role in roles]
+        entry["configured"] = True
+        entry.save()
+
+    @configure.command("set_admins")
+    async def configure_set_admin_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
+        entry = self.db.find(id=str(ctx.guild.id))
+        entry["admin_role_ids"] = [str(role.id) for role in roles]
         entry["configured"] = True
         entry.save()
 
