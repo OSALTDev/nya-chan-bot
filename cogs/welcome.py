@@ -11,10 +11,10 @@ class setup(Base, name="Welcome"):
         entry = self.db.entry(str(member.guild.id))
         if entry:
             try:
-                if "welcome_message" in entry._store:
+                if "welcome_message" in entry.getStore():
                     await member.send(entry["welcome_message"])
 
-                if "roles" in entry._store:
+                if "roles" in entry.getStore():
                     roles = [discord.utils.get(member.guild.roles, id=int(role_id)) for role_id in entry["roles"]]
                     await member.add_roles(*roles, reason="Automatic role assignment")
             except discord.Forbidden:
