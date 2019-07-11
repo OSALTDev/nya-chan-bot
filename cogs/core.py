@@ -1,5 +1,5 @@
 """
-Cog for base events (such as logging, etc)
+Cog for base events (such as logging, etc) and core commands (help, prefix, etc)
 
 Events are only logged if debug is on, or if the
 specific event is enabled in the config.yaml
@@ -10,15 +10,30 @@ import logging
 import traceback
 
 # Import cog base and re-use commands; import our config too
-from bot.cog_base import Base
+from bot.cog_base import Base, commands
 from bot.config import Config, Logging
 
 
 class setup(Base, name="Core"):
     def __init__(self):
+        self.db = self.bot.database.collection("Core")
+
         # Create event loggers
         self.command_log = self._create_logger_for("commands")
         self.chat_log = self._create_logger_for("chat")
+
+    @commands.command("prefix")
+    async def configure_prefix(self, ctx, *, prefix):
+        entry = self.db.find(id=str(ctx.guild.id))
+        if not entry:
+            self.db.enter(dict(
+                id=str(ctx.guild.id),
+                prefix=prefix
+            ))
+            return
+
+        entry["prefix"] = prefix
+        entry.save()
 
     # Helper function to create logger instances
     @staticmethod
