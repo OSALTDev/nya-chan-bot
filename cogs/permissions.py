@@ -17,13 +17,15 @@ class setup(Base, name="Permissions"):
 
             return True
 
-        if (isinstance(ctx.command.cog, setup) and bw_checker()) or ctx.command.name == "help":
+        bw_pass = bw_checker()
+
+        if (isinstance(ctx.command.cog, setup) and bw_pass) or ctx.command.name == "help":
             return True
 
         if ctx.guild.id in self.unconfigured:
             return False
 
-        if not bw_checker():
+        if not bw_pass:
             return False
 
         return True
