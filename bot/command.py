@@ -4,6 +4,7 @@
 """
 
 from discord.ext import commands
+from .checks import CHECK_FAIL
 
 
 class NyaCommand(commands.Command):
@@ -17,17 +18,35 @@ class NyaCommand(commands.Command):
         except AttributeError:
             self.bitwise_checks = []
 
+    async def can_run(self, ctx):
+        if not await super().can_run(ctx):
+            return False
 
-class NyaGroup(commands.Group):
-    def __init__(self, func, **kwargs):
-        super().__init__(func, **kwargs)
+        for f in ctx.command.bitwise_checks:
+            if f(ctx) & CHECK_FAIL:
+                return False
 
-        try:
-            bitwise_checks = func.__commands_bitwise_checks__
-            bitwise_checks.reverse()
-            self.bitwise_checks = bitwise_checks
-        except AttributeError:
-            self.bitwise_checks = []
+        return True
+
+
+class NyaGroup(commands.Group, NyaCommand):
+    def command(self, *args, **kwargs):
+        def decorator(func):
+            kwargs.setdefault('parent', self)
+            result = command(*args, **kwargs)(func)
+            self.add_command(result)
+            return result
+
+        return decorator
+
+    def group(self, *args, **kwargs):
+        def decorator(func):
+            kwargs.setdefault('parent', self)
+            result = group(*args, **kwargs)(func)
+            self.add_command(result)
+            return result
+
+        return decorator
 
 
 def command(*args, **kwargs):
@@ -36,6 +55,6 @@ def command(*args, **kwargs):
 
 
 def group(*args, **kwargs):
-    kwargs.update(cls=NyaCommand)
+    kwargs.update(cls=NyaGroup)
     return commands.group(*args, **kwargs)
 

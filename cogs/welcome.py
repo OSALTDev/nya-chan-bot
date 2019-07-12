@@ -1,4 +1,5 @@
 from bot.cog_base import Base, commands
+from bot import command as NyaCommand
 import discord
 
 
@@ -20,7 +21,7 @@ class setup(Base, name="Welcome"):
             except discord.Forbidden:
                 pass
 
-    @commands.group(invoke_without_command=True)
+    @NyaCommand.group(invoke_without_command=True)
     async def welcome(self, ctx: commands.Context):
         await ctx.send_help(ctx.invoked_with)
 
