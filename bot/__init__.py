@@ -29,11 +29,13 @@ class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
         # Add or update bot token in kwargs
         def get_prefix(bot, message):
-            try:
-                guild = bot.get_cog("Core").db.find(id=str(message.guild.id))
-                return guild["prefix"]
-            except (IndexError, TypeError):
-                return BotConfig.prefix
+            if message.guild:
+                try:
+                    guild = bot.get_cog("Core").db.find(id=str(message.guild.id))
+                    return guild["prefix"]
+                except (IndexError, TypeError, AttributeError):
+                    return BotConfig.prefix
+            return BotConfig.prefix
 
         kwargs.update(command_prefix=get_prefix, help_command=NyaHelp())
         super().__init__(*args, **kwargs)

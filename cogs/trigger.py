@@ -50,8 +50,11 @@ class setup(Base, name="Trigger"):
         if message.author.bot or not message.guild:
             return
 
+        # Get current date and generate the ID with guild and author IDs
         current_date = datetime.now()
         entry_key = str(message.guild.id) + "_" + str(message.author.id)
+
+        # Get entry and, if allowed to trigger, dont return
         entry = self.triggered.entry(entry_key)
         is_allowed = (entry["until"] - current_date.timestamp() <= 0) if entry else True
         if not is_allowed:
@@ -104,6 +107,7 @@ class setup(Base, name="Trigger"):
                     await message.author.ban(reason=f"Triggered ban: {trigger['name']}")
 
     async def cog_command_error(self, ctx, error):
+        # Argument missing
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send("You need to specify a trigger name")
         elif isinstance(error.original, AIO_TIMEOUT_ERROR):
