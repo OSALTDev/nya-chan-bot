@@ -7,9 +7,9 @@ from discord import Role as DiscordRole, utils as DiscordUtils
 class setup(Base, name="Permissions"):
     def __init__(self):
         self.db = self.bot.database.collection("ServersJoined")
-        self.unconfigured = []
 
-    def execution_allowed(self, ctx):
+    @staticmethod
+    def execution_allowed(ctx):
         def bw_checker():
             for f in ctx.command.bitwise_checks:
                 if f(ctx) & CHECK_FAIL:
@@ -21,9 +21,6 @@ class setup(Base, name="Permissions"):
 
         if (isinstance(ctx.command.cog, setup) and bw_pass) or ctx.command.name == "help":
             return True
-
-        if ctx.guild.id in self.unconfigured:
-            return False
 
         if not bw_pass:
             return False
@@ -59,8 +56,6 @@ class setup(Base, name="Permissions"):
     async def configure_set_moderator_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(guild_id=str(ctx.guild.id))
         entry["mod_role_ids"] = [str(role.id) for role in roles]
-        if 'admin_role_ids' in entry.getStore():
-            entry["configured"] = True
         entry.save()
         await ctx.message.add_reaction('👍')
 
@@ -69,8 +64,6 @@ class setup(Base, name="Permissions"):
     async def configure_set_admin_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(guild_id=str(ctx.guild.id))
         entry["admin_role_ids"] = [str(role.id) for role in roles]
-        if 'mod_role_ids' in entry.getStore():
-            entry["configured"] = True
         entry.save()
         await ctx.message.add_reaction('👍')
 
@@ -82,7 +75,6 @@ class setup(Base, name="Permissions"):
             if guild_id not in guilds:
                 self.db.find(guild_id=str(guild_id)).delete()
             else:
-                self.unconfigured.append(guild_id)
                 self.db.enter(
                     dict(
                         guild_id=str(guild_id)
