@@ -65,6 +65,9 @@ class BotBase(commands.Bot):
         if not ctx.command:
             return
 
+        if message.channel.type is discord.ChannelType.private:
+            return
+
         if permissions_cog.execution_allowed(ctx):
             await self.invoke(ctx)
 
