@@ -10,6 +10,9 @@ class setup(Base, name="Permissions"):
 
     @staticmethod
     def execution_allowed(ctx):
+        if ctx.command.name == "help":
+            return True
+
         def bw_checker():
             for f in ctx.command.bitwise_checks:
                 if f(ctx) & CHECK_FAIL:
@@ -19,7 +22,7 @@ class setup(Base, name="Permissions"):
 
         bw_pass = bw_checker()
 
-        if (isinstance(ctx.command.cog, setup) and bw_pass) or ctx.command.name == "help":
+        if isinstance(ctx.command.cog, setup) and bw_pass:
             return True
 
         if not bw_pass:
