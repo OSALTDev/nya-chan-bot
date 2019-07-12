@@ -59,17 +59,14 @@ class BotBase(commands.Bot):
         if message.author.bot:
             return
 
-        permissions_cog = self.get_cog("Permissions")
         ctx = await self.get_context(message, cls=CommandContext)
-
         if not ctx.command:
             return
 
         if message.channel.type is discord.ChannelType.private:
             return
 
-        if permissions_cog.execution_allowed(ctx):
-            await self.invoke(ctx)
+        await self.invoke(ctx)
 
     # Print some basic information on boot
     async def on_ready(self):

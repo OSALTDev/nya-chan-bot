@@ -22,6 +22,9 @@ class NyaCommand(commands.Command):
         if not await super().can_run(ctx):
             return False
 
+        if ctx.command.name == "help":
+            return True
+
         for f in ctx.command.bitwise_checks:
             if f(ctx) & CHECK_FAIL:
                 return False

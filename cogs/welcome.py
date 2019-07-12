@@ -1,5 +1,6 @@
 from bot.cog_base import Base, commands
 from bot import command as NyaCommand
+from bot.checks import is_admin
 import discord
 
 
@@ -22,10 +23,12 @@ class setup(Base, name="Welcome"):
                 pass
 
     @NyaCommand.group(invoke_without_command=True)
+    @is_admin()
     async def welcome(self, ctx: commands.Context):
         await ctx.send_help(ctx.invoked_with)
 
     @welcome.command(name="toggle")
+    @is_admin()
     async def welcome_toggle(self, ctx):
         entry = self.db.entry(str(ctx.guild.id))
         enabled = True
@@ -45,6 +48,7 @@ class setup(Base, name="Welcome"):
         await ctx.send(f"The welcome message for this guild is now {actioned}")
 
     @welcome.command(name="roles")
+    @is_admin()
     async def welcome_roles(self, ctx, roles: commands.Greedy[discord.Role]):
         entry = self.db.entry(str(ctx.guild.id))
         if entry:
@@ -65,6 +69,7 @@ class setup(Base, name="Welcome"):
         await ctx.send("You have updated your automatic role setting", embed=embed)
 
     @welcome.command(name="message")
+    @is_admin()
     async def welcome_message(self, ctx, *, message: str = None):
         entry = self.db.entry(str(ctx.guild.id))
 
