@@ -59,7 +59,8 @@ class setup(Base, name="Permissions"):
     async def configure_set_moderator_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(guild_id=str(ctx.guild.id))
         entry["mod_role_ids"] = [str(role.id) for role in roles]
-        entry["configured"] = True
+        if 'admin_role_ids' in entry.getStore():
+            entry["configured"] = True
         entry.save()
         await ctx.message.add_reaction('👍')
 
@@ -68,7 +69,8 @@ class setup(Base, name="Permissions"):
     async def configure_set_admin_roles(self, ctx, roles: commands.Greedy[DiscordRole]):
         entry = self.db.find(guild_id=str(ctx.guild.id))
         entry["admin_role_ids"] = [str(role.id) for role in roles]
-        entry["configured"] = True
+        if 'mod_role_ids' in entry.getStore():
+            entry["configured"] = True
         entry.save()
         await ctx.message.add_reaction('👍')
 
