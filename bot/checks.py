@@ -25,7 +25,10 @@ def is_owner():
 def is_admin():
     def pred(ctx):
         perm_cog = ctx.bot.get_cog("Permissions")
-        if perm_cog.check_is_admin(ctx) or ctx.author.id == ctx.guild.owner.id:
+        if (
+                ctx.channel.permissions_for(ctx.author).administrator or
+                perm_cog.check_is_admin(ctx) or ctx.author.id == ctx.guild.owner.id
+        ):
             return CHECK_PASS
         return CHECK_FAIL
 
@@ -35,7 +38,13 @@ def is_admin():
 def is_moderator():
     def pred(ctx):
         perm_cog = ctx.bot.get_cog("Permissions")
-        if perm_cog.check_is_moderator(ctx) or perm_cog.check_is_admin(ctx) or ctx.author.id == ctx.guild.owner.id:
+
+        perms = ctx.channel.permissions_for(ctx.author)
+        if (
+            perms.administrator or perms.manage_guild or
+            perm_cog.check_is_moderator(ctx) or perm_cog.check_is_admin(ctx) or
+            ctx.author.id == ctx.guild.owner.id
+        ):
             return CHECK_PASS
         return CHECK_FAIL
 
