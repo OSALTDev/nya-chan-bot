@@ -29,8 +29,8 @@ class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
         # Add or update bot token in kwargs
         def get_prefix(bot, message):
-            guild = bot.get_cog("Core").db.find(id=str(message.guild.id))
             try:
+                guild = bot.get_cog("Core").db.find(id=str(message.guild.id))
                 return guild["prefix"]
             except (IndexError, TypeError):
                 return BotConfig.prefix

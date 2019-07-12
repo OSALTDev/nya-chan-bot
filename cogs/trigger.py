@@ -4,7 +4,8 @@ This cog handles chat triggers and responses
 
 # Load config, base cog and commands
 from bot.cog_base import Base
-from discord.ext import commands
+from bot.command import command as NyaCommand, commands
+from bot.checks import is_moderator, is_admin
 from discord import ChannelType as DiscordChannelType, Forbidden as DiscordForbidden
 
 # Import re compile and ignore case, and import simple namespace
@@ -130,8 +131,8 @@ class setup(Base, name="Trigger"):
 
         return {"message": msg.content}
 
-    @commands.command()
-    @commands.guild_only()
+    @NyaCommand()
+    @is_admin()
     async def add_trigger(self, ctx: commands.Context, trigger_name):
         """
             Add a word trigger to the bot
@@ -210,7 +211,8 @@ class setup(Base, name="Trigger"):
 
         await ctx.author.send("Your reaction has been inserted")
 
-    @commands.command()
+    @NyaCommand()
+    @is_moderator()
     async def list_triggers(self, ctx):
         """
             List your guild's triggers
@@ -229,7 +231,8 @@ class setup(Base, name="Trigger"):
 
         await ctx.send("Your triggers for this guild are:\n" + ', '.join(trigger_names))
 
-    @commands.command()
+    @NyaCommand()
+    @is_admin()
     async def remove_trigger(self, ctx, trigger_name):
         """
             Remove a word trigger from the bot
