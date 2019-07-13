@@ -14,6 +14,9 @@ from re import compile as re_compile, IGNORECASE as RE_IGNORE_CASE, error as RE_
 from datetime import datetime, timedelta
 from asyncio import TimeoutError as AIO_TIMEOUT_ERROR
 
+# Import itertools chaining to check
+from itertools import chain as it_chain
+
 
 class setup(Base, name="Trigger"):
     def __init__(self):
@@ -70,14 +73,16 @@ class setup(Base, name="Trigger"):
         trigger_match = re.finditer(message.content)
 
         # Don't continue if no match
-        if not trigger_match:
+        try:
+            first_match = next(trigger_match)
+        except StopIteration:
             return
 
         # Unique match names
         uniques = []
 
         # Loop over matches, add unique names to unique list
-        for trigger in trigger_match:
+        for trigger in it_chain([first_match], trigger_match):
             groups = trigger.groupdict()
             for name in groups.keys():
                 if groups[name] and name not in uniques:
