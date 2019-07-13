@@ -119,20 +119,23 @@ class setup(Base, name="Trigger"):
             await ctx.send("Command timed out, please try again")
 
     async def add_dm_trigger(self, ctx):
+        # Message check
         def wait_for_message_check(m):
             return m.author.id == ctx.author.id and m.channel.type is DiscordChannelType.private
 
+        # Request user response
         await ctx.author.send("What would you like the response to be?")
         action_response = await self.bot.wait_for("message", check=wait_for_message_check, timeout=75)
 
         return {"response": action_response.content}
 
     async def add_kick_ban_trigger(self, ctx):
-        await ctx.author.send("Please type a reason that I can DM the user, or type '!!' for no message")
-
+        # Message check
         def wait_for_message(m):
             return m.author.id == ctx.author.id and m.channel.type is DiscordChannelType.private
 
+        # Request user response
+        await ctx.author.send("Please type a reason that I can DM the user, or type '!!' for no message")
         msg = await self.bot.wait_for("message", check=wait_for_message, timeout=75)
 
         if msg.content == "!!":
@@ -153,25 +156,27 @@ class setup(Base, name="Trigger"):
             return await ctx.send("This trigger already exists for your guild")
 
         _reaction_list = {
-            # ":mod_message:592400024328077313": ("Message the moderators", "modmsg"),
             ":dm_user:592400024520884246": ("DM the user", "dm"),
             ":kick_user:592400025548750858": ("Kick user", "kick"),
             ":ban_user:592400024605032474": ("Ban user", "ban")
         }
 
+        # Request user to react
         user_react_to = await ctx.author.send(
             "React with the action of your trigger:\n" +
             "\n".join(f"<{reaction}> - {reaction_desc[0]}" for reaction, reaction_desc in _reaction_list.items())
         )
 
+        # Add available reactions
         for reaction in _reaction_list.keys():
             await user_react_to.add_reaction(reaction)
 
+        # Wait for and store reactions
         def wait_for_reaction_check(m, u):
             return u.id == ctx.author.id and m.message.id == user_react_to.id and str(m)[1:-1] in _reaction_list
-
         reaction, _ = await self.bot.wait_for("reaction_add", check=wait_for_reaction_check, timeout=30)
 
+        # Request user to input triggering words
         await ctx.author.send(
             "Please enter the words you want to trigger on\n"
             "Each word must be sent as a new message\n"
@@ -179,6 +184,7 @@ class setup(Base, name="Trigger"):
             "Python regular expressions are allowed to be used as well"
         )
 
+        # Populating the word list
         def wait_for_message_check(m):
             return m.author.id == ctx.author.id and m.channel.type is DiscordChannelType.private
 
@@ -197,7 +203,10 @@ class setup(Base, name="Trigger"):
             finally:
                 user_word = await self.bot.wait_for("message", check=wait_for_message_check, timeout=30)
 
+        # Combine wordlist into one string
         words = "|".join(word_list)
+
+        # Prepare database entry
         entry = {
             "guild": str(ctx.guild.id),
             "name": trigger_name,
@@ -208,6 +217,7 @@ class setup(Base, name="Trigger"):
 
         await user_react_to.delete()
 
+        # Enter new tirgger into database
         if entry["action"] == "dm":
             self.db.enter({
                 **entry,
@@ -231,6 +241,7 @@ class setup(Base, name="Trigger"):
             Syntax:
                 {prefix}list_triggers
         """
+        # Get names of triggers
         trigger_names = []
         for trigger in self.db.entries:
             if int(trigger["guild"]) == ctx.guild.id:
