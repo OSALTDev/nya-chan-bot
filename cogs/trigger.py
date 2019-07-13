@@ -34,7 +34,7 @@ class setup(Base, name="Trigger"):
                 self.triggers[guild_id] = {}
                 self.triggers[guild_id][trigger['name']] = trigger
 
-            if trigger['guild'] not in guild_re:
+            if guild_id not in guild_re:
                 guild_re[guild_id] = []
 
             guild_re[guild_id].append(trigger['re'])
@@ -42,7 +42,7 @@ class setup(Base, name="Trigger"):
         # Guild-specific regex
         self.guild_re = {}
         for guild_id, proc_re in guild_re.items():
-            self.guild_re[guild_id] = re_compile("|".join(proc_re), RE_IGNORE_CASE)
+            self.guild_re[guild_id] = re_compile(r"\b(?:" + "|".join(proc_re) + r")\b", RE_IGNORE_CASE)
 
     @Base.listener()
     async def on_message(self, message):
@@ -184,9 +184,11 @@ class setup(Base, name="Trigger"):
             try:
                 re_compile(user_word.content)
             except RE_ERROR:
+                await user_word.add_reaction("❌")
                 continue
             else:
                 word_list.append(user_word.content)
+                await user_word.add_reaction("✅")
             finally:
                 user_word = await self.bot.wait_for("message", check=wait_for_message_check, timeout=30)
 
