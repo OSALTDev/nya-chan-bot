@@ -42,5 +42,10 @@ _load_and_print_if_error("cogs.core")
 if bot.Config.debug:
     _load_and_print_if_error("jishaku")
 
+# Write PID to a file for stopping with systemctl
+pidfile = open(".pid", "w")
+pidfile.write(str(os.getpid()))
+pidfile.close()
+
 # Begin!
 BotInstance.run(bot.BotConfig.token)
