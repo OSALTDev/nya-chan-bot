@@ -1,4 +1,5 @@
 *.log
 .idea
 .pid
+.env
 config.yml
