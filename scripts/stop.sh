@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
 
-read -r pid < ../.pid
-kill -SIGTERM ${pid}
+C_DIR=`dirname "$(readlink -f $0)"`
+
+read -r pid < ${C_DIR}/../.pid
+kill -TERM ${pid}
