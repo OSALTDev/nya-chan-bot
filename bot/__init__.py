@@ -9,6 +9,7 @@ except ModuleNotFoundError as e:
 
 import logging
 import database
+from asyncio import sleep as aiosleep
 from .help import NyaHelp
 from .context import CommandContext
 from .config import Bot as BotConfig, Config
@@ -50,11 +51,17 @@ class BotBase(commands.Bot):
         handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
         self.logger.addHandler(handler)
 
-        try:
-            self.database = database.Arango()
-        except database.ConnectionError as e:
-            raise Exception(f"A connection to your database at {database.DBConfig.host}:{database.DBConfig.port} "
-                            "could not be established") from e
+        async def runner(attempts=1):
+            try:
+                return database.Arango()
+            except database.ConnectionError as e:
+                if attempts == 3:
+                    raise Exception(f"A connection to your database at {database.DBConfig.host}:{database.DBConfig.port} "
+                                    "could not be established") from e
+                await aiosleep(10)
+                await runner(attempts + 1)
+
+        self.database = self.loop.run_until_complete(runner())
 
     # Setting our custom context
     async def process_commands(self, message):
