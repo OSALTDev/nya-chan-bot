@@ -53,9 +53,3 @@ database:
   user:
     name: "bot"
     password: "password"
-
-  # Maximum attempts for connection
-  max_reconnect_attempts: 3
-
-  # Amount of time between each attempt in seconds
-  reconnect_attempt_wait_length: 10
