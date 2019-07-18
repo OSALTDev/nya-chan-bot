@@ -55,10 +55,10 @@ class BotBase(commands.Bot):
             try:
                 return database.Arango()
             except database.ConnectionError as e:
-                if attempts == 3:
+                if attempts == config.Database.max_reconnect_attempts:
                     raise Exception(f"A connection to your database at {database.DBConfig.host}:{database.DBConfig.port} "
                                     "could not be established") from e
-                await aiosleep(10)
+                await aiosleep(config.Database.reconnect_attempt_wait_length)
                 await runner(attempts + 1)
 
         self.database = self.loop.run_until_complete(runner())

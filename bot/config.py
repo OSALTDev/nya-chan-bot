@@ -209,6 +209,9 @@ class Database(metaclass=YAMLGetter):
         name: str
         password: str
 
+    max_reconnect_attempts: int
+    reconnect_attempt_wait_length: int
+
 
 class Logging(metaclass=YAMLGetter):
     section = "config.logs"
