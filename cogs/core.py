@@ -24,34 +24,27 @@ class setup(Base, name="Core"):
         self.command_log = self._create_logger_for("commands")
         self.chat_log = self._create_logger_for("chat")
 
+    def insert_prefix(self, abc, prefix_type, prefix):
+        entry = self.db.find(id=str(abc.id), type=prefix_type)
+        if not entry:
+            self.db.enter(dict(
+                id=str(abc.id),
+                type=prefix_type,
+                prefix=prefix
+            ))
+            return
+
+        entry["prefix"] = prefix
+        entry.save()
+
     @NyaCommand.command("prefix")
     @is_admin()
     async def configure_prefix(self, ctx, prefix):
-        entry = self.db.find(id=str(ctx.guild.id), type="guild")
-        if not entry:
-            self.db.enter(dict(
-                id=str(ctx.guild.id),
-                type="guild",
-                prefix=prefix
-            ))
-            return
-
-        entry["prefix"] = prefix
-        entry.save()
+        self.insert_prefix(ctx.guild, "guild", prefix)
 
     @NyaCommand.command("personal-prefix")
     async def configure_personal_prefix(self, ctx, prefix):
-        entry = self.db.find(id=str(ctx.guild.id), type="user")
-        if not entry:
-            self.db.enter(dict(
-                id=str(ctx.guild.id),
-                type="user",
-                prefix=prefix
-            ))
-            return
-
-        entry["prefix"] = prefix
-        entry.save()
+        self.insert_prefix(ctx.guild, "user", prefix)
 
     # Helper function to create logger instances
     @staticmethod
