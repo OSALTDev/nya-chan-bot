@@ -26,13 +26,19 @@ cd "`dirname "$(readlink -f $0)"`/.."
 cat <<- EOM > ${C_DIR}/nyachan.service
 [Unit]
 Description=Nya-Chan Discord bot service
+After=arangodb3.service
+Requires=arangodb3.service
 
 [Service]
 Type=simple
 ExecStart=/bin/bash `pwd`/scripts/bot.sh start ${PYTHON_LAUNCHER}
 ExecStop=/bin/bash `pwd`/scripts/bot.sh stop ${PYTHON_LAUNCHER}
-User=
+User=bot
 Group=
+
+Restart=on-failure
+RestartSec=15
+StartLimitIntervalSec=0
 
 [Install]
 WantedBy=multi-user.target
