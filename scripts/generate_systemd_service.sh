@@ -29,8 +29,8 @@ Description=Nya-Chan Discord bot service
 
 [Service]
 Type=simple
-ExecStart=/bin/bash `pwd`/scripts/start.sh ${PYTHON_LAUNCHER}
-ExecStop=/bin/bash `pwd`/scripts/stop.sh
+ExecStart=/bin/bash `pwd`/scripts/bot.sh start ${PYTHON_LAUNCHER}
+ExecStop=/bin/bash `pwd`/scripts/bot.sh stop ${PYTHON_LAUNCHER}
 User=
 Group=
 
