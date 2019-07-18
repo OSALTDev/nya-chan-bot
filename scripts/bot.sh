@@ -2,10 +2,10 @@
 
 # Check if argument is passed, and set PYTHON_LAUNCHER var to the argument passed
 # If not passed, just use "python"
-if [[ -z "$1" ]] ; then
+if [[ -z "$2" ]] ; then
     PYTHON_LAUNCHER=python
 else
-    PYTHON_LAUNCHER=$1
+    PYTHON_LAUNCHER=$2
 fi
 
 # Get python launcher (cut by spaces, get second result, then cut by "b" (beta), and get first result)
@@ -18,7 +18,20 @@ if [[ "${VERSION//./}" -lt '370' ]] ; then
     exit 1
 fi
 
+# CD into parent dir relative to current dir
 C_DIR=`dirname "$(readlink -f $0)"`
+cd "${C_DIR}/.."
 
-read -r pid < ${C_DIR}/../.pid
-kill -TERM ${pid}
+# Source our .env file if it exists
+if [[ -f "./.env" ]] ; then
+    source ./.env
+fi
+
+case "$1" in
+    start)
+        ${PYTHON_LAUNCHER} ./runner.py ;;
+    stop)
+        read -r pid < ./.pid; kill -TERM ${pid} ;;
+    *)
+        echo "Invalid option!"; exit 1 ;;
+esac

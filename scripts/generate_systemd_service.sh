@@ -20,7 +20,7 @@ fi
 
 # Change into parent dir of script
 C_DIR=`pwd`
-cd `dirname "$(readlink -f $0)"`/..
+cd "`dirname "$(readlink -f $0)"`/.."
 
 # Cat our script into nyachan.service
 cat <<- EOM > ${C_DIR}/nyachan.service
