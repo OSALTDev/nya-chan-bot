@@ -10,7 +10,9 @@ import logging
 import traceback
 
 # Import cog base and re-use commands; import our config too
-from bot.cog_base import Base, commands
+import bot.command as NyaCommand
+from bot.checks import is_admin
+from bot.cog_base import Base
 from bot.config import Config, Logging
 
 
@@ -22,18 +24,31 @@ class setup(Base, name="Core"):
         self.command_log = self._create_logger_for("commands")
         self.chat_log = self._create_logger_for("chat")
 
-    @commands.command("prefix")
-    async def configure_prefix(self, ctx, *, prefix):
-        entry = self.db.find(id=str(ctx.guild.id))
+    @NyaCommand.command("prefix")
+    @is_admin()
+    async def configure_prefix(self, ctx, prefix):
+        entry = self.db.find(id=str(ctx.guild.id), type="guild")
         if not entry:
             self.db.enter(dict(
                 id=str(ctx.guild.id),
+                type="guild",
                 prefix=prefix
             ))
             return
 
         entry["prefix"] = prefix
         entry.save()
+
+    @NyaCommand.command("personal-prefix")
+    async def configure_personal_prefix(self, ctx, prefix):
+        entry = self.db.find(id=str(ctx.guild.id), type="user")
+        if not entry:
+            self.db.enter(dict(
+                id=str(ctx.guild.id),
+                type="user",
+                prefix=prefix
+            ))
+            return
 
     # Helper function to create logger instances
     @staticmethod

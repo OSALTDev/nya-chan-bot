@@ -30,13 +30,20 @@ class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
         # Add or update bot token in kwargs
         def get_prefix(bot, message):
+            prefixes = [BotConfig.prefix]
+            try:
+                user = bot.get_cog("Core").db.find(id=str(message.author.id), type="user")
+                prefixes.append(user["prefix"])
+            except (IndexError, TypeError, AttributeError):
+                pass
+
             if message.guild:
                 try:
-                    guild = bot.get_cog("Core").db.find(id=str(message.guild.id))
-                    return guild["prefix"]
+                    guild = bot.get_cog("Core").db.find(id=str(message.guild.id), type="guild")
+                    prefixes.append(guild["prefix"])
                 except (IndexError, TypeError, AttributeError):
-                    return BotConfig.prefix
-            return BotConfig.prefix
+                    pass
+            return prefixes
 
         kwargs.update(command_prefix=get_prefix, help_command=NyaHelp())
         super().__init__(*args, **kwargs)
@@ -56,8 +63,8 @@ class BotBase(commands.Bot):
                 return database.Arango()
             except database.ConnectionError as e:
                 if attempts == config.Database.max_reconnect_attempts:
-                    raise Exception(f"A connection to your database at {database.DBConfig.host}:{database.DBConfig.port} "
-                                    "could not be established") from e
+                    raise Exception(f"A connection to your database at {database.DBConfig.host}:"
+                                    f"{database.DBConfig.port} could not be established") from e
                 await aiosleep(config.Database.reconnect_attempt_wait_length)
                 await runner(attempts + 1)
 
