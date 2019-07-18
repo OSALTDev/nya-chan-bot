@@ -50,6 +50,9 @@ class setup(Base, name="Core"):
             ))
             return
 
+        entry["prefix"] = prefix
+        entry.save()
+
     # Helper function to create logger instances
     @staticmethod
     def _create_logger_for(logger_name):
