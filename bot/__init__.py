@@ -29,7 +29,7 @@ class BotBase(commands.Bot):
     def __init__(self, *args, **kwargs):
         # Add or update bot token in kwargs
         def get_prefix(bot, message):
-            prefixes = [BotConfig.prefix]
+            prefixes = []
             try:
                 user = bot.get_cog("Core").db.find(id=str(message.author.id), type="user")
                 prefixes.append(user["prefix"])
@@ -42,6 +42,10 @@ class BotBase(commands.Bot):
                     prefixes.append(guild["prefix"])
                 except (IndexError, TypeError, AttributeError):
                     pass
+
+            if not prefixes:
+                prefixes = [BotConfig.prefix]
+
             return prefixes
 
         kwargs.update(command_prefix=get_prefix, help_command=NyaHelp())
