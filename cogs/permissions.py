@@ -74,3 +74,22 @@ class setup(Base, name="Permissions"):
     async def on_guild_remove(self, guild):
         self.db.find(guild_id=str(guild.id)).delete()
 
+    @NyaCommands.command()
+    def enable_command(self, ctx, *, command):
+        entry = self.db.find(guild_id=str(ctx.guild.id))
+        if "disabled_commands" in entry.getStore():
+            disabled_commands = entry["disabled_commands"]
+            if command in disabled_commands:
+                disabled_commands.remove(command)
+                entry["disabled_commands"] = disabled_commands
+            entry.save()
+        await ctx.message.add_reaction('👍')
+
+    @NyaCommands.command()
+    def disable_command(self, ctx, *, command):
+        entry = self.db.find(guild_id=str(ctx.guild.id))
+        if "disabled_commands" not in entry.getStore():
+            entry["disabled_commands"] = []
+        entry["disabled_commands"].append(command)
+        entry.save()
+        await ctx.message.add_reaction('👍')
