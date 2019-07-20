@@ -24,13 +24,9 @@ class NyaHelp(DefaultHelpCommand):
                command.qualified_name in guild_config["disabled_commands"]
 
     async def send_command_help(self, command):
-        if self.disabled_command(command):
-            return False
-
-        await super().send_command_help(command)
+        if not self.disabled_command(command):
+            await super().send_command_help(command)
 
     async def send_group_help(self, group):
-        if self.disabled_command(group):
-            return False
-
-        await super().send_group_help(group)
+        if not self.disabled_command(group):
+            await super().send_group_help(group)
