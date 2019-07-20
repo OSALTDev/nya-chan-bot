@@ -22,12 +22,16 @@ class NyaCommand(commands.Command):
         if not await super().can_run(ctx):
             return False
 
-        if ctx.command.name == "help":
-            return True
+        if hasattr(ctx.command, "bitwise_checks"):
+            for f in ctx.command.bitwise_checks:
+                if f(ctx) & CHECK_FAIL:
+                    return False
 
-        for f in ctx.command.bitwise_checks:
-            if f(ctx) & CHECK_FAIL:
-                return False
+        permissions_cog = ctx.bot.get_cog("Permissions")
+        guild_config = permissions_cog.db.find(guild_id=str(ctx.guild.id))
+        if "disabled_commands" in guild_config.getStore() and \
+                ctx.command.qualified_name in guild_config["disabled_commands"]:
+            return False
 
         return True
 
