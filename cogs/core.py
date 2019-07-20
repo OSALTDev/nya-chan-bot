@@ -44,7 +44,7 @@ class setup(Base, name="Core"):
 
     @NyaCommand.command("personal-prefix")
     async def configure_personal_prefix(self, ctx, prefix):
-        self.insert_prefix(ctx.guild, "user", prefix)
+        self.insert_prefix(ctx.author, "user", prefix)
 
     # Helper function to create logger instances
     @staticmethod
