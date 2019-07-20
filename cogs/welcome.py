@@ -22,7 +22,7 @@ class setup(Base, name="Welcome"):
     @Base.listener()
     async def on_member_join(self, member: discord.Member):
         entry = self.db.entry(str(member.guild.id))
-        if entry:
+        if entry and entry["welcome_enabled"]:
             try:
                 if "welcome_message" in entry.getStore():
                     await member.send(entry["welcome_message"])
