@@ -45,10 +45,6 @@ class CommandContext(commands.Context):
         # Initialize custom items to None
         self._custom_items = None
 
-    @property
-    def acquire(self):
-        return self.bot.database.acquire
-
     # Property to return custom items, and create if none
     @property
     def custom(self):
