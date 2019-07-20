@@ -12,6 +12,13 @@ class NyaCommand(commands.Command):
         super().__init__(func, **kwargs)
 
         try:
+            protected = func.__protected__
+        except AttributeError:
+            protected = kwargs.get('protected', False)
+        finally:
+            self.protected = protected
+
+        try:
             bitwise_checks = func.__commands_bitwise_checks__
             bitwise_checks.reverse()
             self.bitwise_checks = bitwise_checks
@@ -30,7 +37,7 @@ class NyaCommand(commands.Command):
         permissions_cog = ctx.bot.get_cog("Permissions")
         guild_config = permissions_cog.db.find(guild_id=str(ctx.guild.id))
         if "disabled_commands" in guild_config.getStore() and \
-                ctx.command.qualified_name in guild_config["disabled_commands"]:
+                self.qualified_name in guild_config["disabled_commands"]:
             return False
 
         return True

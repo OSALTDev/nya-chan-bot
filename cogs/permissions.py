@@ -1,5 +1,5 @@
 from bot.cog_base import Base, commands
-from bot.checks import is_admin, is_owner, protected
+from bot.checks import is_admin, is_owner
 from bot import command as NyaCommands
 from discord import Role as DiscordRole, utils as DiscordUtils
 
@@ -27,8 +27,7 @@ class setup(Base, name="Permissions"):
     def check_is_moderator(self, ctx):
         return self.check_has_permission(ctx, "mod")
 
-    @protected
-    @NyaCommands.group("config", invoke_without_command=True)
+    @NyaCommands.group("config", invoke_without_command=True, protected=True)
     @is_admin()
     async def configure(self, ctx):
         await ctx.send_help(ctx.invoked_with)
@@ -76,8 +75,7 @@ class setup(Base, name="Permissions"):
     async def on_guild_remove(self, guild):
         self.db.find(guild_id=str(guild.id)).delete()
 
-    @protected
-    @NyaCommands.command()
+    @NyaCommands.command(protected=True)
     async def enable_command(self, ctx, *, command):
         entry = self.db.find(guild_id=str(ctx.guild.id))
 
@@ -92,15 +90,15 @@ class setup(Base, name="Permissions"):
 
         await ctx.message.add_reaction('👍')
 
-    @protected
-    @NyaCommands.command()
+    @NyaCommands.command(protected=True)
     async def disable_command(self, ctx, *, command):
         entry = self.db.find(guild_id=str(ctx.guild.id))
 
         if "disabled_commands" not in entry.getStore():
             entry["disabled_commands"] = []
 
-        if protected(command):
+        bot_command: NyaCommands.NyaCommand = self.bot.get_command(command)
+        if bot_command.protected:
             await ctx.send("You can't disable this command")
             return
 

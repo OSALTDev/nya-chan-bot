@@ -51,14 +51,6 @@ def is_moderator():
     return nya_check(pred)
 
 
-PROTECTED_COMMANDS = ["help"]
-
-
 def protected(cmd):
-    if type(cmd) is str:
-        return any(cmd.startswith(protected_command) for protected_command in PROTECTED_COMMANDS)
-    else:
-        PROTECTED_COMMANDS.append(cmd.qualified_name)
-        return cmd
-
-
+    cmd.__protected__ = True
+    return cmd
