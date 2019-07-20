@@ -217,7 +217,7 @@ class setup(Base, name="Trigger"):
 
         await user_react_to.delete()
 
-        # Enter new tirgger into database
+        # Enter new trigger into database
         if entry["action"] == "dm":
             self.db.enter({
                 **entry,

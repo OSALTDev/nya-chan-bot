@@ -24,7 +24,9 @@ class setup(Base, name="Core"):
         self.command_log = self._create_logger_for("commands")
         self.chat_log = self._create_logger_for("chat")
 
+    # Method to help with user and guild prefixes
     def insert_prefix(self, abc, prefix_type, prefix):
+        # We convert the ABC's ID into a string, or our DB software truncs it
         entry = self.db.find(id=str(abc.id), type=prefix_type)
         if not entry:
             self.db.enter(dict(
