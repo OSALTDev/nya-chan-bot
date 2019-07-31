@@ -22,7 +22,9 @@ class setup(Base, name="Trigger"):
     def __init__(self):
         self.db = self.bot.database.collection("TriggerWords")
         self.triggered = self.bot.database.collection("TriggerCount")
+        self.triggers = self.guild_re = None
 
+    def populate_triggers(self):
         # Initialize cog trigger dictionary and temporary trigger string list
         self.triggers = {}
 
@@ -230,6 +232,8 @@ class setup(Base, name="Trigger"):
                 **(await self.add_kick_ban_trigger(ctx))
             }, f"{ctx.guild.id}_{trigger_name}")
 
+        self.populate_triggers()
+
         await ctx.author.send("Your reaction has been inserted")
 
     @NyaCommand()
@@ -265,6 +269,7 @@ class setup(Base, name="Trigger"):
         doc = self.db.entry(f"{ctx.guild.id}_{trigger_name}")
         if doc:
             doc.delete()
+            self.populate_triggers()
             await ctx.send(f"Trigger {trigger_name} successfully deleted")
         else:
             await ctx.send(f"Trigger {trigger_name} does not exist")
