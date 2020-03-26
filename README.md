@@ -1,3 +1,5 @@
+This project is now dead and no longer maintained.
+
 ### Requirements
 
 This is intended to be used with python 3.7
